@@ -33,9 +33,9 @@ The configure scripts supports the following use cases:
 2. If you want to use GPU accelerators:
     ```bash
     # With OpenACC:
-    ./configure --enable-gpu=acc
+    ./configure --enable-gpu=openacc
     # With OpenMP:
-    ./configure --enable-gpu=mp
+    ./configure --enable-gpu=openmp
     ```
 3. If you want to build the [examples](#examples) by default (otherwise, they are built only for testing, i.e. when you call `make check`):
     ```bash
