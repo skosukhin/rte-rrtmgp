@@ -388,7 +388,7 @@ program rte_rrtmgp_allsky
   ! Clouds and aerosols also used enter data  
   !
   if(do_clouds) then
-    !$acc        exit data delete(     cloud_mask, lwp, iwp, rel, rei)
+    !!$acc        exit data delete(     cloud_mask, lwp, iwp, rel, rei)
     !$omp target exit data map(release:cloud_mask, lwp, iwp, rel, rei)
     select type(clouds)
       class is (ty_optical_props_1scl)
