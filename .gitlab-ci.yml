@@ -1,0 +1,131 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "api"
+
+default:
+  tags:
+    - lumi
+
+variables:
+  SBATCH_ACCOUNT: project_4650000454
+  SBATCH_MEM_PER_CPU: 1G
+  SBATCH_PARTITION: debug
+  SBATCH_TIMELIMIT: 20:00
+  SCHEDULER_PARAMETERS: --nodes=1 --ntasks=1 --cpus-per-task=4
+
+#
+# Set up Python virtual environment
+#
+setup-python:
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - module load cray-python
+    - python -m venv python-venv
+    - source python-venv/bin/activate
+    - python -m pip install --upgrade pip
+    - python -m pip install dask[array] netCDF4 numpy xarray
+  artifacts:
+    paths:
+      - python-venv
+    expire_in: 60 minutes
+
+#
+# Build libraries, examples and tests
+#
+.build-common:
+  variables:
+    # Core variables:
+    FC: ftn
+    # Production flags for Icon model
+    FCFLAGS: -hacc -hadd_paren -Ktrap=divz,ovf,inv -hflex_mp=intolerant -hfp1 -g -DRTE_USE_$FPMODEL
+    # Make variables:
+    FCINCLUDE: -I/usr/include
+    RRTMGP_ROOT: $CI_PROJECT_DIR
+    RTE_KERNELS: accel
+  before_script:
+    - module load PrgEnv-cray cce/16.0.1 craype-x86-milan craype-accel-amd-gfx90a rocm cray-hdf5 cray-netcdf
+  script:
+    - $FC --version
+    - make libs
+    - make -C build separate-libs
+  artifacts:
+    paths:
+      - examples/all-sky/rrtmgp_allsky
+      - examples/rfmip-clear-sky/rrtmgp_rfmip_?w
+      - tests/check_equivalence
+      - tests/check_variants
+    expire_in: 60 minutes
+
+build-cce-gpu-openacc-DP:
+  extends: .build-common
+  variables:
+    FPMODEL: DP
+
+build-cce-gpu-openacc-SP:
+  extends: .build-common
+  variables:
+    FPMODEL: SP
+
+#
+# Run examples and tests
+#
+.test-common:
+  variables:
+    SBATCH_PARTITION: dev-g
+    SBATCH_GPUS: 1
+    RRTMGP_DATA: $CI_PROJECT_DIR/rrtmgp-data
+    RUN_CMD:
+  script:
+    #
+    # Check out data
+    #
+    - git clone --depth 1 https://github.com/earth-system-radiation/rrtmgp-data.git $RRTMGP_DATA
+    - make tests
+  artifacts:
+    paths:
+      - $RRTMGP_DATA
+      - examples/rfmip-clear-sky/r??_Efx_RTE-RRTMGP-181204_rad-irf_r1i1p1f1_gn.nc
+      - examples/all-sky/rrtmgp-allsky-?w.nc
+      - examples/all-sky/rrtmgp-allsky-?w-no-aerosols.nc
+    exclude:
+      - $RRTMGP_DATA/.git
+    expire_in: 60 minutes
+
+test-cce-gpu-openacc-DP:
+  needs:
+    - build-cce-gpu-openacc-DP
+  extends: .test-common
+
+test-cce-gpu-openacc-SP:
+  needs:
+    - build-cce-gpu-openacc-SP
+  extends: .test-common
+
+#
+# Compare the results
+#
+.check-common:
+  variables:
+    RRTMGP_ROOT: $CI_PROJECT_DIR
+    RRTMGP_DATA: $CI_PROJECT_DIR/rrtmgp-data
+  before_script:
+    - source python-venv/bin/activate
+  script:
+    - make check
+
+check-cce-gpu-openacc-DP:
+  needs:
+    - setup-python
+    - test-cce-gpu-openacc-DP
+  extends: .check-common
+  variables:
+    FAILURE_THRESHOLD: "7.e-4"
+
+check-cce-gpu-openacc-SP:
+  needs:
+    - setup-python
+    - test-cce-gpu-openacc-SP
+  extends: .check-common
+  variables:
+    FAILURE_THRESHOLD: "3.5e-1"
