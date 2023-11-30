@@ -15,24 +15,16 @@ jobs:
   CI:
     if: github.repository == 'earth-system-radiation/rte-rrtmgp'
     runs-on:
-      labels: ${{ matrix.runner }}
+      labels: cscs-ci
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
-        config-name:
-        - nvidia-gpu-openacc
-        - cce-cpu-icon-production
-        - cce-gpu-openmp
-        - cce-gpu-openacc
+        config-name: [nvidia-gpu-openacc, cce-cpu-icon-production, cce-gpu-openmp]
         fpmodel: [DP, SP]
         include:
         # The tests are not experimental by default:
         - experimental: false
-        # Run at CSCS by default:
-        - runner: cscs-ci
-          srun-args: -C gpu -A d56 -p cscsci
-        # Tests:
         - config-name: nvidia-gpu-openacc
           rte-kernels: accel
           compiler-modules: "PrgEnv-nvidia nvidia craype-accel-nvidia60 cdt-cuda/21.09 !cray-libsci_acc"
@@ -49,12 +41,6 @@ jobs:
           # OpenMP flags from Nichols Romero (Argonne)
           fcflags: "-hnoacc -homp -O0"
           experimental: true
-        - config-name: cce-gpu-openacc
-          rte-kernels: accel
-          compiler-modules: "PrgEnv-cray cce/16.0.1 craype-x86-milan craype-accel-amd-gfx90a rocm"
-          fcflags: "-hnoomp -hacc"
-          runner: lumi-ci
-          srun-args: -G 1 -A project_465000454 -p small-g
     env:
       # Core variables:
       FC: ftn
@@ -63,7 +49,7 @@ jobs:
       RRTMGP_ROOT: ${{ github.workspace }}
       RRTMGP_DATA: ${{ github.workspace }}/rrtmgp-data
       RTE_KERNELS: ${{ matrix.rte-kernels }}
-      RUN_CMD: "srun ${{ matrix.srun-args }} -t 15:00"
+      RUN_CMD: "srun -C gpu -A d56 -p cscsci -t 15:00"
       FAILURE_THRESHOLD: 7.e-4
     steps:
     #
@@ -79,10 +65,9 @@ jobs:
         repository: earth-system-radiation/rrtmgp-data
         path: rrtmgp-data
     #
-    # Finalize build environment (CSCS)
+    # Finalize build environment
     #
-    - name: Finalize build environment (CSCS)
-      if: matrix.runner == 'cscs-ci'
+    - name: Finalize build environment
       run: |
         # There are significant limitations on what can go into ${GITHUB_ENV},
         # therefore, we use ${BASH_ENV} but only when necessary:
@@ -107,25 +92,6 @@ jobs:
         # SLURM jobs, user home directories and HDF5 file locking are
         # incompatible on Daint:
         echo 'HDF5_USE_FILE_LOCKING=FALSE' >> "${GITHUB_ENV}"
-    #
-    # Finalize build environment (LUMI)
-    #
-    - name: Finalize build environment (LUMI)
-      if: matrix.runner == 'lumi-ci'
-      run: |
-        # There are significant limitations on what can go into ${GITHUB_ENV},
-        # therefore, we use ${BASH_ENV} but only when necessary:
-        BASH_ENV="${GITHUB_WORKSPACE}/.bash"
-        echo "module load ${{ matrix.compiler-modules }} cray-hdf5 cray-netcdf" >> "${BASH_ENV}"
-        # Use custom Python environment:
-        #   The environment can be re-generated as follows:
-        #     module load cray-python
-        #     python3 -m venv /users/skosukhin/rte-rrtmgp-python
-        #     /users/skosukhin/rte-rrtmgp-python/bin/pip3 install --upgrade pip
-        #     /users/skosukhin/rte-rrtmgp-python/bin/pip3 install dask[array] netCDF4 numpy xarray
-        echo 'PATH="/users/skosukhin/rte-rrtmgp-python/bin:${PATH}"' >> "${BASH_ENV}"
-        # Make bash run the above on startup:
-        echo "BASH_ENV=${BASH_ENV}" >> "${GITHUB_ENV}"
     #
     # Build libraries, examples and tests
     #
