@@ -124,7 +124,7 @@ jobs:
   # Deferred GitLab pipelines on Lumi at CSC:
   #
   lumi-init:
-    if: github.repository == 'earth-system-radiation/rte-rrtmgp'
+    # if: github.repository == 'earth-system-radiation/rte-rrtmgp'
     runs-on: ubuntu-latest
     outputs:
       ref-name: ${{ steps.g-push-rev.outputs.ref-name }}
