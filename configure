@@ -581,7 +581,7 @@ PACKAGE_STRING='rte+rrtmgp 1.6'
 PACKAGE_BUGREPORT=''
 PACKAGE_URL='https://github.com/earth-system-radiation/rte-rrtmgp'
 
-ac_unique_file="rte/mo_rte_sw.F90"
+ac_unique_file="rte-frontend/mo_rte_sw.F90"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 INSTALL_DATA
@@ -595,13 +595,13 @@ TESTS_DISABLED
 TESTS_ENABLED
 EXAMPLES_DISABLED
 EXAMPLES_ENABLED
+DL_CMD
 PYTHON
 ARFLAGS
 AR
-GPTL_FCLIBS
-GPTL_FCFLAGS
 NETCDF_FCLIBS
 NETCDF_FCFLAGS
+SP_ENABLED
 GPU_DISABLED
 GPU_ENABLED
 DEFAULT_VERBOSITY
@@ -668,10 +668,10 @@ enable_option_checking
 enable_silent_rules
 enable_rpaths
 enable_gpu
+enable_single_precision
 enable_examples
 enable_tests
 with_netcdf_fortran
-with_gptl_fortran
 '
       ac_precious_vars='build_alias
 host_alias
@@ -682,8 +682,6 @@ LDFLAGS
 LIBS
 NETCDF_FCFLAGS
 NETCDF_FCLIBS
-GPTL_FCFLAGS
-GPTL_FCLIBS
 AR
 ARFLAGS
 PYTHON
@@ -1307,6 +1305,9 @@ Optional Features:
                             openacc|yes  enable OpenACC support
                             openmp       enable OpenMP support
                             no           disable GPU offload
+  --enable-single-precision
+                          enable single-precision floating-point model
+                          [default=no]
   --enable-examples       enable examples [default=no]
   --enable-tests          enable tests [default=auto]
 
@@ -1315,9 +1316,6 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-netcdf-fortran=<yes|no|directory>
                           location of NetCDF Fortran library (lib and include
-                          subdirs)
-  --with-gptl-fortran=<yes|no|directory>
-                          location of GPTL Fortran library (lib and include
                           subdirs)
 
 Some influential environment variables:
@@ -1330,10 +1328,6 @@ Some influential environment variables:
               exact Fortran compiler flags enabling NetCDF Fortran
   NETCDF_FCLIBS
               exact linker flags enabling NetCDF Fortran when linking with
-              Fortran compiler
-  GPTL_FCFLAGS
-              exact Fortran compiler flags enabling GPTL Fortran
-  GPTL_FCLIBS exact linker flags enabling GPTL Fortran when linking with
               Fortran compiler
   AR          archiver command
   ARFLAGS     archiver flags
@@ -2439,7 +2433,7 @@ elif $FC --version 2>&1 | grep '^AMD clang version' >/dev/null 2>&1; then :
   acx_cv_fc_compiler_vendor=amd
 elif $FC -V 2>&1 | grep '^f18 compiler' >/dev/null 2>&1; then :
   acx_cv_fc_compiler_vendor=flang
-elif $FC --version 2>&1 | grep '^clang version' >/dev/null 2>&1; then :
+elif $FC --version 2>&1 | grep 'clang version' >/dev/null 2>&1; then :
   acx_cv_fc_compiler_vendor=flang
 else
   acx_cv_fc_compiler_vendor=unknown
@@ -2459,46 +2453,46 @@ else
   case $acx_cv_fc_compiler_vendor in #(
   intel) :
     acx_cv_fc_compiler_version=`$FC --version 2>/dev/null | sed -n 's/^ifort (IFORT) \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p'`
-         if test -z "$acx_cv_fc_compiler_version"; then :
+         if test -n "$acx_cv_fc_compiler_version"; then :
+  acx_cv_fc_compiler_version="classic:${acx_cv_fc_compiler_version}"
+else
   acx_cv_fc_compiler_version=`$FC --version 2>/dev/null | sed -n 's/^ifx (IFORT) \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p'`
             if test -n "$acx_cv_fc_compiler_version"; then :
   acx_cv_fc_compiler_version="oneapi:${acx_cv_fc_compiler_version}"
 fi
-else
-  acx_cv_fc_compiler_version="classic:${acx_cv_fc_compiler_version}"
 fi ;; #(
   nag) :
     acx_cv_fc_compiler_version=`$FC -V 2>&1 | sed -n 's/^NAG Fortran Compiler Release \([0-9][0-9]*\.[0-9][0-9]*\).*Build \([0-9][0-9]*\)/\1.\2/p'` ;; #(
   portland) :
     acx_cv_fc_compiler_version=`$FC -V 2>/dev/null | sed -n 's/\(pgfortran\|pgf90\) \([0-9][0-9]*\.[0-9][0-9]*\)-\([0-9][0-9]*\).*/\2.\3/p'`
-         if test -z "$acx_cv_fc_compiler_version"; then :
+         if test -n "$acx_cv_fc_compiler_version"; then :
+  acx_cv_fc_compiler_version="pg:${acx_cv_fc_compiler_version}"
+else
   acx_cv_fc_compiler_version=`$FC -V 2>/dev/null | sed -n 's/nvfortran \([0-9][0-9]*\.[0-9][0-9]*\)-\([0-9][0-9]*\).*/\1.\2/p'`
             if test -n "$acx_cv_fc_compiler_version"; then :
   acx_cv_fc_compiler_version="nv:${acx_cv_fc_compiler_version}"
 fi
-else
-  acx_cv_fc_compiler_version="pg:${acx_cv_fc_compiler_version}"
 fi ;; #(
   cray) :
-    acx_cv_fc_compiler_version=`$FC -V 2>&1 | sed -n 's/.*ersion \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p'` ;; #(
+    acx_cv_fc_compiler_version=`$FC -V 2>&1 | sed -n 's/.*[vV]ersion \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p'` ;; #(
   nec) :
     acx_cv_fc_compiler_version=`$FC --version 2>&1 | sed -n 's/^nfort (NFORT) \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p'` ;; #(
   gnu) :
-    acx_cv_fc_compiler_version=`$FC -dumpfullversion 2>/dev/null`
-         if test $? -ne 0 || test -z "$acx_cv_fc_compiler_version"; then :
-  acx_cv_fc_compiler_version=`$FC -dumpversion 2>/dev/null`
+    acx_cv_fc_compiler_version=`$FC -dumpfullversion 2>/dev/null | sed -n '/^[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$/p'`
+         if test -z "$acx_cv_fc_compiler_version"; then :
+  acx_cv_fc_compiler_version=`$FC -dumpversion 2>/dev/null | sed -n '/^[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$/p'`
 fi ;; #(
   amd) :
     acx_cv_fc_compiler_version=`$FC --version 2>/dev/null | sed -n 's/.*AOCC_\([0-9][0-9]*\)[._]\([0-9][0-9]*\)[._]\([0-9][0-9]*\).*/\1.\2.\3/p'` ;; #(
   flang) :
     acx_cv_fc_compiler_version=`$FC -V 2>&1 | sed -n 's/.*version \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)/\1/p'`
-         if test -z "$acx_cv_fc_compiler_version"; then :
+         if test -n "$acx_cv_fc_compiler_version"; then :
+  acx_cv_fc_compiler_version="f18:${acx_cv_fc_compiler_version}"
+else
   acx_cv_fc_compiler_version=`$FC --version 2>/dev/null | sed -n 's/.*version \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p'`
             if test -n "$acx_cv_fc_compiler_version"; then :
   acx_cv_fc_compiler_version="classic:${acx_cv_fc_compiler_version}"
 fi
-else
-  acx_cv_fc_compiler_version="f18:${acx_cv_fc_compiler_version}"
 fi ;; #(
   *) :
     acx_cv_fc_compiler_version=unknown ;;
@@ -2644,7 +2638,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
       cd ..
       rm -rf conftest.dir
 fi
-   if test x"$acx_cv_fc_module_naming_upper" = xunknown || test x"$acx_cv_fc_module_naming_ext" = xunknown; then :
+   if test "x$acx_cv_fc_module_naming_upper" = xunknown || test "x$acx_cv_fc_module_naming_ext" = xunknown; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: unknown" >&5
 $as_echo "unknown" >&6; }
       { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
@@ -3712,6 +3706,67 @@ else
 
 fi
 
+# Check whether --enable-single-precision was given.
+if test "${enable_single_precision+set}" = set; then :
+  enableval=$enable_single_precision; if test x"$enableval" != xno; then :
+  enable_single_precision=yes
+fi
+else
+  enable_single_precision=no
+fi
+
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the Fortran preprocessor macro RTE_USE_SP is defined" >&5
+$as_echo_n "checking whether the Fortran preprocessor macro RTE_USE_SP is defined... " >&6; }
+if ${acx_cv_fc_macro_RTE_USE_SP_defined+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat > conftest.$ac_ext <<_ACEOF
+      program main
+#ifdef RTE_USE_SP
+#else
+      choke me
+#endif
+      end
+_ACEOF
+if ac_fn_fc_try_compile "$LINENO"; then :
+  acx_cv_fc_macro_RTE_USE_SP_defined=yes
+else
+  cat > conftest.$ac_ext <<_ACEOF
+      program main
+#ifndef RTE_USE_SP
+#else
+      choke me
+#endif
+      end
+_ACEOF
+if ac_fn_fc_try_compile "$LINENO"; then :
+  acx_cv_fc_macro_RTE_USE_SP_defined=no
+else
+  acx_cv_fc_macro_RTE_USE_SP_defined=unsupported
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $acx_cv_fc_macro_RTE_USE_SP_defined" >&5
+$as_echo "$acx_cv_fc_macro_RTE_USE_SP_defined" >&6; }
+   acx_macro_defined=$acx_cv_fc_macro_RTE_USE_SP_defined
+
+if test "x$enable_single_precision" = xyes; then :
+  if test "x$acx_macro_defined" = xno; then :
+  as_fn_append FCFLAGS " ${FCDEF_PP}RTE_USE_SP"
+fi
+   SP_ENABLED=''
+
+else
+  if test "x$acx_macro_defined" = xyes; then :
+  as_fn_error $? "Single-precision floating-point model is enabled via FCFLAGS: either enable it via the configure option (--enable-single-precision) or remove the definition of the RTE_USE_SP preprocessor macro from FCFLAGS" "$LINENO" 5
+fi
+   SP_ENABLED='#'
+
+fi
+
 # Check whether --enable-examples was given.
 if test "${enable_examples+set}" = set; then :
   enableval=$enable_examples; if test x"$enableval" != xno; then :
@@ -3863,123 +3918,6 @@ fi
    NETCDF_FCFLAGS=;NETCDF_FCLIBS=
 fi
 
-gptl_fortran_requested=no
-
-# Check whether --with-gptl-fortran was given.
-if test "${with_gptl_fortran+set}" = set; then :
-  withval=$with_gptl_fortran; if test x"$withval" != xno; then :
-  gptl_fortran_requested=yes
-fi
-else
-  with_gptl_fortran=no
-fi
-
-
-
-
-if test x"$with_gptl_fortran" != xno; then :
-  acx_inc_search_args=
-   acx_lib_search_args=
-   if test x"$with_gptl_fortran" != xyes; then :
-  acx_inc_search_args="${FCMODINC}$with_gptl_fortran/include"
-      acx_lib_search_args="-L$with_gptl_fortran/lib"
-      if test "x$enable_rpaths" = xyes; then :
-  as_fn_append acx_lib_search_args " ${acx_cv_fc_rpath_flag}$with_gptl_fortran/lib"
-fi
-fi
-   acx_save_FCFLAGS=$FCFLAGS
-   GPTL_FCFLAGS=${GPTL_FCFLAGS-$acx_inc_search_args}
-   FCFLAGS="$GPTL_FCFLAGS $acx_save_FCFLAGS"
-         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Fortran module GPTL" >&5
-$as_echo_n "checking for Fortran module GPTL... " >&6; }
-if ${acx_cv_fc_module_GPTL+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat > conftest.$ac_ext <<_ACEOF
-      program main
-      use gptl
-      end
-_ACEOF
-if ac_fn_fc_try_compile "$LINENO"; then :
-  acx_cv_fc_module_GPTL=yes
-else
-  acx_cv_fc_module_GPTL=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $acx_cv_fc_module_GPTL" >&5
-$as_echo "$acx_cv_fc_module_GPTL" >&6; }
-   if test "x$acx_cv_fc_module_GPTL" = xyes; then :
-  acx_fc_lib_search=GPTLSTART
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker flags enabling Fortran function $acx_fc_lib_search" >&5
-$as_echo_n "checking for linker flags enabling Fortran function $acx_fc_lib_search... " >&6; }
-   if { as_var=acx_cv_fc_lib_func_`$as_echo "$acx_fc_lib_search" | $as_tr_sh`; eval \${$as_var+:} false; }; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat > conftest.$ac_ext <<_ACEOF
-      program main
-      use gptl, only: gptlstart
-      implicit none
-      integer :: status
-      status = gptlstart('conftest')
-      end
-_ACEOF
-      acx_save_LIBS=$LIBS
-      if ${GPTL_FCLIBS+:} false; then :
-  set dummy "$GPTL_FCLIBS"
-else
-  set dummy ''  "$acx_lib_search_args -lgptlf" "$acx_lib_search_args -lgptlf -lgptl"
-fi
-      shift
-      for acx_libs in "$@"; do
-        LIBS="$acx_libs $acx_save_LIBS"
-        if ac_fn_fc_try_link "$LINENO"; then :
-  eval acx_cv_fc_lib_func_`$as_echo "$acx_fc_lib_search" | $as_tr_sh`=\$acx_libs
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-        if { as_var=acx_cv_fc_lib_func_`$as_echo "$acx_fc_lib_search" | $as_tr_sh`; eval \${$as_var+:} false; }; then :
-  break
-fi
-      done
-      rm -f conftest.$ac_ext
-      LIBS=$acx_save_LIBS
-fi
-
-   if { as_var=acx_cv_fc_lib_func_`$as_echo "$acx_fc_lib_search" | $as_tr_sh`; eval \${$as_var+:} false; }; then :
-  if test -n "`eval 'as_val=${'acx_cv_fc_lib_func_\`$as_echo "$acx_fc_lib_search" | $as_tr_sh\`'};$as_echo "$as_val"'`"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: `eval 'as_val=${'acx_cv_fc_lib_func_\`$as_echo "$acx_fc_lib_search" | $as_tr_sh\`'};$as_echo "$as_val"'`" >&5
-$as_echo "`eval 'as_val=${'acx_cv_fc_lib_func_\`$as_echo "$acx_fc_lib_search" | $as_tr_sh\`'};$as_echo "$as_val"'`" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: none needed" >&5
-$as_echo "none needed" >&6; }
-fi
-      GPTL_FCLIBS=$acx_cv_fc_lib_func_GPTLSTART
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: unknown" >&5
-$as_echo "unknown" >&6; }
-      with_gptl_fortran=no
-fi
-
-else
-  with_gptl_fortran=no
-fi
-
-   FCFLAGS=$acx_save_FCFLAGS
-fi
-
-if test "x$with_gptl_fortran" = xno; then :
-  if test "x$gptl_fortran_requested" = xyes; then :
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "GPTL Fortran is not available
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-   GPTL_FCFLAGS=;GPTL_FCLIBS=
-else
-  as_fn_append FCFLAGS " ${FCDEF_PP}USE_TIMING"
-fi
-
 
 
 ARFLAGS=${ARFLAGS-cr}
@@ -4123,10 +4061,14 @@ fi
 fi
 
 if test x"$enable_tests" != xno; then :
-  set 'numpy'             'import numpy' \
-       'netCDF4'           'import netCDF4' \
-       'xarray (v0.12.2+)' 'import xarray; exit(tuple(map(int, xarray.__version__.split("."))) < (0, 12, 2))' \
-       'dask.array'        'import dask.array'
+  set 'numpy'                      'import numpy' \
+       'netCDF4 or h5netcdf+scipy'  'try:
+    import netCDF4
+except:
+    import h5netcdf
+    import scipy' \
+       'xarray (v0.12.2+)'          'import xarray; exit(tuple(map(int, xarray.__version__.split("."))) < (0, 12, 2))' \
+       'dask.array'                 'import dask.array'
    while test $# -gt 1; do
           { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether Python module '$1' is available" >&5
 $as_echo_n "checking whether Python module '$1' is available... " >&6; }
@@ -4170,6 +4112,47 @@ fi
      shift; shift
         done
    set dummy; shift
+fi
+
+if test x"$enable_tests" != xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for download command" >&5
+$as_echo_n "checking for download command... " >&6; }
+if ${acx_cv_prog_DL_CMD+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ${DL_CMD+:} false; then :
+  acx_cv_prog_DL_CMD=$DL_CMD
+else
+  acx_cv_prog_DL_CMD=unknown
+         for acx_candidate in wget curl; do
+           case `$acx_candidate --version 2>/dev/null` in #(
+  *'curl '*) :
+    acx_cv_prog_DL_CMD="$acx_candidate -sL"; break ;; #(
+  *'GNU Wget'*) :
+    acx_cv_prog_DL_CMD="$acx_candidate -qO-"; break ;; #(
+  *) :
+     ;;
+esac
+         done
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $acx_cv_prog_DL_CMD" >&5
+$as_echo "$acx_cv_prog_DL_CMD" >&6; }
+   if test "x$acx_cv_prog_DL_CMD" = xunknown; then :
+  if test "x$enable_tests" = xauto; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Unable to find a download command for the tests" >&5
+$as_echo "$as_me: WARNING: Unable to find a download command for the tests" >&2;}
+         enable_tests=no
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Unable to find a download command for the tests
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+else
+  DL_CMD=$acx_cv_prog_DL_CMD
+
+fi
 fi
 
 if test "x$enable_examples" = xno; then :
@@ -4347,7 +4330,7 @@ test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
 
-ac_config_files="$ac_config_files examples/all-sky/all-sky.test examples/rfmip-clear-sky/rfmip-clear-sky.test tests/clear_sky_regression.test tests/test_zenith_angle_spherical_correction.test"
+ac_config_files="$ac_config_files examples/all-sky/all-sky.test examples/rfmip-clear-sky/rfmip-clear-sky.test tests/check_equivalence.test tests/check_variants.test tests/test_zenith_angle_spherical_correction.test"
 
 
 ac_config_files="$ac_config_files Makefile"
@@ -5070,7 +5053,8 @@ do
   case $ac_config_target in
     "examples/all-sky/all-sky.test") CONFIG_FILES="$CONFIG_FILES examples/all-sky/all-sky.test" ;;
     "examples/rfmip-clear-sky/rfmip-clear-sky.test") CONFIG_FILES="$CONFIG_FILES examples/rfmip-clear-sky/rfmip-clear-sky.test" ;;
-    "tests/clear_sky_regression.test") CONFIG_FILES="$CONFIG_FILES tests/clear_sky_regression.test" ;;
+    "tests/check_equivalence.test") CONFIG_FILES="$CONFIG_FILES tests/check_equivalence.test" ;;
+    "tests/check_variants.test") CONFIG_FILES="$CONFIG_FILES tests/check_variants.test" ;;
     "tests/test_zenith_angle_spherical_correction.test") CONFIG_FILES="$CONFIG_FILES tests/test_zenith_angle_spherical_correction.test" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
@@ -5505,7 +5489,8 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
   case $ac_file$ac_mode in
     "examples/all-sky/all-sky.test":F) chmod a+x "$ac_file" ;;
     "examples/rfmip-clear-sky/rfmip-clear-sky.test":F) chmod a+x "$ac_file" ;;
-    "tests/clear_sky_regression.test":F) chmod a+x "$ac_file" ;;
+    "tests/check_equivalence.test":F) chmod a+x "$ac_file" ;;
+    "tests/check_variants.test":F) chmod a+x "$ac_file" ;;
     "tests/test_zenith_angle_spherical_correction.test":F) chmod a+x "$ac_file" ;;
     "depfiles":C) ${MAKE-make} dummy-depend >/dev/null 2>&5
    sleep 1
