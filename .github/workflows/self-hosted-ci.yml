@@ -144,8 +144,8 @@ jobs:
       id: g-push-rev
       uses: "skosukhin/git-ci-hub-lab/g-push-rev@v1"
       with:
-        remote-url: ${{ vars.GITLAB_SERVER }}/${{ vars.GITLAB_PROJECT }}.git
-        password: ${{ secrets.GITLAB_TOKEN }}
+        remote-url: ${{ vars.GITLAB_SERVER }}/${{ vars.GITLAB_PROJECT2 }}.git
+        password: ${{ secrets.GITLAB_TOKEN2 }}
         ref-type: tag
         ref-message: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         force-push: true
@@ -157,8 +157,8 @@ jobs:
       uses: "skosukhin/git-ci-hub-lab/gl-create-pipeline@v1"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT }}
-        token: ${{ secrets.GITLAB_TOKEN }}
+        project-name: ${{ vars.GITLAB_PROJECT2 }}
+        token: ${{ secrets.GITLAB_TOKEN2 }}
         ref-name: ${{ steps.g-push-rev.outputs.ref-name }}
         expected-sha: ${{ github.sha }}
     #
@@ -168,8 +168,8 @@ jobs:
       uses: "skosukhin/git-ci-hub-lab/gl-attach-job@v1"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT }}
-        token: ${{ secrets.GITLAB_TOKEN }}
+        project-name: ${{ vars.GITLAB_PROJECT2 }}
+        token: ${{ secrets.GITLAB_TOKEN2 }}
         pipeline-id: ${{ steps.gl-create-pipeline.outputs.pipeline-id }}
         job-name: setup-python
   lumi:
@@ -187,8 +187,8 @@ jobs:
       uses: "skosukhin/git-ci-hub-lab/gl-attach-job@v1"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT }}
-        token: ${{ secrets.GITLAB_TOKEN }}
+        project-name: ${{ vars.GITLAB_PROJECT2 }}
+        token: ${{ secrets.GITLAB_TOKEN2 }}
         pipeline-id: ${{ needs.lumi-init.outputs.pipeline-id }}
         job-name: build-${{ matrix.config-name }}
     #
@@ -198,8 +198,8 @@ jobs:
       uses: "skosukhin/git-ci-hub-lab/gl-attach-job@v1"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT }}
-        token: ${{ secrets.GITLAB_TOKEN }}
+        project-name: ${{ vars.GITLAB_PROJECT2 }}
+        token: ${{ secrets.GITLAB_TOKEN2 }}
         pipeline-id: ${{ needs.lumi-init.outputs.pipeline-id }}
         job-name: test-${{ matrix.config-name }}
     #
@@ -209,8 +209,8 @@ jobs:
       uses: "skosukhin/git-ci-hub-lab/gl-attach-job@v1"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT }}
-        token: ${{ secrets.GITLAB_TOKEN }}
+        project-name: ${{ vars.GITLAB_PROJECT2 }}
+        token: ${{ secrets.GITLAB_TOKEN2 }}
         pipeline-id: ${{ needs.lumi-init.outputs.pipeline-id }}
         job-name: check-${{ matrix.config-name }}
   lumi-cleanup:
@@ -222,8 +222,8 @@ jobs:
     - uses: "skosukhin/git-ci-hub-lab/gl-delete-ref@v1"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT }}
-        token: ${{ secrets.GITLAB_TOKEN }}
+        project-name: ${{ vars.GITLAB_PROJECT2 }}
+        token: ${{ secrets.GITLAB_TOKEN2 }}
         ref-type: tag
         ref-name: ${{ needs.lumi-init.outputs.ref-name }}
         force: true

@@ -4,7 +4,8 @@ workflow:
 
 default:
   tags:
-    - lumi
+    - saas-linux-small-amd64
+  image: skosukhin/lumi-ci-test
 
 variables:
   SBATCH_ACCOUNT: project_4650000454
@@ -20,7 +21,6 @@ setup-python:
   variables:
     GIT_STRATEGY: none
   script:
-    - module load cray-python
     - python -m venv python-venv
     - source python-venv/bin/activate
     - python -m pip install --upgrade pip
@@ -36,15 +36,13 @@ setup-python:
 .build-common:
   variables:
     # Core variables:
-    FC: ftn
+    FC: gfortran
     # Production flags for Icon model
-    FCFLAGS: -hacc -hadd_paren -Ktrap=divz,ovf,inv -hflex_mp=intolerant -hfp1 -g -DRTE_USE_$FPMODEL
+    FCFLAGS: -ffree-line-length-none -m64 -std=f2008 -march=native -fbounds-check -fmodule-private -fimplicit-none -finit-real=nan -g -DRTE_USE_CBOOL -DRTE_USE_$FPMODEL
     # Make variables:
     FCINCLUDE: -I/usr/include
     RRTMGP_ROOT: $CI_PROJECT_DIR
-    RTE_KERNELS: accel
-  before_script:
-    - module load PrgEnv-cray cce/16.0.1 craype-x86-milan craype-accel-amd-gfx90a rocm cray-hdf5 cray-netcdf
+    RTE_KERNELS: default
   script:
     - $FC --version
     - make libs
