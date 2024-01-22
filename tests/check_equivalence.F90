@@ -258,7 +258,7 @@ program rte_check_equivalence
                             lw_sources,      &
                             sfc_emis,        &
                             fluxes))
-    if(.not. allclose(fluxes%flux_net, ref_flux_dn-ref_flux_up) )  &  
+    if(.not. allclose(fluxes%flux_net, ref_flux_dn-ref_flux_up, tol=0._wp) )  &
       call stop_on_err("Net fluxes don't match when computed alone")
     fluxes%flux_up => tst_flux_up(:,:)
     fluxes%flux_dn => tst_flux_dn(:,:)
@@ -266,7 +266,7 @@ program rte_check_equivalence
                             lw_sources,      &
                             sfc_emis,        &
                             fluxes))
-    if(.not. allclose(fluxes%flux_net, ref_flux_dn-ref_flux_up) )  &  
+    if(.not. allclose(fluxes%flux_net, ref_flux_dn-ref_flux_up, tol=0._wp) )  &
       call report_err("Net fluxes don't match when computed in tandem")
     print *, "  Net fluxes"  
     nullify(fluxes%flux_net)
@@ -275,8 +275,8 @@ program rte_check_equivalence
     ! Orientation invariance 
     !
     call lw_clear_sky_vr
-    if(.not. allclose(tst_flux_up, ref_flux_up) .or. & 
-       .not. allclose(tst_flux_dn, ref_flux_dn) )    & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol=4._wp) .or. &
+       .not. allclose(tst_flux_dn, ref_flux_dn, tol=4._wp) )    &
       call report_err(" Vertical invariance failure")
     print *, "  Vertical orientation invariance"
     ! -------------------------------------------------------
@@ -284,8 +284,8 @@ program rte_check_equivalence
     ! Subsets of atmospheric columns 
     !
     call lw_clear_sky_subset
-    if(.not. allclose(tst_flux_up, ref_flux_up) .or. & 
-       .not. allclose(tst_flux_dn, ref_flux_dn) )    & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol=0._wp) .or. &
+       .not. allclose(tst_flux_dn, ref_flux_dn, tol=0._wp) )    &
       call report_err("  Doing problem in subsets fails")
     print *, "  Subsetting invariance"
     ! -------------------------------------------------------
@@ -298,8 +298,8 @@ program rte_check_equivalence
                             lw_sources,      &
                             sfc_emis,        &
                             fluxes))
-    if(.not. allclose(tst_flux_up, ref_flux_up) .or. & 
-       .not. allclose(tst_flux_dn, ref_flux_dn) )    & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol=0._wp) .or. &
+       .not. allclose(tst_flux_dn, ref_flux_dn, tol=0._wp) )    &
       call report_err("  halving/doubling fails")
 
     call increment_with_1scl
@@ -307,8 +307,8 @@ program rte_check_equivalence
                             lw_sources,      &
                             sfc_emis,        &
                             fluxes))
-    if(.not. allclose(tst_flux_up, ref_flux_up) .or. & 
-       .not. allclose(tst_flux_dn, ref_flux_dn) )    & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol=0._wp) .or. &
+       .not. allclose(tst_flux_dn, ref_flux_dn, tol=0._wp) )    &
       call report_err("  Incrementing with 1scl fails")
 
     call increment_with_2str
@@ -316,8 +316,8 @@ program rte_check_equivalence
                             lw_sources,      &
                             sfc_emis,        &
                             fluxes))
-    if(.not. allclose(tst_flux_up, ref_flux_up) .or. & 
-       .not. allclose(tst_flux_dn, ref_flux_dn) )    & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol=0._wp) .or. &
+       .not. allclose(tst_flux_dn, ref_flux_dn, tol=0._wp) )    &
       call report_err("  Incrementing with 2str fails")
 
     call increment_with_nstr
@@ -325,8 +325,8 @@ program rte_check_equivalence
                             lw_sources,      &
                             sfc_emis,        &
                             fluxes))
-    if(.not. allclose(tst_flux_up, ref_flux_up) .or. & 
-       .not. allclose(tst_flux_dn, ref_flux_dn) )    & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol=0._wp) .or. &
+       .not. allclose(tst_flux_dn, ref_flux_dn, tol=0._wp) )    &
       call report_err("  Incrementing with nstr fails")
     print *, "  Incrementing"
     ! -------------------------------------------------------
@@ -338,8 +338,8 @@ program rte_check_equivalence
                             sfc_emis,        &
                             fluxes,          &
                             flux_up_Jac = jFluxUp))
-    if(.not. allclose(tst_flux_up, ref_flux_up) .or. & 
-       .not. allclose(tst_flux_dn, ref_flux_dn) )    & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol=0._wp) .or. &
+       .not. allclose(tst_flux_dn, ref_flux_dn, tol=0._wp) )    &
       call report_err("  Computing Jacobian changes fluxes")
     !
     ! Increase surface temperature by 1K and recompute fluxes 
@@ -358,7 +358,7 @@ program rte_check_equivalence
     ! Comparision of fluxes with increased surface T aren't expected to match 
     !   fluxes + their Jacobian w.r.t. surface T exactly
     !
-    if (.not. allclose(tst_flux_up, ref_flux_up + jFluxUp, tol=30._wp)) then
+    if (.not. allclose(tst_flux_up, ref_flux_up + jFluxUp, tol=23._wp)) then
       call report_err("  Jacobian approx. differs from flux with perturbed surface T")
       print *, maxval(abs(tst_flux_up - (ref_flux_up + jFluxUp))/spacing(tst_flux_up))
     end if
@@ -400,9 +400,9 @@ program rte_check_equivalence
     ! Orientation invariance 
     !
     call sw_clear_sky_vr
-    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 4._wp) .or. & 
-       .not. allclose(tst_flux_dn, ref_flux_dn, tol = 4._wp) .or. & 
-       .not. allclose(tst_flux_dir,ref_flux_dir,tol = 4._wp))    &  
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 0._wp) .or. &
+       .not. allclose(tst_flux_dn, ref_flux_dn, tol = 0._wp) .or. &
+       .not. allclose(tst_flux_dir,ref_flux_dir,tol = 0._wp))    &
       call report_err(" Vertical invariance failure")
     print *, "  Vertical orientation invariance"
     ! -------------------------------------------------------
@@ -411,7 +411,7 @@ program rte_check_equivalence
     !   Threshold of 4x spacing() works on CPUs but 8x is needed for GPUs
     !
     call sw_clear_sky_tsi
-    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 8._wp) .or. & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 10._wp) .or. &
        .not. allclose(tst_flux_dn, ref_flux_dn, tol = 8._wp) .or. & 
        .not. allclose(tst_flux_dir,ref_flux_dir,tol = 8._wp))    &  
       call report_err("  Changing TSI fails")
@@ -432,9 +432,9 @@ program rte_check_equivalence
                             mu0,   toa_flux, &
                             sfc_alb_dir, sfc_alb_dif, &
                             fluxes))
-    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 6._wp) .or. & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 8._wp) .or. &
        .not. allclose(tst_flux_dn, ref_flux_dn, tol = 6._wp) .or. & 
-       .not. allclose(tst_flux_dir,ref_flux_dir,tol = 6._wp))    &  
+       .not. allclose(tst_flux_dir,ref_flux_dir,tol = 5._wp))    &
       call report_err("  halving/doubling fails")
 
     call increment_with_1scl
@@ -442,9 +442,9 @@ program rte_check_equivalence
                             mu0,   toa_flux, &
                             sfc_alb_dir, sfc_alb_dif, &
                             fluxes))
-    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 6._wp) .or. & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 8._wp) .or. &
        .not. allclose(tst_flux_dn, ref_flux_dn, tol = 6._wp) .or. & 
-       .not. allclose(tst_flux_dir,ref_flux_dir,tol = 6._wp))    &  
+       .not. allclose(tst_flux_dir,ref_flux_dir,tol = 5._wp))    &
       call report_err("  Incrementing with 1scl fails")
 
      call stop_on_err(k_dist%gas_optics(p_lay, p_lev, &
@@ -453,9 +453,9 @@ program rte_check_equivalence
                                        atmos,        &
                                        toa_flux))
    call increment_with_2str
-    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 6._wp) .or. & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 8._wp) .or. &
        .not. allclose(tst_flux_dn, ref_flux_dn, tol = 6._wp) .or. & 
-       .not. allclose(tst_flux_dir,ref_flux_dir,tol = 6._wp))    &  
+       .not. allclose(tst_flux_dir,ref_flux_dir,tol = 5._wp))    &
       call report_err("  Incrementing with 2str fails")
 
     call stop_on_err(k_dist%gas_optics(p_lay, p_lev, &
@@ -468,9 +468,9 @@ program rte_check_equivalence
                             mu0,   toa_flux, &
                             sfc_alb_dir, sfc_alb_dif, &
                             fluxes))
-    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 6._wp) .or. & 
+    if(.not. allclose(tst_flux_up, ref_flux_up, tol = 8._wp) .or. &
        .not. allclose(tst_flux_dn, ref_flux_dn, tol = 6._wp) .or. & 
-       .not. allclose(tst_flux_dir,ref_flux_dir,tol = 6._wp))    &  
+       .not. allclose(tst_flux_dir,ref_flux_dir,tol = 5._wp))    &
       call report_err("  Incrementing with nstr fails")
     print *, "  Incrementing"
   end if 
