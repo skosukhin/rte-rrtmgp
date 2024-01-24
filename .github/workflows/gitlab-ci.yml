@@ -16,10 +16,6 @@ jobs:
   # Deferred GitLab pipelines on Levante at DKRZ (see .gitlab/levante.yml):
   #
   levante-init:
-    if: |
-      github.repository_owner == 'earth-system-radiation' &&
-        ( github.event_name != 'pull_request' ||
-          github.event.pull_request.head.repo.owner.login == github.repository_owner )
     runs-on: ubuntu-latest
     outputs:
       ref-name: ${{ steps.g-push-rev.outputs.ref-name }}
