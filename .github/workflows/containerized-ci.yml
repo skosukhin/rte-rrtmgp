@@ -14,23 +14,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        fortran-compiler: [ifort, ifx, nvfortran]
+        fortran-compiler: [nvfortran]
         rte-kernels: [default, accel]
         fpmodel: [DP, SP]
         include:
         # The tests are not experimental by default:
         - experimental: false
-        # Set flags for Intel Fortran Compiler Classic
-        - fortran-compiler: ifort
-          fcflags: -m64 -g -traceback -heap-arrays -assume realloc_lhs -extend-source 132 -check bounds,uninit,pointers,stack -stand f08
-        # Set flags for Intel Fortran Compiler
-        - fortran-compiler: ifx
-          rte-kernels: default
-          fcflags: -debug -traceback -O0 -heap-arrays -assume realloc_lhs -extend-source 132 -stand f08
-        - fortran-compiler: ifx
-          rte-kernels: accel
-          fcflags: -debug -traceback -O0 -heap-arrays -assume realloc_lhs -extend-source 132 -stand f08 -fiopenmp -fopenmp-targets=spir64
-          experimental: true
         # Set flags for NVIDIA Fortran compiler
         - fortran-compiler: nvfortran
           rte-kernels: default
@@ -39,12 +28,8 @@ jobs:
           rte-kernels: accel
           fcflags: -Mallocatable=03 -Mstandard -Mbounds -Mchkptr -Kieee -Mchkstk -acc
         # Set container images
-        - fortran-compiler: ifort
-          image: ghcr.io/earth-system-radiation/rte-rrtmgp-ci:oneapi
-        - fortran-compiler: ifx
-          image: ghcr.io/earth-system-radiation/rte-rrtmgp-ci:oneapi
         - fortran-compiler: nvfortran
-          image: ghcr.io/earth-system-radiation/rte-rrtmgp-ci:nvhpc
+          image: skosukhin/rte-rrtmgp-ci:nvhpc
     container:
       image: ${{ matrix.image }}
     env:
