@@ -4,7 +4,8 @@ workflow:
 
 default:
   tags:
-    - lumi
+    - saas-linux-small-amd64
+  image: skosukhin/lumi-ci-test
 
 variables:
   SCHEDULER_PARAMETERS: >-
@@ -31,9 +32,9 @@ variables:
 .cce:
   variables:
     # Core variables:
-    FC: ftn
+    FC: gfortran
     # Convenience variables:
-    VERSION_FCFLAGS: -V
+    VERSION_FCFLAGS: --version
     COMPILER_MODULES: PrgEnv-cray cce/16.0.1 craype-x86-milan
 
 .dp:
@@ -60,9 +61,8 @@ variables:
   extends:
     - .cpu
     - .common
-  before_script:
-    - module --force purge
-    - module load ${COMPILER_MODULES} ${EXTRA_COMPILER_MODULES} cray-hdf5 cray-netcdf
+  variables:
+    FCINCLUDE: -I/usr/include
   script:
     - ${FC} ${VERSION_FCFLAGS}
     - make libs
@@ -81,8 +81,8 @@ variables:
     - .build-common
   variables:
     # Compiler flags used for ICON model:
-    FCFLAGS: -hacc -hadd_paren -Ktrap=divz,ovf,inv -hflex_mp=intolerant -hfp1 -g -DRTE_USE_${FPMODEL}
-    RTE_KERNELS: accel
+    FCFLAGS: -ffree-line-length-none -m64 -std=f2008 -march=native -fbounds-check -fmodule-private -fimplicit-none -finit-real=nan -g -DRTE_USE_CBOOL -DRTE_USE_${FPMODEL}
+    RTE_KERNELS: default
     # Convenience variables:
     EXTRA_COMPILER_MODULES: craype-accel-amd-gfx90a rocm
 
@@ -130,7 +130,6 @@ setup-python:
   variables:
     GIT_STRATEGY: none
   script:
-    - module load cray-python
     - python -m venv ${PYHOME}
     - ${PYHOME}/bin/python -m pip install --upgrade pip
     - ${PYHOME}/bin/python -m pip install dask[array] netCDF4 numpy xarray
