@@ -1,0 +1,176 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "api"
+
+default:
+  tags:
+    - lumi
+
+variables:
+  SCHEDULER_PARAMETERS: >-
+    --account=project_4650000454
+    --nodes=1
+    --ntasks=1
+    --cpus-per-task=4
+    --mem-per-cpu=1G
+    --time=05:00
+    ${EXTRA_SCHEDULER_PARAMETERS}
+  EXTRA_SCHEDULER_PARAMETERS:
+
+.gpu:
+  variables:
+    EXTRA_SCHEDULER_PARAMETERS: >-
+      --partition=dev-g
+      --gpus=1
+
+.cpu:
+  variables:
+    EXTRA_SCHEDULER_PARAMETERS: >-
+      --partition=debug
+
+.cce:
+  variables:
+    # Core variables:
+    FC: ftn
+    # Convenience variables:
+    VERSION_FCFLAGS: -V
+    COMPILER_MODULES: PrgEnv-cray cce/16.0.1 craype-x86-milan
+
+.dp:
+  variables:
+    FPMODEL: DP
+    FAILURE_THRESHOLD: "5.8e-2"
+
+.sp:
+  variables:
+    FPMODEL: SP
+    FAILURE_THRESHOLD: "3.5e-1"
+
+.common:
+  variables:
+    PYHOME: ${CI_PROJECT_DIR}/python-venv
+    # Make variables:
+    RRTMGP_ROOT: ${CI_PROJECT_DIR}
+    RRTMGP_DATA: ${CI_PROJECT_DIR}/rrtmgp-data
+
+#
+# Build libraries, examples and tests
+#
+.build-common:
+  extends:
+    - .cpu
+    - .common
+  before_script:
+    - module --force purge
+    - module load ${COMPILER_MODULES} ${EXTRA_COMPILER_MODULES} cray-hdf5 cray-netcdf
+  script:
+    - ${FC} ${VERSION_FCFLAGS}
+    - make libs
+    - make -C build separate-libs
+  artifacts:
+    untracked: true
+    exclude:
+      - "**/*.o"
+      - "**/*.a"
+      - "**/*.mod"
+    expire_in: 60 minutes
+
+.build-cce-gpu-openacc:
+  extends:
+    - .cce
+    - .build-common
+  variables:
+    # Compiler flags used for ICON model:
+    FCFLAGS: -hacc -hadd_paren -Ktrap=divz,ovf,inv -hflex_mp=intolerant -hfp1 -g -DRTE_USE_${FPMODEL}
+    RTE_KERNELS: accel
+    # Convenience variables:
+    EXTRA_COMPILER_MODULES: craype-accel-amd-gfx90a rocm
+
+#
+# Run examples and tests
+#
+.test-common:
+  extends: .common
+  script:
+    #
+    # Check out data
+    #
+    - git clone --depth 1 https://github.com/earth-system-radiation/rrtmgp-data.git ${RRTMGP_DATA}
+    - make tests
+  artifacts:
+    paths:
+      - "**/*.nc"
+    exclude:
+      # Exclude files from the main repository:
+      - extensions/solar_variability/rrtmgp-solar-var-tables.nc
+    expire_in: 60 minutes
+
+.test-gpu:
+  extends:
+    - .gpu
+    - .test-common
+
+#
+# Compare the results
+#
+.check-common:
+  extends: .common
+  before_script:
+    - export PATH="${PYHOME}/bin:${PATH}"
+  script:
+    - make check
+
+#
+# Set up Python virtual environment
+#
+setup-python:
+  extends:
+    - .cpu
+    - .common
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - module load cray-python
+    - python -m venv ${PYHOME}
+    - ${PYHOME}/bin/python -m pip install --upgrade pip
+    - ${PYHOME}/bin/python -m pip install dask[array] netCDF4 numpy xarray
+  artifacts:
+    paths:
+      - ${PYHOME}
+    expire_in: 60 minutes
+
+build-cce-gpu-openacc-DP:
+  extends:
+    - .dp
+    - .build-cce-gpu-openacc
+
+build-cce-gpu-openacc-SP:
+  extends:
+    - .sp
+    - .build-cce-gpu-openacc
+
+test-cce-gpu-openacc-DP:
+  needs:
+    - build-cce-gpu-openacc-DP
+  extends: .test-gpu
+
+test-cce-gpu-openacc-SP:
+  needs:
+    - build-cce-gpu-openacc-SP
+  extends: .test-gpu
+
+check-cce-gpu-openacc-DP:
+  needs:
+    - setup-python
+    - test-cce-gpu-openacc-DP
+  extends:
+    - .dp
+    - .check-common
+
+check-cce-gpu-openacc-SP:
+  needs:
+    - setup-python
+    - test-cce-gpu-openacc-SP
+  extends:
+    - .sp
+    - .check-common
