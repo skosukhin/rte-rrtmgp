@@ -37,7 +37,7 @@ jobs:
     #
     - name: Push to GitLab repository
       id: g-push-rev
-      uses: "skosukhin/git-ci-hub-lab/g-push-rev@v1"
+      uses: "skosukhin/git-ci-hub-lab/g-push-rev@develop"
       with:
         remote-url: ${{ vars.DKRZ_GITLAB_SERVER }}/${{ vars.DKRZ_GITLAB_PROJECT }}.git
         password: ${{ secrets.DKRZ_GITLAB_TOKEN }}
@@ -49,7 +49,7 @@ jobs:
     #
     - name: Trigger GitLab CI/CD Pipeline
       id: gl-trigger-pipeline
-      uses: "skosukhin/git-ci-hub-lab/gl-trigger-pipeline@v1"
+      uses: "skosukhin/git-ci-hub-lab/gl-trigger-pipeline@develop"
       with:
         server-url: ${{ vars.DKRZ_GITLAB_SERVER }}
         project-name: ${{ vars.DKRZ_GITLAB_PROJECT }}
@@ -78,7 +78,7 @@ jobs:
     # Build, run and check (fetch the log)
     #
     - name: Build, run and check (fetch the log)
-      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@v1"
+      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@develop"
       with:
         server-url: ${{ vars.DKRZ_GITLAB_SERVER }}
         project-name: ${{ vars.DKRZ_GITLAB_PROJECT }}
@@ -91,7 +91,7 @@ jobs:
     if: always() && needs.levante-init.result != 'skipped'
     continue-on-error: true
     steps:
-    - uses: "skosukhin/git-ci-hub-lab/g-delete-ref@v1"
+    - uses: "skosukhin/git-ci-hub-lab/g-delete-ref@develop"
       with:
         remote-url: ${{ vars.DKRZ_GITLAB_SERVER }}/${{ vars.DKRZ_GITLAB_PROJECT }}.git
         password: ${{ secrets.DKRZ_GITLAB_TOKEN }}
@@ -123,7 +123,7 @@ jobs:
     #
     - name: Push to GitLab repository
       id: g-push-rev
-      uses: "skosukhin/git-ci-hub-lab/g-push-rev@v1"
+      uses: "skosukhin/git-ci-hub-lab/g-push-rev@develop"
       with:
         remote-url: ${{ vars.GITLAB_SERVER }}/${{ vars.GITLAB_PROJECT2 }}.git
         password: ${{ secrets.GITLAB_TOKEN2 }}
@@ -135,7 +135,7 @@ jobs:
     #
     - name: Create GitLab CI/CD Pipeline
       id: gl-create-pipeline
-      uses: "skosukhin/git-ci-hub-lab/gl-create-pipeline@v1"
+      uses: "skosukhin/git-ci-hub-lab/gl-create-pipeline@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
         project-name: ${{ vars.GITLAB_PROJECT2 }}
@@ -146,7 +146,7 @@ jobs:
     # Set up Python virtual environment (fetch the log)
     #
     - name: Set up Python virtual environment (fetch the log)
-      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@v1"
+      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
         project-name: ${{ vars.GITLAB_PROJECT2 }}
@@ -171,7 +171,7 @@ jobs:
     # Build libraries, examples and tests (fetch the log)
     #
     - name: Build libraries, examples and tests (fetch the log)
-      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@v1"
+      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
         project-name: ${{ vars.GITLAB_PROJECT2 }}
@@ -182,7 +182,7 @@ jobs:
     # Run examples and tests (fetch the log)
     #
     - name: Run examples and tests (fetch the log)
-      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@v1"
+      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
         project-name: ${{ vars.GITLAB_PROJECT2 }}
@@ -193,7 +193,7 @@ jobs:
     # Compare the results (fetch the log)
     #
     - name: Compare the results (fetch the log)
-      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@v1"
+      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
         project-name: ${{ vars.GITLAB_PROJECT2 }}
@@ -206,7 +206,7 @@ jobs:
     if: always() && needs.lumi-init.result != 'skipped'
     continue-on-error: true
     steps:
-    - uses: "skosukhin/git-ci-hub-lab/gl-delete-ref@v1"
+    - uses: "skosukhin/git-ci-hub-lab/gl-delete-ref@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
         project-name: ${{ vars.GITLAB_PROJECT2 }}
