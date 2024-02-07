@@ -127,10 +127,10 @@ jobs:
       with:
         remote-url: ${{ vars.GITLAB_SERVER }}/${{ vars.GITLAB_PROJECT }}.git
         password: ${{ secrets.GITLAB_TOKEN }}
-        rev-signing-format: ssh
-        rev-signing-key: ${{ secrets.GITLAB_SIGNING_KEY }}
-        ref-type: branch
-        ref-name: ${{ github.ref_name }}
+        ref-type: tag
+        ref-message: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        ref-signing-format: ssh
+        ref-signing-key: ${{ secrets.GITLAB_SIGNING_KEY }}
         force-push: true
     #
     # Create GitLab CI/CD Pipeline
@@ -143,7 +143,7 @@ jobs:
         project-name: ${{ vars.GITLAB_PROJECT }}
         token: ${{ secrets.GITLAB_TOKEN }}
         ref-name: ${{ steps.g-push-rev.outputs.ref-name }}
-        expected-sha: ${{ steps.g-push-rev.outputs.ref-commit }}
+        expected-sha: ${{ github.sha }}
     #
     # Set up Python virtual environment (fetch the log)
     #
@@ -191,6 +191,6 @@ jobs:
         server-url: ${{ vars.GITLAB_SERVER }}
         project-name: ${{ vars.GITLAB_PROJECT }}
         token: ${{ secrets.GITLAB_TOKEN }}
-        ref-type: branch
-        ref-name: ${{ github.ref_name }}
+        ref-type: tag
+        ref-name: ${{ needs.lumi-init.outputs.ref-name }}
         force: true
