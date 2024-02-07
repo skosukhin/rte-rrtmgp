@@ -127,8 +127,8 @@ jobs:
       with:
         remote-url: ${{ vars.GITLAB_SERVER }}/${{ vars.GITLAB_PROJECT }}.git
         password: ${{ secrets.GITLAB_TOKEN }}
-        ref-type: tag
-        ref-message: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        ref-type: branch
+        ref-name: ${{ github.ref_name }}
         force-push: true
     #
     # Create GitLab CI/CD Pipeline
@@ -211,6 +211,6 @@ jobs:
         server-url: ${{ vars.GITLAB_SERVER }}
         project-name: ${{ vars.GITLAB_PROJECT }}
         token: ${{ secrets.GITLAB_TOKEN }}
-        ref-type: tag
-        ref-name: ${{ needs.lumi-init.outputs.ref-name }}
+        ref-type: branch
+        ref-name: ${{ github.ref_name }}
         force: true
