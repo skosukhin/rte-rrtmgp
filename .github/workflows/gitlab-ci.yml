@@ -127,6 +127,8 @@ jobs:
       with:
         remote-url: ${{ vars.GITLAB_SERVER }}/${{ vars.GITLAB_PROJECT }}.git
         password: ${{ secrets.GITLAB_TOKEN }}
+        rev-signing-format: ssh
+        rev-signing-key: ${{ secrets.GITLAB_SIGNING_KEY }}
         ref-type: branch
         ref-name: ${{ github.ref_name }}
         force-push: true
@@ -141,7 +143,7 @@ jobs:
         project-name: ${{ vars.GITLAB_PROJECT }}
         token: ${{ secrets.GITLAB_TOKEN }}
         ref-name: ${{ steps.g-push-rev.outputs.ref-name }}
-        expected-sha: ${{ github.sha }}
+        expected-sha: ${{ steps.g-push-rev.outputs.ref-commit }}
     #
     # Set up Python virtual environment (fetch the log)
     #
