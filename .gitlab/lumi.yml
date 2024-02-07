@@ -53,6 +53,13 @@ variables:
 .python-common:
   variables:
     PYHOME: ${CI_PROJECT_DIR}/python-venv
+    FF_USE_FASTZIP: 1
+  cache:
+    # Update the key to regenerate the virtual environment:
+    key: python-venv-version-1
+    paths:
+      - ${PYHOME}
+    policy: pull
 
 setup-python:
   extends:
@@ -61,13 +68,12 @@ setup-python:
   variables:
     GIT_STRATEGY: none
   script:
+    - test ! -d "${PYHOME}" || exit 0
     - python -m venv ${PYHOME}
     - ${PYHOME}/bin/python -m pip install --upgrade pip
     - ${PYHOME}/bin/python -m pip install dask[array] netCDF4 numpy xarray
-  artifacts:
-    paths:
-      - ${PYHOME}
-    expire_in: 60 minutes
+  cache:
+    policy: pull-push
 
 .common:
   extends: .python-common
