@@ -46,87 +46,17 @@ variables:
     FPMODEL: SP
     FAILURE_THRESHOLD: "3.5e-1"
 
-.common:
-  variables:
-    PYHOME: ${CI_PROJECT_DIR}/python-venv
-    # Make variables:
-    RRTMGP_ROOT: ${CI_PROJECT_DIR}
-    RRTMGP_DATA: ${CI_PROJECT_DIR}/rrtmgp-data
-
-#
-# Build libraries, examples and tests
-#
-.build-common:
-  extends:
-    - .cpu
-    - .common
-  before_script:
-    - module --force purge
-    - module load ${COMPILER_MODULES} ${EXTRA_COMPILER_MODULES} cray-hdf5 cray-netcdf
-  script:
-    - ${FC} ${VERSION_FCFLAGS}
-    - make libs
-    - make -C build separate-libs
-  artifacts:
-    untracked: true
-    exclude:
-      - "**/*.o"
-      - "**/*.a"
-      - "**/*.mod"
-    expire_in: 60 minutes
-
-.build-cce-gpu-openacc:
-  extends:
-    - .cce
-    - .build-common
-  variables:
-    # Compiler flags used for ICON model:
-    FCFLAGS: -hacc -hadd_paren -Ktrap=divz,ovf,inv -hflex_mp=intolerant -hfp1 -g -DRTE_USE_${FPMODEL}
-    RTE_KERNELS: accel
-    # Convenience variables:
-    EXTRA_COMPILER_MODULES: craype-accel-amd-gfx90a rocm
-
-#
-# Run examples and tests
-#
-.test-common:
-  extends: .common
-  script:
-    #
-    # Check out data
-    #
-    - git clone --depth 1 https://github.com/earth-system-radiation/rrtmgp-data.git ${RRTMGP_DATA}
-    - make tests
-  artifacts:
-    paths:
-      - "**/*.nc"
-    exclude:
-      # Exclude files from the main repository:
-      - extensions/solar_variability/rrtmgp-solar-var-tables.nc
-    expire_in: 60 minutes
-
-.test-gpu:
-  extends:
-    - .gpu
-    - .test-common
-
-#
-# Compare the results
-#
-.check-common:
-  extends: .common
-  before_script:
-    - export PATH="${PYHOME}/bin:${PATH}"
-  script:
-    - make check
-
 #
 # Set up Python virtual environment
 #
+.python-common:
+  variables:
+    PYHOME: ${CI_PROJECT_DIR}/python-venv
+
 setup-python:
   extends:
     - .cpu
-    - .common
+    - .python-common
   variables:
     GIT_STRATEGY: none
   script:
@@ -139,38 +69,58 @@ setup-python:
       - ${PYHOME}
     expire_in: 60 minutes
 
-build-cce-gpu-openacc-DP:
-  extends:
-    - .dp
-    - .build-cce-gpu-openacc
-
-build-cce-gpu-openacc-SP:
-  extends:
-    - .sp
-    - .build-cce-gpu-openacc
-
-test-cce-gpu-openacc-DP:
-  needs:
-    - build-cce-gpu-openacc-DP
-  extends: .test-gpu
-
-test-cce-gpu-openacc-SP:
-  needs:
-    - build-cce-gpu-openacc-SP
-  extends: .test-gpu
-
-check-cce-gpu-openacc-DP:
+.common:
+  extends: .python-common
   needs:
     - setup-python
-    - test-cce-gpu-openacc-DP
+  variables:
+    PYHOME: ${CI_PROJECT_DIR}/python-venv
+    # Make variables:
+    RRTMGP_ROOT: ${CI_PROJECT_DIR}
+    RRTMGP_DATA: ${CI_PROJECT_DIR}/rrtmgp-data
+  before_script:
+    - module --force purge
+    - module load ${COMPILER_MODULES} ${EXTRA_COMPILER_MODULES} cray-hdf5 cray-netcdf
+    # Extend the existing environment variables:
+    - export PATH="${PYHOME}/bin:${PATH}"
+  script:
+    #
+    # Build libraries, examples and tests
+    #
+    - ${FC} ${VERSION_FCFLAGS}
+    - make libs
+    - make -C build separate-libs
+    #
+    # Check out data
+    #
+    - git clone --depth 1 https://github.com/earth-system-radiation/rrtmgp-data.git "${RRTMGP_DATA}"
+    #
+    # Run examples and tests
+    #
+    - make tests
+    #
+    # Compare the results
+    #
+    - make check
+
+.cce-gpu-openacc:
+  extends:
+    - .gpu
+    - .cce
+    - .common
+  variables:
+    # Compiler flags used for ICON model:
+    FCFLAGS: -hacc -hadd_paren -Ktrap=divz,ovf,inv -hflex_mp=intolerant -hfp1 -g -DRTE_USE_${FPMODEL}
+    RTE_KERNELS: accel
+    # Convenience variables:
+    EXTRA_COMPILER_MODULES: craype-accel-amd-gfx90a rocm
+
+cce-gpu-openacc-DP:
   extends:
     - .dp
-    - .check-common
+    - .cce-gpu-openacc
 
-check-cce-gpu-openacc-SP:
-  needs:
-    - setup-python
-    - test-cce-gpu-openacc-SP
+cce-gpu-openacc-SP:
   extends:
-    - .sp
-    - .check-common
+    - .dp
+    - .cce-gpu-openacc

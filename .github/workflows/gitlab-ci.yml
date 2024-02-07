@@ -168,38 +168,16 @@ jobs:
           - experimental: false
     steps:
     #
-    # Build libraries, examples and tests (fetch the log)
+    # Build, run and check (fetch the log)
     #
-    - name: Build libraries, examples and tests (fetch the log)
+    - name: Build, run and check (fetch the log)
       uses: "skosukhin/git-ci-hub-lab/gl-attach-job@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
         project-name: ${{ vars.GITLAB_PROJECT }}
         token: ${{ secrets.GITLAB_TOKEN }}
         pipeline-id: ${{ needs.lumi-init.outputs.pipeline-id }}
-        job-name: build-${{ matrix.config-name }}
-    #
-    # Run examples and tests (fetch the log)
-    #
-    - name: Run examples and tests (fetch the log)
-      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@develop"
-      with:
-        server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT }}
-        token: ${{ secrets.GITLAB_TOKEN }}
-        pipeline-id: ${{ needs.lumi-init.outputs.pipeline-id }}
-        job-name: test-${{ matrix.config-name }}
-    #
-    # Compare the results (fetch the log)
-    #
-    - name: Compare the results (fetch the log)
-      uses: "skosukhin/git-ci-hub-lab/gl-attach-job@develop"
-      with:
-        server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT }}
-        token: ${{ secrets.GITLAB_TOKEN }}
-        pipeline-id: ${{ needs.lumi-init.outputs.pipeline-id }}
-        job-name: check-${{ matrix.config-name }}
+        job-name: ${{ matrix.config-name }}
   lumi-cleanup:
     runs-on: ubuntu-latest
     needs: [lumi-init, lumi]
