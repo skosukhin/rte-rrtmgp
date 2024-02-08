@@ -64,8 +64,6 @@ setup-python:
   extends:
     - .cpu
     - .python-common
-  variables:
-    GIT_STRATEGY: none
   script:
     - test ! -d "${PYHOME}" || exit 0
     - module load cray-python
