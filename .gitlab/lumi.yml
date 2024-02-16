@@ -4,8 +4,7 @@ workflow:
 
 default:
   tags:
-    - saas-linux-small-amd64
-  image: skosukhin/lumi-ci-test
+    - lumi
 
 variables:
   SCHEDULER_PARAMETERS: >-
@@ -32,9 +31,9 @@ variables:
 .cce:
   variables:
     # Core variables:
-    FC: gfortran
+    FC: ftn
     # Convenience variables:
-    VERSION_FCFLAGS: --version
+    VERSION_FCFLAGS: -V
     COMPILER_MODULES: PrgEnv-cray cce/16.0.1 craype-x86-milan
 
 .dp:
@@ -61,6 +60,7 @@ setup-python:
     - .python-common
   script:
     - test ! -d "${PYHOME}" || exit 0
+    - module load cray-python
     - python -m venv ${PYHOME}
     - ${PYHOME}/bin/python -m pip install --upgrade pip
     - ${PYHOME}/bin/python -m pip install dask[array] netCDF4 numpy xarray
@@ -80,10 +80,11 @@ setup-python:
     - setup-python
   variables:
     # Make variables:
-    FCINCLUDE: -I/usr/include
     RRTMGP_ROOT: ${CI_PROJECT_DIR}
     RRTMGP_DATA: ${CI_PROJECT_DIR}/rrtmgp-data
   before_script:
+    - module --force purge
+    - module load ${COMPILER_MODULES} ${EXTRA_COMPILER_MODULES} cray-hdf5 cray-netcdf
     # Extend the existing environment variables:
     - export PATH="${PYHOME}/bin:${PATH}"
   script:
@@ -113,8 +114,8 @@ setup-python:
     - .common
   variables:
     # Compiler flags used for ICON model:
-    FCFLAGS: -ffree-line-length-none -m64 -std=f2008 -march=native -fbounds-check -fmodule-private -fimplicit-none -finit-real=nan -g -DRTE_USE_CBOOL -DRTE_USE_${FPMODEL}
-    RTE_KERNELS: default
+    FCFLAGS: -hacc -hadd_paren -Ktrap=divz,ovf,inv -hflex_mp=intolerant -hfp1 -g -DRTE_USE_${FPMODEL}
+    RTE_KERNELS: accel
     # Convenience variables:
     EXTRA_COMPILER_MODULES: craype-accel-amd-gfx90a rocm
 

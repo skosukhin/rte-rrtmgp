@@ -125,8 +125,8 @@ jobs:
       id: g-push-rev
       uses: "skosukhin/git-ci-hub-lab/g-push-rev@develop"
       with:
-        remote-url: ${{ vars.GITLAB_SERVER }}/${{ vars.GITLAB_PROJECT2 }}.git
-        password: ${{ secrets.GITLAB_TOKEN2 }}
+        remote-url: ${{ vars.GITLAB_SERVER }}/${{ vars.GITLAB_PROJECT }}.git
+        password: ${{ secrets.GITLAB_TOKEN }}
         rev-id: ${{ github.sha }}
         rev-signing-format: ssh
         rev-signing-key: ${{ secrets.GITLAB_SIGNING_KEY }}
@@ -141,8 +141,8 @@ jobs:
       uses: "skosukhin/git-ci-hub-lab/gl-create-pipeline@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT2 }}
-        token: ${{ secrets.GITLAB_TOKEN2 }}
+        project-name: ${{ vars.GITLAB_PROJECT }}
+        token: ${{ secrets.GITLAB_TOKEN }}
         ref-name: ${{ steps.g-push-rev.outputs.ref-name }}
         expected-sha: ${{ steps.g-push-rev.outputs.ref-commit }}
     #
@@ -152,8 +152,8 @@ jobs:
       uses: "skosukhin/git-ci-hub-lab/gl-attach-job@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT2 }}
-        token: ${{ secrets.GITLAB_TOKEN2 }}
+        project-name: ${{ vars.GITLAB_PROJECT }}
+        token: ${{ secrets.GITLAB_TOKEN }}
         pipeline-id: ${{ steps.gl-create-pipeline.outputs.pipeline-id }}
         job-name: setup-python
   lumi:
@@ -177,8 +177,8 @@ jobs:
       uses: "skosukhin/git-ci-hub-lab/gl-attach-job@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT2 }}
-        token: ${{ secrets.GITLAB_TOKEN2 }}
+        project-name: ${{ vars.GITLAB_PROJECT }}
+        token: ${{ secrets.GITLAB_TOKEN }}
         pipeline-id: ${{ needs.lumi-init.outputs.pipeline-id }}
         job-name: ${{ matrix.config-name }}
   lumi-cleanup:
@@ -190,8 +190,8 @@ jobs:
     - uses: "skosukhin/git-ci-hub-lab/gl-delete-ref@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
-        project-name: ${{ vars.GITLAB_PROJECT2 }}
-        token: ${{ secrets.GITLAB_TOKEN2 }}
+        project-name: ${{ vars.GITLAB_PROJECT }}
+        token: ${{ secrets.GITLAB_TOKEN }}
         ref-type: tag
         ref-name: ${{ needs.lumi-init.outputs.ref-name }}
         force: true
