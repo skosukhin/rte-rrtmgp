@@ -187,6 +187,12 @@ jobs:
     if: always() && needs.lumi-init.result != 'skipped'
     continue-on-error: true
     steps:
+    - uses: "skosukhin/git-ci-hub-lab/gl-cancel-pipeline@develop"
+      with:
+        server-url: ${{ vars.GITLAB_SERVER }}
+        project-name: ${{ vars.GITLAB_PROJECT }}
+        token: ${{ secrets.GITLAB_TOKEN }}
+        pipeline-id: ${{ needs.lumi-init.outputs.pipeline-id }}
     - uses: "skosukhin/git-ci-hub-lab/gl-delete-ref@develop"
       with:
         server-url: ${{ vars.GITLAB_SERVER }}
