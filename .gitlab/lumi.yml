@@ -54,12 +54,6 @@ variables:
   variables:
     PYHOME: ${CI_PROJECT_DIR}/python-venv
     FF_USE_FASTZIP: 1
-  cache:
-    # Update the key to regenerate the virtual environment:
-    key: python-venv-version-1
-    paths:
-      - ${PYHOME}
-    policy: pull
 
 setup-python:
   extends:
@@ -71,14 +65,20 @@ setup-python:
     - ${PYHOME}/bin/python -m pip install --upgrade pip
     - ${PYHOME}/bin/python -m pip install dask[array] netCDF4 numpy xarray
   cache:
-    policy: pull-push
+    # Update the key to regenerate the virtual environment:
+    key: python-venv-version-1
+    paths:
+      - ${PYHOME}
+  artifacts:
+    paths:
+      - ${PYHOME}
+    expire_in: 60 minutes
 
 .common:
   extends: .python-common
   needs:
     - setup-python
   variables:
-    PYHOME: ${CI_PROJECT_DIR}/python-venv
     # Make variables:
     FCINCLUDE: -I/usr/include
     RRTMGP_ROOT: ${CI_PROJECT_DIR}
