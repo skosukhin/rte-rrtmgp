@@ -36,7 +36,7 @@ jobs:
         # Set flags for NVIDIA Fortran compiler
         - fortran-compiler: nvfortran
           rte-kernels: default
-          fcflags: -Mallocatable=03 -Mstandard -Mbounds -Mchkptr -Kieee -Mchkstk
+          fcflags: -Mstandard -Mbounds -Mchkptr -Kieee -Mchkstk
         - fortran-compiler: nvfortran
           rte-kernels: accel
           fcflags: -Mallocatable=03 -Mstandard -Mbounds -Mchkptr -Kieee -Mchkstk -acc
