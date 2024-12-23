@@ -1,0 +1,19 @@
+name: Check Style
+on:
+  push:
+    branches:
+    - main
+    - develop
+  pull_request:
+    branches-ignore:
+    - documentation
+  workflow_dispatch:
+
+jobs:
+  API:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+    - name: Check CMake style
+      run: true
