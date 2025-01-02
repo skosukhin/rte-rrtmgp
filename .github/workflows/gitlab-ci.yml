@@ -19,6 +19,7 @@ jobs:
   #
   levante-init:
     if: |
+      false &&
       github.repository_owner == 'earth-system-radiation' &&
         ( github.event_name != 'pull_request' ||
           ( github.event.pull_request.head.repo.owner.login == github.repository_owner &&
@@ -102,12 +103,6 @@ jobs:
   # Deferred GitLab pipelines on Lumi at CSC (see .gitlab/lumi.yml):
   #
   lumi-init:
-    if: |
-      false && 
-      github.repository_owner == 'earth-system-radiation' &&
-        ( github.event_name != 'pull_request' ||
-          ( github.event.pull_request.head.repo.owner.login == github.repository_owner &&
-            github.event.pull_request.user.login != 'dependabot[bot]' ))
     runs-on: ubuntu-latest
     outputs:
       ref-type: ${{ steps.g-push-rev.outputs.ref-type }}
