@@ -18,8 +18,8 @@
 module mo_fluxes_byband
   use mo_rte_kind,      only: wp
   use mo_rte_config,    only: check_extents
-  use mo_rte_util_array_validation, & 
-                        only: extents_are
+  use mo_rte_util_array_validation, &
+    only: extents_are
   use mo_fluxes,        only: ty_fluxes, ty_fluxes_broadband
   use mo_optical_props, only: ty_optical_props
   implicit none
@@ -50,7 +50,7 @@ contains
     class(ty_optical_props),           intent(in   ) :: spectral_disc  !< derived type with spectral information
     logical,                           intent(in   ) :: top_at_1
     real(kind=wp), dimension(:,:,:), optional, &
-                                       intent(in   ) :: gpt_flux_dn_dir! Direct flux down
+      intent(in   ) :: gpt_flux_dn_dir! Direct flux down
     character(len=128)                               :: error_msg
     ! ------
     integer :: ncol, nlev, ngpt, nbnd
@@ -151,7 +151,7 @@ contains
   end function are_desired_byband
 
   ! ----------------------------------------------------------------------------
-  ! Kernels (private to this module) 
+  ! Kernels (private to this module)
   ! ----------------------------------------------------------------------------
   !
   ! Spectral reduction over all points

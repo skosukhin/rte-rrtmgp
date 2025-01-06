@@ -46,14 +46,14 @@ contains
                         p_lay, t_lay, p_lev, t_lev, gas_concs, col_dry)
     character(len=*),   intent(in   ) :: fileName
     real(wp), dimension(:,:), allocatable,                 &
-                        intent(inout) :: p_lay, t_lay, p_lev, t_lev, col_dry
+      intent(inout) :: p_lay, t_lay, p_lev, t_lev, col_dry
     type(ty_gas_concs), intent(inout) :: gas_concs
     ! -------------------
     integer :: igas
     integer :: ncid, ncol, nlay, nlev
     integer, parameter :: ngas = 8
     character(len=3), dimension(ngas) &
-                       :: gas_names = ['h2o', 'co2', 'o3 ', 'n2o', 'co ', 'ch4', 'o2 ', 'n2 ']
+      :: gas_names = ['h2o', 'co2', 'o3 ', 'n2o', 'co ', 'ch4', 'o2 ', 'n2 ']
     character(len=7) :: vmr_name
     ! -------------------
 

@@ -114,7 +114,7 @@ contains
         call apply_cloud_mask(ncol,nlay,nbnd,ngpt,clouds_sampled%get_band_lims_gpoint(),cloud_mask,clouds%ssa,clouds_sampled%ssa)
         call apply_cloud_mask(ncol,nlay,nbnd,ngpt,clouds_sampled%get_band_lims_gpoint(),cloud_mask,clouds%g,  clouds_sampled%g  )
       class default
-          error_msg = "draw_samples: by-band and sampled cloud properties need to be the same variable type"
+        error_msg = "draw_samples: by-band and sampled cloud properties need to be the same variable type"
       end select
     end select
   end function draw_samples
@@ -127,7 +127,7 @@ contains
     real(wp), dimension(:,:),      intent(in ) :: cloud_frac ! ncol,nlay
     logical,  dimension(:,:,:),    intent(out) :: cloud_mask ! ncol,nlay,ngpt
     character(len=128)                         :: error_msg
-  ! ------------------------
+    ! ------------------------
     integer                              :: ncol, nlay, ngpt, icol, ilay, igpt
     integer                              :: cloud_lay_fst, cloud_lay_lst
     real(wp), dimension(size(randoms,1)) :: local_rands
@@ -195,7 +195,7 @@ contains
   ! Generate a McICA-sampled cloud mask for exponential-random overlap.
   !   The overlap parameter overlap_param is defined between pairs of layers.
   !   For layer i, overlap_param(i) describes the overlap between cloud_frac(i) and cloud_frac(i+1).
-  !   It is a correlation coefficient in [-1,1]. E.g., 
+  !   It is a correlation coefficient in [-1,1]. E.g.,
   !     +1 gives perfect correlation or maximum cloud overlap between layers i & i+1;
   !      0 gives no correlation or random cloud overlap between layers i & i+1;
   !     -1 gives perfect anticorrelation or minimum cloud overlap between layers i & i+1.
@@ -276,7 +276,7 @@ contains
             !
             rho = overlap_param(icol,ilay-1)
             local_rands(1:ngpt) =  rho*(local_rands(1:ngpt)      -0.5_wp) + &
-                   sqrt(1._wp-rho*rho)*(randoms(1:ngpt,ilay,icol)-0.5_wp) + 0.5_wp
+                                  sqrt(1._wp-rho*rho)*(randoms(1:ngpt,ilay,icol)-0.5_wp) + 0.5_wp
           else
             local_rands(1:ngpt) = randoms(1:ngpt,ilay,icol)
           end if

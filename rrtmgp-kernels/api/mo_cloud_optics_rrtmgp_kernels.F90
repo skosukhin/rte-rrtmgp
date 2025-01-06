@@ -3,7 +3,7 @@ module mo_cloud_optics_rrtmgp_kernels
   implicit none
   private
   public :: compute_cld_from_table, compute_cld_from_pade
-  interface 
+  interface
     !---------------------------------------------------------------------------
     !
     ! Linearly interpolate values from a lookup table with "nsteps" evenly-spaced
@@ -38,18 +38,18 @@ module mo_cloud_optics_rrtmgp_kernels
       use mo_rte_kind, only : wp, wl
       integer,                        intent(in) :: ncol, nlay, nbnd, nsizes
       logical(wl),  &
-                dimension(ncol,nlay), intent(in) :: mask
+        dimension(ncol,nlay), intent(in) :: mask
       real(wp), dimension(ncol,nlay), intent(in) :: lwp, re
       real(wp), dimension(nsizes+1),  intent(in) :: re_bounds_ext, re_bounds_ssa, re_bounds_asy
       integer,                        intent(in) :: m_ext, n_ext
       real(wp), dimension(nbnd,nsizes,0:m_ext+n_ext), &
-                                      intent(in) :: coeffs_ext
+        intent(in) :: coeffs_ext
       integer,                        intent(in) :: m_ssa, n_ssa
       real(wp), dimension(nbnd,nsizes,0:m_ssa+n_ssa), &
-                                      intent(in) :: coeffs_ssa
+        intent(in) :: coeffs_ssa
       integer,                        intent(in) :: m_asy, n_asy
       real(wp), dimension(nbnd,nsizes,0:m_asy+n_asy), &
-                                      intent(in) :: coeffs_asy
+        intent(in) :: coeffs_asy
       real(wp), dimension(ncol,nlay,nbnd)        :: tau, taussa, taussag
     end subroutine compute_cld_from_pade
   end interface

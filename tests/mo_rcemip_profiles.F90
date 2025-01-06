@@ -17,8 +17,8 @@
 ! ------------------------------------------------------------------------------
 module mo_rcemip_profiles
   use mo_rte_kind,           only: wp, wl
-  use mo_rte_util_array_validation, &  
-                             only: extents_are
+  use mo_rte_util_array_validation, &
+    only: extents_are
   use mo_gas_concentrations, only: ty_gas_concs
   implicit none
   private
@@ -58,7 +58,7 @@ contains
     real(wp), intent(in ) :: p
     real(wp), intent(out) :: z
     real(wp), optional, &
-              intent(out) :: temp, q, o3 ! K, specific humidity/mmr, vmr
+      intent(out) :: temp, q, o3 ! K, specific humidity/mmr, vmr
     ! ----------------------------------
     real(wp) :: Tv, q_local
     ! ----------------------------------
@@ -85,7 +85,7 @@ contains
     real(wp), dimension(:), intent(in   ) :: p
     real(wp), dimension(:), intent(  out) :: temp, z
     type(ty_gas_concs),     optional, &
-                            intent(inout) :: gas_concs
+      intent(inout) :: gas_concs
     character(len=128)                    :: error_msg
     ! ----------------------------------
     integer :: nlay

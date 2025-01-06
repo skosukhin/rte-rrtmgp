@@ -23,7 +23,7 @@ module mo_fluxes
   use mo_rte_util_array_validation, only: extents_are
   use mo_optical_props,  only: ty_optical_props
   use mo_fluxes_broadband_kernels, &
-                         only: sum_broadband, net_broadband
+    only: sum_broadband, net_broadband
   implicit none
   private
   ! -----------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ module mo_fluxes
       class(ty_optical_props),           intent(in   ) :: spectral_disc  !< derived type with spectral information
       logical,                           intent(in   ) :: top_at_1
       real(kind=wp), dimension(:,:,:), optional, &
-                                         intent(in   ) :: gpt_flux_dn_dir! Direct flux down
+        intent(in   ) :: gpt_flux_dn_dir! Direct flux down
       character(len=128)                               :: error_msg
     end function reduce_abstract
     ! -------------------
@@ -101,7 +101,7 @@ contains
     class(ty_optical_props),           intent(in   ) :: spectral_disc  !< derived type with spectral information
     logical,                           intent(in   ) :: top_at_1
     real(kind=wp), dimension(:,:,:), optional, &
-                                       intent(in   ) :: gpt_flux_dn_dir! Direct flux down
+      intent(in   ) :: gpt_flux_dn_dir! Direct flux down
     character(len=128)                               :: error_msg
     ! ------
     integer :: ncol, nlev, ngpt

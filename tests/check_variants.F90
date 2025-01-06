@@ -23,14 +23,14 @@ subroutine stop_on_err(error_msg)
 end subroutine stop_on_err
 ! ----------------------------------------------------------------------------------
 !
-! Exercise a range of alternative approaches to RFMIP clear sky problem 
-!   Accuracy is assessed relative to RFMIP submission with validation-plots.py 
-!   Serves also to exercise various code paths 
-! Longwave: 
-!   omiting level temperatures, use optimal angle, use three-angle integration, 
-!   two-stream solution; reduced-resolution gas optics 
-! Shortwave: 
-!   reduced-resolution gas optics 
+! Exercise a range of alternative approaches to RFMIP clear sky problem
+!   Accuracy is assessed relative to RFMIP submission with validation-plots.py
+!   Serves also to exercise various code paths
+! Longwave:
+!   omiting level temperatures, use optimal angle, use three-angle integration,
+!   two-stream solution; reduced-resolution gas optics
+! Shortwave:
+!   reduced-resolution gas optics
 !
 program rte_clear_sky_regression
   use mo_rte_kind,           only: wp
@@ -87,15 +87,15 @@ program rte_clear_sky_regression
   ! Output variables
   !
   real(wp), dimension(:,:), target, &
-                            allocatable :: flux_up, flux_dn, flux_dir
+    allocatable :: flux_up, flux_dn, flux_dir
   !
   ! Derived types from the RTE and RRTMGP libraries
   !
   type(ty_gas_concs)         :: gas_concs
   type(ty_gas_concs), dimension(:), allocatable &
-                             :: gas_conc_array
+    :: gas_conc_array
   class(ty_optical_props_arry), &
-                 allocatable :: atmos
+    allocatable :: atmos
   type(ty_fluxes_broadband)  :: fluxes
 
   !
@@ -109,7 +109,7 @@ program rte_clear_sky_regression
   integer  :: nUserArgs=0
 
   character(len=32 ), &
-            dimension(:), allocatable :: kdist_gas_names, rfmip_gas_games
+    dimension(:), allocatable :: kdist_gas_names, rfmip_gas_games
 
   character(len=256) :: input_file = "", output_file = "", gas_optics_file = "", gas_optics_file_2 = ""
   integer            :: ncid, dimid
@@ -206,8 +206,8 @@ program rte_clear_sky_regression
   allocate(flux_up(ncol,nlay+1), flux_dn(ncol,nlay+1), flux_dir(ncol,nlay+1))
   ! ----------------------------------------------------------------------------
   !
-  ! Create output file and site, level, layer dimensions 
-  ! 
+  ! Create output file and site, level, layer dimensions
+  !
   if(nf90_create(trim(output_file), NF90_CLOBBER, ncid) /= NF90_NOERR) &
     call stop_on_err("write_fluxes: can't create file " // trim(output_file))
   if(nf90_def_dim(ncid, "site", ncol, dimid) /= NF90_NOERR) &
@@ -274,12 +274,12 @@ contains
 
     fluxes%flux_net => flux_net
     call stop_on_err(gas_optics%gas_optics(p_lay, p_lev, &
-                                       t_lay, sfc_t, &
-                                       gas_concs,    &
-                                       atmos,        &
-                                       lw_sources,   &
-                                       tlev = t_lev))
-    call stop_on_err(rte_lw(atmos,      & 
+                                           t_lay, sfc_t, &
+                                           gas_concs,    &
+                                           atmos,        &
+                                           lw_sources,   &
+                                           tlev = t_lev))
+    call stop_on_err(rte_lw(atmos,      &
                             lw_sources, &
                             sfc_emis,   &
                             fluxes))
@@ -289,7 +289,7 @@ contains
 
     call stop_on_err(compute_heating_rate(flux_up, flux_dn, p_lev, heating_rate))
     call write_broadband_field(heating_rate,  &
-                                                     "lw_flux_hr_default",  "LW heating rate", vert_dim_name = "layer")
+                               "lw_flux_hr_default",  "LW heating rate", vert_dim_name = "layer")
     !
     ! Test for mo_fluxes_broadband for computing only net flux
     !
@@ -311,10 +311,10 @@ contains
   !
   subroutine lw_clear_sky_notlev
     call stop_on_err(gas_optics%gas_optics(p_lay, p_lev, &
-                                       t_lay, sfc_t, &
-                                       gas_concs,    &
-                                       atmos,        &
-                                       lw_sources))
+                                           t_lay, sfc_t, &
+                                           gas_concs,    &
+                                           atmos,        &
+                                           lw_sources))
     call stop_on_err(rte_lw(atmos,      &
                             lw_sources, &
                             sfc_emis,   &
@@ -328,11 +328,11 @@ contains
   !
   subroutine lw_clear_sky_3ang
     call stop_on_err(gas_optics%gas_optics(p_lay, p_lev, &
-                                       t_lay, sfc_t, &
-                                       gas_concs,    &
-                                       atmos,        &
-                                       lw_sources,   &
-                                       tlev = t_lev))
+                                           t_lay, sfc_t, &
+                                           gas_concs,    &
+                                           atmos,        &
+                                           lw_sources,   &
+                                           tlev = t_lev))
     call stop_on_err(rte_lw(atmos,      &
                             lw_sources, &
                             sfc_emis,  &
@@ -347,11 +347,11 @@ contains
   subroutine lw_clear_sky_optangle
     real(wp), dimension(ncol, ngpt) :: lw_Ds
     call stop_on_err(gas_optics%gas_optics(p_lay, p_lev, &
-                                       t_lay, sfc_t, &
-                                       gas_concs,    &
-                                       atmos,        &
-                                       lw_sources,   &
-                                       tlev = t_lev))
+                                           t_lay, sfc_t, &
+                                           gas_concs,    &
+                                           atmos,        &
+                                           lw_sources,   &
+                                           tlev = t_lev))
     call stop_on_err(gas_optics%compute_optimal_angles(atmos, lw_Ds))
     call stop_on_err(rte_lw(atmos,      &
                             lw_sources, &
@@ -368,11 +368,11 @@ contains
     real(wp), dimension(ncol,nlay+1) :: jFluxUp
 
     call stop_on_err(gas_optics%gas_optics(p_lay, p_lev, &
-                                       t_lay, sfc_t, &
-                                       gas_concs,    &
-                                       atmos,        &
-                                       lw_sources,   &
-                                       tlev=t_lev))
+                                           t_lay, sfc_t, &
+                                           gas_concs,    &
+                                           atmos,        &
+                                           lw_sources,   &
+                                           tlev=t_lev))
     call stop_on_err(rte_lw(atmos,      &
                             lw_sources, &
                             sfc_emis,   &
@@ -383,11 +383,11 @@ contains
     call write_broadband_field(jFluxUp, "lw_jaco_up"     , "Jacobian of LW flux up to surface temperature")
 
     call stop_on_err(gas_optics%gas_optics(p_lay, p_lev, &
-                                       t_lay, sfc_t + 1._wp, &
-                                       gas_concs,    &
-                                       atmos,        &
-                                       lw_sources,   &
-                                       tlev=t_lev))
+                                           t_lay, sfc_t + 1._wp, &
+                                           gas_concs,    &
+                                           atmos,        &
+                                           lw_sources,   &
+                                           tlev=t_lev))
     call stop_on_err(rte_lw(atmos,      &
                             lw_sources, &
                             sfc_emis,   &
@@ -404,11 +404,11 @@ contains
   !
   subroutine lw_clear_sky_2str
     call stop_on_err(gas_optics%gas_optics(p_lay, p_lev, &
-                                       t_lay, sfc_t, &
-                                       gas_concs,    &
-                                       atmos,        &
-                                       lw_sources,   &
-                                       tlev=t_lev))
+                                           t_lay, sfc_t, &
+                                           gas_concs,    &
+                                           atmos,        &
+                                           lw_sources,   &
+                                           tlev=t_lev))
     call stop_on_err(rte_lw(atmos,      &
                             lw_sources, &
                             sfc_emis,   &
@@ -432,11 +432,11 @@ contains
 
     fluxes%flux_net => flux_net
     call stop_on_err(gas_optics%gas_optics(p_lay, p_lev, &
-                                       t_lay, sfc_t, &
-                                       gas_concs,    &
-                                       atmos,        &
-                                       lw_sources,   &
-                                       tlev = t_lev))
+                                           t_lay, sfc_t, &
+                                           gas_concs,    &
+                                           atmos,        &
+                                           lw_sources,   &
+                                           tlev = t_lev))
     call stop_on_err(rte_lw(atmos,      &
                             lw_sources, &
                             sfc_emis,   &
@@ -446,8 +446,8 @@ contains
     call write_broadband_field(flux_net, "lw_flux_net_alt", "LW flux ne, fewer g-pointst")
     call stop_on_err(compute_heating_rate(flux_up, flux_dn, p_lev, heating_rate))
     call write_broadband_field(heating_rate,  &
-                                                     "lw_flux_hr_alt",  "LW heating rate, fewer g-points", &
-                                                     vert_dim_name = "layer")
+                               "lw_flux_hr_alt",  "LW heating rate, fewer g-points", &
+                               vert_dim_name = "layer")
 
     call stop_on_err(gas_optics%compute_optimal_angles(atmos, lw_Ds))
     call stop_on_err(rte_lw(atmos,      &
@@ -459,8 +459,8 @@ contains
     call write_broadband_field(flux_net, "lw_flux_net_alt_oa", "LW flux ne, fewer g-points, opt. angle")
     call stop_on_err(compute_heating_rate(flux_up, flux_dn, p_lev, heating_rate))
     call write_broadband_field(heating_rate,  &
-                                                     "lw_flux_hr_alt_oa",  "LW heating rate, fewer g-points, opt. angle", &
-                                                     vert_dim_name = "layer")
+                               "lw_flux_hr_alt_oa",  "LW heating rate, fewer g-points, opt. angle", &
+                               vert_dim_name = "layer")
     call gas_optics%finalize()
   end subroutine lw_clear_sky_alt
   ! ----------------------------------------------------------------------------
@@ -477,10 +477,10 @@ contains
     type(ty_optical_props_2str)     :: atmos2
 
     call stop_on_err(gas_optics%gas_optics(p_lay, p_lev, &
-                                       t_lay,        &
-                                       gas_concs,    &
-                                       atmos,        &
-                                       toa_flux))
+                                           t_lay,        &
+                                           gas_concs,    &
+                                           atmos,        &
+                                           toa_flux))
     !
     ! Scaling factor for column dependence of TSI in RFMIP
     !
@@ -504,13 +504,13 @@ contains
   ! ----------------------------------------------------------------------------
   subroutine sw_clear_sky_alt
     real(wp), dimension(ncol, gas_optics%get_ngpt()) &
-                                    :: rfmip_tsi_scale
+      :: rfmip_tsi_scale
     real(wp)                        :: rrtmgp_tsi
     call stop_on_err(gas_optics%gas_optics(p_lay, p_lev, &
-                                       t_lay,        &
-                                       gas_concs,    &
-                                       atmos,        &
-                                       toa_flux))
+                                           t_lay,        &
+                                           gas_concs,    &
+                                           atmos,        &
+                                           toa_flux))
     !
     ! Scaling factor for column dependence of TSI in RFMIP
     !
@@ -531,43 +531,43 @@ contains
     call write_broadband_field(flux_up,  "sw_flux_up_alt",  "SW flux up, fewer g-points")
     call write_broadband_field(flux_dn,  "sw_flux_dn_alt",  "SW flux dn, fewer g-points")
   end subroutine sw_clear_sky_alt
-    ! ----------------------------------------------------------------------------
+  ! ----------------------------------------------------------------------------
   subroutine make_optical_props_1scl(gas_optics)
     class (ty_optical_props), intent(in) :: gas_optics
 
     if(allocated(atmos)) then
-       call atmos%finalize()
-       deallocate(atmos)
-     end if
+      call atmos%finalize()
+      deallocate(atmos)
+    end if
     allocate(ty_optical_props_1scl::atmos)
     ! Clouds optical props are defined by band
     !
     ! Allocate arrays for the optical properties themselves.
     !
     select type(atmos)
-      class is (ty_optical_props_1scl)
-        call stop_on_err(atmos%alloc_1scl(ncol, nlay, gas_optics))
-      class default
-        call stop_on_err("rte_rrtmgp_atmos: Don't recognize the kind of optical properties ")
+    class is (ty_optical_props_1scl)
+      call stop_on_err(atmos%alloc_1scl(ncol, nlay, gas_optics))
+    class default
+      call stop_on_err("rte_rrtmgp_atmos: Don't recognize the kind of optical properties ")
     end select
   end subroutine make_optical_props_1scl
   ! ----------------------------------------------------------------------------
   subroutine make_optical_props_2str(gas_optics)
     class (ty_optical_props), intent(in) :: gas_optics
     if(allocated(atmos)) then
-       call atmos%finalize()
-       deallocate(atmos)
-     end if
+      call atmos%finalize()
+      deallocate(atmos)
+    end if
     allocate(ty_optical_props_2str::atmos)
     ! Clouds optical props are defined by band
     !
     ! Allocate arrays for the optical properties themselves.
     !
     select type(atmos)
-      class is (ty_optical_props_2str)
-        call stop_on_err(atmos%alloc_2str(ncol, nlay, gas_optics))
-      class default
-        call stop_on_err("rte_rrtmgp_atmos: Don't recognize the kind of optical properties ")
+    class is (ty_optical_props_2str)
+      call stop_on_err(atmos%alloc_2str(ncol, nlay, gas_optics))
+    class default
+      call stop_on_err("rte_rrtmgp_atmos: Don't recognize the kind of optical properties ")
     end select
   end subroutine make_optical_props_2str
   ! ----------------------------------------------------------------------------
@@ -578,7 +578,7 @@ contains
     real(wp), dimension(:,:), intent(in) :: field
     character(len=*),         intent(in) :: field_name, field_description
     character(len=*), optional, &
-                              intent(in) ::col_dim_name, vert_dim_name
+      intent(in) ::col_dim_name, vert_dim_name
     ! -------------------
     integer           :: varid, ncol, nlev
     !

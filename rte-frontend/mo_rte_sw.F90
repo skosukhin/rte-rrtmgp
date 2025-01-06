@@ -36,13 +36,13 @@ module mo_rte_sw
   use mo_rte_kind,      only: wp, wl
   use mo_rte_config,    only: check_extents, check_values
   use mo_rte_util_array,only: zero_array
-  use mo_rte_util_array_validation, & 
-                        only: any_vals_less_than, any_vals_outside, extents_are
+  use mo_rte_util_array_validation, &
+    only: any_vals_less_than, any_vals_outside, extents_are
   use mo_optical_props, only: ty_optical_props, &
                               ty_optical_props_arry, ty_optical_props_1scl, ty_optical_props_2str, ty_optical_props_nstr
   use mo_fluxes,        only: ty_fluxes, ty_fluxes_broadband
   use mo_rte_solver_kernels, &
-                        only: sw_solver_noscat, sw_solver_2stream
+    only: sw_solver_noscat, sw_solver_2stream
   implicit none
   private
 
@@ -54,9 +54,9 @@ module mo_rte_sw
 contains
   ! -------------------------------------------------------------------------------------------------
   function rte_sw_mu0_bycol(atmos,           &
-                  mu0, inc_flux,             &
-                  sfc_alb_dir, sfc_alb_dif,  &
-                  fluxes, inc_flux_dif) result(error_msg)
+                            mu0, inc_flux,             &
+                            sfc_alb_dir, sfc_alb_dif,  &
+                            fluxes, inc_flux_dif) result(error_msg)
     class(ty_optical_props_arry), intent(in   ) :: atmos
       !! Optical properties provided as arrays
     real(wp), dimension(:),       intent(in   ) :: mu0
@@ -70,7 +70,7 @@ contains
     class(ty_fluxes),             intent(inout) :: fluxes
       !! Class describing output calculations
     real(wp), dimension(:,:), optional, target, &
-                                  intent(in   ) :: inc_flux_dif
+      intent(in   ) :: inc_flux_dif
       !! incident diffuse flux at top of domain [W/m2] (ncol, ngpt)
     character(len=128)                          :: error_msg
       !! If empty, calculation was successful
@@ -93,9 +93,9 @@ contains
     end do
 
     error_msg = rte_sw_mu0_full(atmos,        &
-                    mu0_bylay, inc_flux,      &
-                    sfc_alb_dir, sfc_alb_dif, &
-                    fluxes, inc_flux_dif)
+                                mu0_bylay, inc_flux,      &
+                                sfc_alb_dir, sfc_alb_dif, &
+                                fluxes, inc_flux_dif)
     !$acc end data
     !$omp end target data
   end function rte_sw_mu0_bycol
@@ -116,7 +116,7 @@ contains
     class(ty_fluxes),             intent(inout) :: fluxes
       !! Class describing output calculations
     real(wp), dimension(:,:), optional, target, &
-                                  intent(in   ) :: inc_flux_dif
+      intent(in   ) :: inc_flux_dif
       !! incident diffuse flux at top of domain [W/m2] (ncol, ngpt)
     character(len=128)                          :: error_msg
       !! If empty, calculation was successful
@@ -194,50 +194,50 @@ contains
 
     ! ------------------------------------------------------------------------------------
     select type(fluxes)
-      type is (ty_fluxes_broadband)
-        do_broadband = .true._wl
-        !
-        ! Solvers will integrate in place (one g-point at a time on CPUs)
-        !   so won't need big working arrays
-        !
-        allocate(decoy3D(ncol, nlay+1, ngpt))
-        gpt_flux_up  => decoy3D
-        gpt_flux_dn  => decoy3D
-        gpt_flux_dir => decoy3D
-        !
-        ! Broadband fluxes class has three possible outputs; allocate memory for local use
-        !   if one or more haven't been requested
-        !
-        if(associated(fluxes%flux_up)) then
-          flux_up_loc => fluxes%flux_up
-        else
-          allocate(flux_up_loc(ncol, nlay+1))
-        end if
-        if(associated(fluxes%flux_dn)) then
-          flux_dn_loc => fluxes%flux_dn
-        else
-          allocate(flux_dn_loc(ncol, nlay+1))
-        end if
-        if(associated(fluxes%flux_dn_dir)) then
-          flux_dir_loc => fluxes%flux_dn_dir
-        else
-          allocate(flux_dir_loc(ncol, nlay+1))
-        end if
-        !$acc        enter data create(   flux_up_loc, flux_dn_loc, flux_dir_loc)
-        !$omp target enter data map(alloc:flux_up_loc, flux_dn_loc, flux_dir_loc)
-      class default
-        !
-        ! If broadband integrals aren't being computed, allocate working space
-        !   and decoy addresses for spectrally-integrated fields
-        !
-        do_broadband = .false._wl
-        allocate(decoy2D(ncol, nlay+1))
-        flux_up_loc  => decoy2D
-        flux_dn_loc  => decoy2D
-        flux_dir_loc => decoy2D
-        allocate(gpt_flux_up (ncol,nlay+1,ngpt), &
-                 gpt_flux_dn (ncol,nlay+1,ngpt), &
-                 gpt_flux_dir(ncol,nlay+1,ngpt))
+    type is (ty_fluxes_broadband)
+      do_broadband = .true._wl
+      !
+      ! Solvers will integrate in place (one g-point at a time on CPUs)
+      !   so won't need big working arrays
+      !
+      allocate(decoy3D(ncol, nlay+1, ngpt))
+      gpt_flux_up  => decoy3D
+      gpt_flux_dn  => decoy3D
+      gpt_flux_dir => decoy3D
+      !
+      ! Broadband fluxes class has three possible outputs; allocate memory for local use
+      !   if one or more haven't been requested
+      !
+      if(associated(fluxes%flux_up)) then
+        flux_up_loc => fluxes%flux_up
+      else
+        allocate(flux_up_loc(ncol, nlay+1))
+      end if
+      if(associated(fluxes%flux_dn)) then
+        flux_dn_loc => fluxes%flux_dn
+      else
+        allocate(flux_dn_loc(ncol, nlay+1))
+      end if
+      if(associated(fluxes%flux_dn_dir)) then
+        flux_dir_loc => fluxes%flux_dn_dir
+      else
+        allocate(flux_dir_loc(ncol, nlay+1))
+      end if
+      !$acc        enter data create(   flux_up_loc, flux_dn_loc, flux_dir_loc)
+      !$omp target enter data map(alloc:flux_up_loc, flux_dn_loc, flux_dir_loc)
+    class default
+      !
+      ! If broadband integrals aren't being computed, allocate working space
+      !   and decoy addresses for spectrally-integrated fields
+      !
+      do_broadband = .false._wl
+      allocate(decoy2D(ncol, nlay+1))
+      flux_up_loc  => decoy2D
+      flux_dn_loc  => decoy2D
+      flux_dir_loc => decoy2D
+      allocate(gpt_flux_up (ncol,nlay+1,ngpt), &
+               gpt_flux_dn (ncol,nlay+1,ngpt), &
+               gpt_flux_dir(ncol,nlay+1,ngpt))
     end select
 
     allocate(sfc_alb_dir_gpt(ncol, ngpt), sfc_alb_dif_gpt(ncol, ngpt))
@@ -256,7 +256,6 @@ contains
     !$acc             create(   sfc_alb_dir_gpt, sfc_alb_dif_gpt)
     !$omp target data map(alloc:gpt_flux_up,gpt_flux_dn,gpt_flux_dir) &
     !$omp             map(alloc:sfc_alb_dir_gpt, sfc_alb_dif_gpt)
-
 
     ! ------------------------------------------------------------------------------------
     ! Boundary conditions
@@ -284,41 +283,41 @@ contains
     !
     if(len_trim(error_msg) == 0) then
       select type (atmos)
-        class is (ty_optical_props_1scl)
-          !
-          ! Direct beam only - for completeness, unlikely to be used in practice
-          !
-          call sw_solver_noscat(ncol, nlay, ngpt,                 &
-                                logical(atmos%top_is_at_1(), wl), &
-                                atmos%tau, mu0, inc_flux,         &
-                                gpt_flux_dir)
-          call zero_array(ncol, nlay+1, ngpt, gpt_flux_up)
-          !
-          !$acc kernels
-          !$omp target
-          gpt_flux_dn(:,:,:) = gpt_flux_dir(:,:,:)
-          !$acc end kernels
-          !$omp end target
+      class is (ty_optical_props_1scl)
+        !
+        ! Direct beam only - for completeness, unlikely to be used in practice
+        !
+        call sw_solver_noscat(ncol, nlay, ngpt,                 &
+                              logical(atmos%top_is_at_1(), wl), &
+                              atmos%tau, mu0, inc_flux,         &
+                              gpt_flux_dir)
+        call zero_array(ncol, nlay+1, ngpt, gpt_flux_up)
+        !
+        !$acc kernels
+        !$omp target
+        gpt_flux_dn(:,:,:) = gpt_flux_dir(:,:,:)
+        !$acc end kernels
+        !$omp end target
 
-        class is (ty_optical_props_2str)
-          !
-          ! two-stream calculation with scattering
-          !
-          call sw_solver_2stream(ncol, nlay, ngpt,                        &
-                                 logical(atmos%top_is_at_1(), wl),        &
-                                 atmos%tau, atmos%ssa, atmos%g, mu0,      &
-                                 sfc_alb_dir_gpt, sfc_alb_dif_gpt,        &
-                                             inc_flux,                    &
-                                 gpt_flux_up, gpt_flux_dn, gpt_flux_dir,  &
-                                 has_dif_bc, inc_flux_diffuse,            &
-                                 do_broadband, flux_up_loc, flux_dn_loc, flux_dir_loc)
-        class is (ty_optical_props_nstr)
-          !
-          ! n-stream calculation
-          !
-          ! not yet implemented so fail
-          !
-          error_msg = 'sw_solver(...ty_optical_props_nstr...) not yet implemented'
+      class is (ty_optical_props_2str)
+        !
+        ! two-stream calculation with scattering
+        !
+        call sw_solver_2stream(ncol, nlay, ngpt,                        &
+                               logical(atmos%top_is_at_1(), wl),        &
+                               atmos%tau, atmos%ssa, atmos%g, mu0,      &
+                               sfc_alb_dir_gpt, sfc_alb_dif_gpt,        &
+                               inc_flux,                    &
+                               gpt_flux_up, gpt_flux_dn, gpt_flux_dir,  &
+                               has_dif_bc, inc_flux_diffuse,            &
+                               do_broadband, flux_up_loc, flux_dn_loc, flux_dir_loc)
+      class is (ty_optical_props_nstr)
+        !
+        ! n-stream calculation
+        !
+        ! not yet implemented so fail
+        !
+        error_msg = 'sw_solver(...ty_optical_props_nstr...) not yet implemented'
       end select
       if(len_trim(error_msg) > 0) then
         if(len_trim(atmos%get_name()) > 0) &
@@ -331,21 +330,21 @@ contains
         !
         ! Tidy up memory for broadband fluxes
         !
-        type is (ty_fluxes_broadband)
-          if(associated(fluxes%flux_net)) then
-            !$acc                         parallel loop    collapse(2) copyin(fluxes) copyout(fluxes%flux_net)
-            !$omp target teams distribute parallel do simd collapse(2)
-            do ilev = 1, nlay+1
-              do icol = 1, ncol
-                fluxes%flux_net(icol,ilev) = flux_dn_loc(icol,ilev) - flux_up_loc(icol,ilev)
-              end do
+      type is (ty_fluxes_broadband)
+        if(associated(fluxes%flux_net)) then
+          !$acc                         parallel loop    collapse(2) copyin(fluxes) copyout(fluxes%flux_net)
+          !$omp target teams distribute parallel do simd collapse(2)
+          do ilev = 1, nlay+1
+            do icol = 1, ncol
+              fluxes%flux_net(icol,ilev) = flux_dn_loc(icol,ilev) - flux_up_loc(icol,ilev)
             end do
-          end if
-        class default
-          !
-          ! ...or reduce spectral fluxes to desired output quantities
-          !
-          error_msg = fluxes%reduce(gpt_flux_up, gpt_flux_dn, atmos, atmos%top_is_at_1(), gpt_flux_dir)
+          end do
+        end if
+      class default
+        !
+        ! ...or reduce spectral fluxes to desired output quantities
+        !
+        error_msg = fluxes%reduce(gpt_flux_up, gpt_flux_dn, atmos, atmos%top_is_at_1(), gpt_flux_dir)
       end select
     end if ! In case of an error we exit here
 
@@ -364,14 +363,14 @@ contains
     ! Deallocate any memory allocated locally to pointer variables
     !
     select type(fluxes)
-      type is (ty_fluxes_broadband)
-        !$acc        exit data copyout( flux_up_loc, flux_dn_loc, flux_dir_loc)
-        !$omp target exit data map(from:flux_up_loc, flux_dn_loc, flux_dir_loc)
-        if(.not. associated(fluxes%flux_up    )) deallocate(flux_up_loc)
-        if(.not. associated(fluxes%flux_dn    )) deallocate(flux_dn_loc)
-        if(.not. associated(fluxes%flux_dn_dir)) deallocate(flux_dir_loc)
-      class default
-        deallocate(gpt_flux_up, gpt_flux_dn, gpt_flux_dir)
+    type is (ty_fluxes_broadband)
+      !$acc        exit data copyout( flux_up_loc, flux_dn_loc, flux_dir_loc)
+      !$omp target exit data map(from:flux_up_loc, flux_dn_loc, flux_dir_loc)
+      if(.not. associated(fluxes%flux_up    )) deallocate(flux_up_loc)
+      if(.not. associated(fluxes%flux_dn    )) deallocate(flux_dn_loc)
+      if(.not. associated(fluxes%flux_dn_dir)) deallocate(flux_dir_loc)
+    class default
+      deallocate(gpt_flux_up, gpt_flux_dn, gpt_flux_dir)
     end select
     if(.not. has_dif_bc) then
       !$acc        exit data delete(     inc_flux_diffuse)

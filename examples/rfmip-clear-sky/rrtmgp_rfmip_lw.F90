@@ -94,7 +94,7 @@ program rrtmgp_rfmip_lw
   character(len=4)   :: block_size_char, forcing_index_char = '1', physics_index_char = '1'
 
   character(len=32 ), &
-            dimension(:),             allocatable :: kdist_gas_names, rfmip_gas_games
+    dimension(:),             allocatable :: kdist_gas_names, rfmip_gas_games
   real(wp), dimension(:,:,:),         allocatable :: p_lay, p_lev, t_lay, t_lev ! block_size, nlay, nblocks
   real(wp), dimension(:,:,:), target, allocatable :: flux_up, flux_dn
   real(wp), dimension(:,:  ),         allocatable :: sfc_emis, sfc_t  ! block_size, nblocks (emissivity is spectrally constant)
@@ -193,7 +193,7 @@ program rrtmgp_rfmip_lw
     p_lev(:,1,:) = k_dist%get_press_min() + epsilon(k_dist%get_press_min())
   else
     p_lev(:,nlay+1,:) &
-                 = k_dist%get_press_min() + epsilon(k_dist%get_press_min())
+      = k_dist%get_press_min() + epsilon(k_dist%get_press_min())
   end if
 
   !

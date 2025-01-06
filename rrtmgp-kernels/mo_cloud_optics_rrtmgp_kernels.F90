@@ -1,7 +1,7 @@
 ! This code is part of
 ! RRTM for GCM Applications - Parallel (RRTMGP)
 !
-! Copyright 2024-,  Atmospheric and Environmental Research, 
+! Copyright 2024-,  Atmospheric and Environmental Research,
 !    Trustees of Columbia University.  All right reserved.
 !
 ! Use and duplication is permitted under the terms of the
@@ -52,8 +52,8 @@ contains
             ts  = t              * &
                   (ssa_table(index,  ibnd) + fint * (ssa_table(index+1,ibnd) - ssa_table(index,ibnd)))
             taussag(icol,ilay,ibnd) =  &
-                  ts             * &
-                  (asy_table(index,  ibnd) + fint * (asy_table(index+1,ibnd) - asy_table(index,ibnd)))
+              ts             * &
+              (asy_table(index,  ibnd) + fint * (asy_table(index+1,ibnd) - asy_table(index,ibnd)))
             taussa (icol,ilay,ibnd) = ts
             tau    (icol,ilay,ibnd) = t
           else
@@ -78,18 +78,18 @@ contains
                                    tau, taussa, taussag) bind(C, name="rrtmgp_compute_cld_from_pade")
     integer,                        intent(in) :: ncol, nlay, nbnd, nsizes
     logical(wl),  &
-              dimension(ncol,nlay), intent(in) :: mask
+      dimension(ncol,nlay), intent(in) :: mask
     real(wp), dimension(ncol,nlay), intent(in) :: lwp, re
     real(wp), dimension(nsizes+1),  intent(in) :: re_bounds_ext, re_bounds_ssa, re_bounds_asy
     integer,                        intent(in) :: m_ext, n_ext
     real(wp), dimension(nbnd,nsizes,0:m_ext+n_ext), &
-                                    intent(in) :: coeffs_ext
+      intent(in) :: coeffs_ext
     integer,                        intent(in) :: m_ssa, n_ssa
     real(wp), dimension(nbnd,nsizes,0:m_ssa+n_ssa), &
-                                    intent(in) :: coeffs_ssa
+      intent(in) :: coeffs_ssa
     integer,                        intent(in) :: m_asy, n_asy
     real(wp), dimension(nbnd,nsizes,0:m_asy+n_asy), &
-                                    intent(in) :: coeffs_asy
+      intent(in) :: coeffs_asy
     real(wp), dimension(ncol,nlay,nbnd)        :: tau, taussa, taussag
     ! ---------------------------
     integer  :: icol, ilay, ibnd, irad
@@ -113,12 +113,12 @@ contains
             irad = min(floor((re(icol,ilay) - re_bounds_ssa(2))/re_bounds_ssa(3))+2, 3)
             ! Pade approximants for co-albedo can sometimes be negative
             ts  = t              * (1._wp - max(0._wp, &
-                  pade_eval(ibnd, nbnd, nsizes, m_ssa, n_ssa, irad, re(icol,ilay), coeffs_ssa)))
+                                                pade_eval(ibnd, nbnd, nsizes, m_ssa, n_ssa, irad, re(icol,ilay), coeffs_ssa)))
 
             irad = min(floor((re(icol,ilay) - re_bounds_asy(2))/re_bounds_asy(3))+2, 3)
             taussag(icol,ilay,ibnd) =  &
-                  ts             *     &
-                  pade_eval(ibnd, nbnd, nsizes, m_asy, n_asy, irad, re(icol,ilay), coeffs_asy)
+              ts             *     &
+              pade_eval(ibnd, nbnd, nsizes, m_asy, n_asy, irad, re(icol,ilay), coeffs_asy)
 
             taussa (icol,ilay,ibnd) = ts
             tau    (icol,ilay,ibnd) = t
@@ -139,7 +139,7 @@ contains
   function pade_eval_nbnd(nbnd, nrads, m, n, irad, re, pade_coeffs)
     integer,                intent(in) :: nbnd, nrads, m, n, irad
     real(wp), dimension(nbnd, nrads, 0:m+n), &
-                            intent(in) :: pade_coeffs
+      intent(in) :: pade_coeffs
     real(wp),               intent(in) :: re
     real(wp), dimension(nbnd)          :: pade_eval_nbnd
 
@@ -173,7 +173,7 @@ contains
     !
     integer,                intent(in) :: iband, nbnd, nrads, m, n, irad
     real(wp), dimension(nbnd, nrads, 0:m+n), &
-                            intent(in) :: pade_coeffs
+      intent(in) :: pade_coeffs
     real(wp),               intent(in) :: re
     real(wp)                           :: pade_eval_1
 

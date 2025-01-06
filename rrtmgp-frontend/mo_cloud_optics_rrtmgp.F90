@@ -21,15 +21,15 @@
 module mo_cloud_optics_rrtmgp
   use mo_rte_kind,      only: wp, wl
   use mo_rte_config,    only: check_values, check_extents
-  use mo_rte_util_array_validation,& 
-                        only: any_vals_less_than, any_vals_outside, extents_are
+  use mo_rte_util_array_validation,&
+    only: any_vals_less_than, any_vals_outside, extents_are
   use mo_optical_props, only: ty_optical_props,      &
                               ty_optical_props_arry, &
                               ty_optical_props_1scl, &
                               ty_optical_props_2str, &
                               ty_optical_props_nstr
-  use mo_cloud_optics_rrtmgp_kernels, only: & 
-                              compute_cld_from_table, compute_cld_from_pade
+  use mo_cloud_optics_rrtmgp_kernels, only: &
+    compute_cld_from_table, compute_cld_from_pade
   implicit none
   private
   ! -----------------------------------------------------------------------------------
@@ -186,7 +186,7 @@ contains
                      pade_extice, pade_ssaice, pade_asyice, &
                      pade_sizreg_extliq, pade_sizreg_ssaliq, pade_sizreg_asyliq, &
                      pade_sizreg_extice, pade_sizreg_ssaice, pade_sizreg_asyice) &
-                     result(error_msg)
+    result(error_msg)
     class(ty_cloud_optics_rrtmgp),       intent(inout) :: this          ! cloud specification data
     real(wp), dimension(:,:),     intent(in   ) :: band_lims_wvn ! Spectral discretization
     !
@@ -238,7 +238,7 @@ contains
             size(pade_sizreg_extice), size(pade_sizreg_ssaice), size(pade_sizreg_asyice)] /= nbound))   &
       error_msg = "cloud_optics%init(): one or more Pade size regime arrays are inconsistently sized"
     if(nsizereg /= 3) &
-        error_msg = "cloud_optics%init(): Expecting precisely three size regimes for Pade approximants"
+      error_msg = "cloud_optics%init(): Expecting precisely three size regimes for Pade approximants"
     if(error_msg /= "") return
     !
     ! Consistency among size regimes
@@ -333,7 +333,6 @@ contains
       !$omp target exit data map(release:this%lut_extliq, this%lut_ssaliq, this%lut_asyliq) &
       !$omp map(release:this%lut_extice, this%lut_ssaice, this%lut_asyice)
 
-
       deallocate(this%lut_extliq, this%lut_ssaliq, this%lut_asyliq, &
                  this%lut_extice, this%lut_ssaice, this%lut_asyice)
       this%liq_nsteps = 0
@@ -373,22 +372,22 @@ contains
                         clwp, ciwp, reliq, reice, &
                         optical_props) result(error_msg)
     class(ty_cloud_optics_rrtmgp), &
-              intent(in   ) :: this
+      intent(in   ) :: this
     real(wp), intent(in   ) :: clwp  (:,:), &   ! cloud liquid water path (g/m2)
                                ciwp  (:,:), &   ! cloud ice water path    (g/m2)
                                reliq (:,:), &   ! cloud liquid particle effective size (microns)
                                reice (:,:)      ! cloud ice particle effective radius  (microns)
     class(ty_optical_props_arry), &
-              intent(inout) :: optical_props
-                                               ! Dimensions: (ncol,nlay,nbnd)
+      intent(inout) :: optical_props
+    ! Dimensions: (ncol,nlay,nbnd)
 
     character(len=128)      :: error_msg
     ! ------- Local -------
     logical(wl), dimension(size(clwp,1), size(clwp,2)) :: liqmsk, icemsk
     real(wp),    dimension(size(clwp,1), size(clwp,2), this%get_nband()) :: &
-                ltau, ltaussa, ltaussag, itau, itaussa, itaussag
-                ! Optical properties: tau, tau*ssa, tau*ssa*g
-                ! liquid and ice separately
+      ltau, ltaussa, ltaussag, itau, itaussa, itaussag
+    ! Optical properties: tau, tau*ssa, tau*ssa*g
+    ! liquid and ice separately
     integer  :: ncol, nlay, nbnd
     integer  :: nsizereg
     integer  :: icol, ilay, ibnd
@@ -505,17 +504,17 @@ contains
         !
         nsizereg = size(this%pade_extliq,2)
         call compute_cld_from_pade(ncol, nlay, nbnd, nsizereg, &
-                                  liqmsk, clwp, reliq,        &
-                                  2, 3, this%pade_sizreg_extliq, this%pade_extliq, &
-                                  2, 2, this%pade_sizreg_ssaliq, this%pade_ssaliq, &
-                                  2, 2, this%pade_sizreg_asyliq, this%pade_asyliq, &
-                                  ltau, ltaussa, ltaussag)
+                                   liqmsk, clwp, reliq,        &
+                                   2, 3, this%pade_sizreg_extliq, this%pade_extliq, &
+                                   2, 2, this%pade_sizreg_ssaliq, this%pade_ssaliq, &
+                                   2, 2, this%pade_sizreg_asyliq, this%pade_asyliq, &
+                                   ltau, ltaussa, ltaussag)
         call compute_cld_from_pade(ncol, nlay, nbnd, nsizereg, &
-                                  icemsk, ciwp, reice,        &
-                                  2, 3, this%pade_sizreg_extice, this%pade_extice(:,:,:,this%icergh), &
-                                  2, 2, this%pade_sizreg_ssaice, this%pade_ssaice(:,:,:,this%icergh), &
-                                  2, 2, this%pade_sizreg_asyice, this%pade_asyice(:,:,:,this%icergh), &
-                                  itau, itaussa, itaussag)
+                                   icemsk, ciwp, reice,        &
+                                   2, 3, this%pade_sizreg_extice, this%pade_extice(:,:,:,this%icergh), &
+                                   2, 2, this%pade_sizreg_ssaice, this%pade_ssaice(:,:,:,this%icergh), &
+                                   2, 2, this%pade_sizreg_asyice, this%pade_asyice(:,:,:,this%icergh), &
+                                   itau, itaussa, itaussag)
       endif
 
       !
@@ -549,7 +548,7 @@ contains
               tau    = ltau   (icol,ilay,ibnd) + itau   (icol,ilay,ibnd)
               taussa = ltaussa(icol,ilay,ibnd) + itaussa(icol,ilay,ibnd)
               optical_props%g  (icol,ilay,ibnd) = (ltaussag(icol,ilay,ibnd) + itaussag(icol,ilay,ibnd)) / &
-                                                        max(epsilon(tau), taussa)
+                                                  max(epsilon(tau), taussa)
               optical_props%ssa(icol,ilay,ibnd) = taussa/max(epsilon(tau), tau)
               optical_props%tau(icol,ilay,ibnd) = tau
             end do
@@ -576,7 +575,7 @@ contains
     if(.not. allocated(this%pade_extice) .and. .not. allocated(this%lut_extice )) &
       error_msg = "cloud_optics%set_ice_roughness(): can't set before initialization"
     if (icergh < 1 .or. icergh > this%get_num_ice_roughness_types()) &
-       error_msg = 'cloud optics: cloud ice surface roughness flag is out of bounds'
+      error_msg = 'cloud optics: cloud ice surface roughness flag is out of bounds'
     if(error_msg /= "") return
 
     this%icergh = icergh

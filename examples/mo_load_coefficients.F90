@@ -35,7 +35,6 @@ contains
     use iso_fortran_env, only : error_unit
     character(len=*), intent(in) :: msg
 
-
     if(msg /= "") then
       write(error_unit, *) msg
       error stop 1
@@ -115,11 +114,11 @@ contains
     ngpts             = get_dim_size(ncid,'gpt')
     npairs            = get_dim_size(ncid,'pair')
     nminor_absorber_intervals_lower &
-                      = get_dim_size(ncid,'minor_absorber_intervals_lower')
+      = get_dim_size(ncid,'minor_absorber_intervals_lower')
     nminor_absorber_intervals_upper  &
-                      = get_dim_size(ncid,'minor_absorber_intervals_upper')
+      = get_dim_size(ncid,'minor_absorber_intervals_upper')
     ninternalSourcetemps &
-                      = get_dim_size(ncid,'temperature_Planck')
+      = get_dim_size(ncid,'temperature_Planck')
     ncontributors_lower = get_dim_size(ncid,'contributors_lower')
     ncontributors_upper = get_dim_size(ncid,'contributors_upper')
     nfit_coeffs         = get_dim_size(ncid,'fit_coeffs') ! Will be 0 for SW
@@ -138,33 +137,33 @@ contains
     temp_ref_t        = read_field(ncid, 'absorption_coefficient_ref_T')
     press_ref_trop    = read_field(ncid, 'press_ref_trop')
     kminor_lower      = read_field(ncid, 'kminor_lower', &
-        ncontributors_lower, nmixingfracs, ntemps)
+                                   ncontributors_lower, nmixingfracs, ntemps)
     kminor_upper      = read_field(ncid, 'kminor_upper', &
-        ncontributors_upper, nmixingfracs, ntemps)
+                                   ncontributors_upper, nmixingfracs, ntemps)
     gas_minor = read_char_vec(ncid, 'gas_minor', nminorabsorbers)
     identifier_minor = read_char_vec(ncid, 'identifier_minor', nminorabsorbers)
     minor_gases_lower = read_char_vec(ncid, 'minor_gases_lower', nminor_absorber_intervals_lower)
     minor_gases_upper = read_char_vec(ncid, 'minor_gases_upper', nminor_absorber_intervals_upper)
     minor_limits_gpt_lower &
-                      = int(read_field(ncid, 'minor_limits_gpt_lower', npairs,nminor_absorber_intervals_lower))
+      = int(read_field(ncid, 'minor_limits_gpt_lower', npairs,nminor_absorber_intervals_lower))
     minor_limits_gpt_upper &
-                      = int(read_field(ncid, 'minor_limits_gpt_upper', npairs,nminor_absorber_intervals_upper))
+      = int(read_field(ncid, 'minor_limits_gpt_upper', npairs,nminor_absorber_intervals_upper))
     minor_scales_with_density_lower &
-                      = read_logical_vec(ncid, 'minor_scales_with_density_lower', nminor_absorber_intervals_lower)
+      = read_logical_vec(ncid, 'minor_scales_with_density_lower', nminor_absorber_intervals_lower)
     minor_scales_with_density_upper &
-                      = read_logical_vec(ncid, 'minor_scales_with_density_upper', nminor_absorber_intervals_upper)
+      = read_logical_vec(ncid, 'minor_scales_with_density_upper', nminor_absorber_intervals_upper)
     scale_by_complement_lower &
-                      = read_logical_vec(ncid, 'scale_by_complement_lower', nminor_absorber_intervals_lower)
+      = read_logical_vec(ncid, 'scale_by_complement_lower', nminor_absorber_intervals_lower)
     scale_by_complement_upper &
-                      = read_logical_vec(ncid, 'scale_by_complement_upper', nminor_absorber_intervals_upper)
+      = read_logical_vec(ncid, 'scale_by_complement_upper', nminor_absorber_intervals_upper)
     scaling_gas_lower &
-                      = read_char_vec(ncid, 'scaling_gas_lower', nminor_absorber_intervals_lower)
+      = read_char_vec(ncid, 'scaling_gas_lower', nminor_absorber_intervals_lower)
     scaling_gas_upper &
-                      = read_char_vec(ncid, 'scaling_gas_upper', nminor_absorber_intervals_upper)
+      = read_char_vec(ncid, 'scaling_gas_upper', nminor_absorber_intervals_upper)
     kminor_start_lower &
-                      = int(read_field(ncid, 'kminor_start_lower', nminor_absorber_intervals_lower))
+      = int(read_field(ncid, 'kminor_start_lower', nminor_absorber_intervals_lower))
     kminor_start_upper &
-                      = int(read_field(ncid, 'kminor_start_upper', nminor_absorber_intervals_upper))
+      = int(read_field(ncid, 'kminor_start_upper', nminor_absorber_intervals_upper))
     vmr_ref           = read_field(ncid, 'vmr_ref', nlayers, nextabsorbers, ntemps)
 
     kmajor            = read_field(ncid, 'kmajor',  ngpts, nmixingfracs,  npress+1, ntemps)

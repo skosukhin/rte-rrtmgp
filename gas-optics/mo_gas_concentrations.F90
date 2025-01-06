@@ -16,7 +16,7 @@
 !
 !> Values may be provided as scalars, 1-dimensional profiles (nlay), or 2-D fields (ncol,nlay).
 !>   `nlay` and `ncol` are determined from the input arrays; self-consistency is enforced.
-!>   No bounds are enforced on the sum of the mixing ratios. 
+!>   No bounds are enforced on the sum of the mixing ratios.
 !>
 !>   For example:
 !> ```
@@ -29,7 +29,7 @@
 !>   or as 2D fields. Values for all columns are returned although the entire collection
 !>   can be subsetted in the column dimension
 !>
-!> Subsets can be extracted in the column dimension. 
+!> Subsets can be extracted in the column dimension.
 !>
 !> Functions return strings. Non-empty strings indicate an error.
 !>
@@ -38,8 +38,8 @@
 module mo_gas_concentrations
   use mo_rte_kind,           only: wp
   use mo_rte_config,         only: check_values
-  use mo_rte_util_array_validation, & 
-                             only: any_vals_outside
+  use mo_rte_util_array_validation, &
+    only: any_vals_outside
   implicit none
   integer, parameter, private :: GAS_NOT_IN_LIST = -1
   private
@@ -55,40 +55,40 @@ module mo_gas_concentrations
     character(len=32), dimension(:), allocatable, public :: gas_names ! Should make this private
     type(conc_field),  dimension(:), allocatable, private :: concs
     integer, private :: ncol = 0, nlay = 0
-    contains
-      !
-      ! Procedures
-      !
-      procedure, private :: find_gas
-      procedure, private :: set_vmr_scalar
-      procedure, private :: set_vmr_1d
-      procedure, private :: set_vmr_2d
-      procedure, private :: get_vmr_1d
-      procedure, private :: get_vmr_2d
-      procedure, private :: get_subset_range
-      final :: del
-      !
-      ! public interface
-      !
-      procedure, public :: init
-      procedure, public :: reset
-      generic,   public :: set_vmr => set_vmr_scalar, &
-                                      set_vmr_1d, &
-                                      set_vmr_2d !! ### Set concentration values 
-      generic,   public :: get_vmr => get_vmr_1d, &
-                                      get_vmr_2d !! ### Get concentration values
-      generic,   public :: get_subset => get_subset_range 
-                                                 !! ### Extract a subset of columns 
-      procedure, public :: get_num_gases
-      procedure, public :: get_gas_names
+  contains
+    !
+    ! Procedures
+    !
+    procedure, private :: find_gas
+    procedure, private :: set_vmr_scalar
+    procedure, private :: set_vmr_1d
+    procedure, private :: set_vmr_2d
+    procedure, private :: get_vmr_1d
+    procedure, private :: get_vmr_2d
+    procedure, private :: get_subset_range
+    final :: del
+    !
+    ! public interface
+    !
+    procedure, public :: init
+    procedure, public :: reset
+    generic,   public :: set_vmr => set_vmr_scalar, &
+      set_vmr_1d, &
+      set_vmr_2d !! ### Set concentration values
+    generic,   public :: get_vmr => get_vmr_1d, &
+      get_vmr_2d !! ### Get concentration values
+    generic,   public :: get_subset => get_subset_range
+                                                 !! ### Extract a subset of columns
+    procedure, public :: get_num_gases
+    procedure, public :: get_gas_names
   end type ty_gas_concs
 contains
   ! -------------------------------------------------------------------------------------
   !> ### Initialize the object
   function init(this, gas_names) result(error_msg)
     class(ty_gas_concs),            intent(inout) :: this
-    character(len=*), dimension(:), intent(in   ) :: gas_names !! names of all gases which might be provided 
-    character(len=128)                            :: error_msg !! error string, empty when successful 
+    character(len=*), dimension(:), intent(in   ) :: gas_names !! names of all gases which might be provided
+    character(len=128)                            :: error_msg !! error string, empty when successful
     ! ---------
     integer :: i, j, ngas
     ! ---------
@@ -125,13 +125,13 @@ contains
   ! Set concentrations --- scalar, 1D, 2D
   !
   ! -------------------------------------------------------------------------------------
-  !> ### Set scalar concentrations 
+  !> ### Set scalar concentrations
   function set_vmr_scalar(this, gas, w) result(error_msg)
     ! In OpenACC context scalar w always assumed to be on the CPU
     class(ty_gas_concs), intent(inout) :: this
     character(len=*),    intent(in   ) :: gas !! Name of the gas being provided
-    real(wp),            intent(in   ) :: w   !! volume (molar) mixing ratio 
-    character(len=128)                 :: error_msg !! error string, empty when successful 
+    real(wp),            intent(in   ) :: w   !! volume (molar) mixing ratio
+    character(len=128)                 :: error_msg !! error string, empty when successful
     ! ---------
     real(wp), dimension(:,:), pointer :: p
     integer :: igas
@@ -177,14 +177,14 @@ contains
     !$omp end target
   end function set_vmr_scalar
   ! -------------------------------------------------------------------------------------
-  !> ### Set 1d (function of level) concentrations 
+  !> ### Set 1d (function of level) concentrations
   function set_vmr_1d(this, gas, w) result(error_msg)
     ! In OpenACC context w assumed to be either on the CPU or on the GPU
     class(ty_gas_concs), intent(inout) :: this
     character(len=*),    intent(in   ) :: gas  !! Name of the gas being provided
     real(wp), dimension(:), &
-                         intent(in   ) :: w    !! volume (molar) mixing ratio 
-    character(len=128)                 :: error_msg !! error string, empty when successful 
+      intent(in   ) :: w    !! volume (molar) mixing ratio
+    character(len=128)                 :: error_msg !! error string, empty when successful
     ! ---------
     real(wp), dimension(:,:), pointer :: p
     integer :: igas
@@ -239,15 +239,15 @@ contains
     !$acc exit data delete(w)
   end function set_vmr_1d
   ! -------------------------------------------------------------------------------------
-  !> ### Set 2d  concentrations 
+  !> ### Set 2d  concentrations
   function set_vmr_2d(this, gas, w) result(error_msg)
     ! In OpenACC context w assumed to be either on the CPU or on the GPU
     class(ty_gas_concs), intent(inout) :: this
     character(len=*),    intent(in   ) :: gas !! Name of the gas being provided
     real(wp), dimension(:,:),  &
-                         intent(in   ) :: w   !! volume (molar) mixing ratio 
-    character(len=128)                 :: error_msg 
-                                              !! error string, empty when successful 
+      intent(in   ) :: w   !! volume (molar) mixing ratio
+    character(len=128)                 :: error_msg
+                                              !! error string, empty when successful
     ! ---------
     real(wp), dimension(:,:), pointer :: p
     integer :: igas
@@ -317,8 +317,8 @@ contains
   function get_vmr_1d(this, gas, array) result(error_msg)
     class(ty_gas_concs) :: this
     character(len=*),         intent(in ) :: gas   !! Name of the gas
-    real(wp), dimension(:),   intent(out) :: array !! Volume mixing ratio 
-    character(len=128) :: error_msg                !! Error string, empty if successful 
+    real(wp), dimension(:),   intent(out) :: array !! Volume mixing ratio
+    character(len=128) :: error_msg                !! Error string, empty if successful
     ! ---------------------
     real(wp), dimension(:,:), pointer :: p
     integer :: igas
@@ -374,8 +374,8 @@ contains
   function get_vmr_2d(this, gas, array) result(error_msg)
     class(ty_gas_concs) :: this
     character(len=*),         intent(in ) :: gas   !! Name of the gas
-    real(wp), dimension(:,:), intent(out) :: array !! Volume mixing ratio 
-    character(len=128)                    :: error_msg !! Error string, empty if successful 
+    real(wp), dimension(:,:), intent(out) :: array !! Volume mixing ratio
+    character(len=128)                    :: error_msg !! Error string, empty if successful
     ! ---------------------
     real(wp), dimension(:,:), pointer :: p
     integer :: icol, ilay, igas
@@ -408,7 +408,7 @@ contains
       do ilay = 1, size(array,2)
         do icol = 1, size(array,1)
 #ifdef _CRAYFTN
-           array(icol,ilay) = p(icol,ilay)
+          array(icol,ilay) = p(icol,ilay)
 #else
           array(icol,ilay) = this%concs(igas)%conc(icol,ilay)
 #endif
@@ -422,7 +422,7 @@ contains
 #ifdef _CRAYFTN
           array(icol,ilay) = p(1,ilay)
 #else
-         array(icol, ilay) = this%concs(igas)%conc(1,ilay)
+          array(icol, ilay) = this%concs(igas)%conc(1,ilay)
 #endif
         end do
       end do
@@ -451,19 +451,19 @@ contains
   function get_subset_range(this, start, n, subset) result(error_msg)
     class(ty_gas_concs),      intent(in   ) :: this
     integer,                  intent(in   ) :: start, n !! Index of first column, number of columns to extract
-    class(ty_gas_concs),      intent(inout) :: subset   !! Object to hold the subset of columns 
-    character(len=128)                      :: error_msg !! Error string, empty if successful 
+    class(ty_gas_concs),      intent(inout) :: subset   !! Object to hold the subset of columns
+    character(len=128)                      :: error_msg !! Error string, empty if successful
     ! ---------------------
     real(wp), dimension(:,:), pointer :: p1, p2
     integer :: i
     ! ---------------------
     error_msg = ''
     if(n <= 0) &
-       error_msg = "gas_concs%get_vmr: Asking for 0 or fewer columns "
+      error_msg = "gas_concs%get_vmr: Asking for 0 or fewer columns "
     if(start < 1 ) &
-       error_msg = "gas_concs%get_vmr: Asking for columns outside range"
+      error_msg = "gas_concs%get_vmr: Asking for columns outside range"
     if(this%ncol > 0 .and. start > this%ncol .or. start+n-1 > this%ncol ) &
-       error_msg = "gas_concs%get_vmr: Asking for columns outside range"
+      error_msg = "gas_concs%get_vmr: Asking for columns outside range"
     if(error_msg /= "") return
 
     call subset%reset()
@@ -564,11 +564,11 @@ contains
   ! Private procedures
   !
   ! -------------------------------------------------------------------------------------
-  !> Convert string to lower case 
+  !> Convert string to lower case
   pure function lower_case( input_string ) result( output_string )
     character(len=*), intent(in)     :: input_string
     character(len=len(input_string)) :: output_string
-  
+
     ! List of character for case conversion
     character(len=26), parameter :: LOWER_CASE_CHARS = 'abcdefghijklmnopqrstuvwxyz'
     character(len=26), parameter :: UPPER_CASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'

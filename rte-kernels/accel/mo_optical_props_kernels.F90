@@ -49,7 +49,7 @@ contains
   !   user-provided value of f (forward scattering)
   !
   subroutine delta_scale_2str_f_k(ncol, nlay, ngpt, tau, ssa, g, f) &
-      bind(C, name="rte_delta_scale_2str_f_k")
+    bind(C, name="rte_delta_scale_2str_f_k")
     integer,                               intent(in   ) :: ncol, nlay, ngpt
     real(wp), dimension(ncol, nlay, ngpt), intent(inout) ::  tau, ssa, g
     real(wp), dimension(ncol, nlay, ngpt), intent(in   ) ::  f
@@ -85,7 +85,7 @@ contains
   !   f = g*g
   !
   subroutine delta_scale_2str_k(ncol, nlay, ngpt, tau, ssa, g) &
-      bind(C, name="rte_delta_scale_2str_k")
+    bind(C, name="rte_delta_scale_2str_k")
     integer,                               intent(in   ) :: ncol, nlay, ngpt
     real(wp), dimension(ncol, nlay, ngpt), intent(inout) ::  tau, ssa, g
 
@@ -130,8 +130,8 @@ contains
   !
   ! -------------------------------------------------------------------------------------------------
   subroutine increment_1scalar_by_1scalar(ncol, nlay, ngpt, &
-                                               tau1,             &
-                                               tau2) bind(C, name="rte_increment_1scalar_by_1scalar")
+                                          tau1,             &
+                                          tau2) bind(C, name="rte_increment_1scalar_by_1scalar")
     integer,                              intent(in  ) :: ncol, nlay, ngpt
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1
     real(wp), dimension(ncol,nlay,ngpt), intent(in   ) :: tau2
@@ -142,13 +142,13 @@ contains
 
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1)
     !$acc data copyin(tau2)
 
-    !$acc  parallel loop collapse(3) 
+    !$acc  parallel loop collapse(3)
     !$omp target teams distribute parallel do simd collapse(3) &
     !$omp& map(to:tau2) &
     !$omp& map(tofrom:tau1)
@@ -160,14 +160,14 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine increment_1scalar_by_1scalar
   ! ---------------------------------
   ! increment 1scalar by 2stream
   subroutine increment_1scalar_by_2stream(ncol, nlay, ngpt, &
-                                               tau1,             &
-                                               tau2, ssa2) bind(C, name="rte_increment_1scalar_by_2stream")
+                                          tau1,             &
+                                          tau2, ssa2) bind(C, name="rte_increment_1scalar_by_2stream")
     integer,                              intent(in   ) :: ncol, nlay, ngpt
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1
     real(wp), dimension(ncol,nlay,ngpt), intent(in   ) :: tau2, ssa2
@@ -178,7 +178,7 @@ contains
 
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1)
@@ -198,14 +198,14 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine increment_1scalar_by_2stream
   ! ---------------------------------
   ! increment 1scalar by nstream
   subroutine increment_1scalar_by_nstream(ncol, nlay, ngpt, &
-                                               tau1,             &
-                                               tau2, ssa2) bind(C, name="rte_increment_1scalar_by_nstream")
+                                          tau1,             &
+                                          tau2, ssa2) bind(C, name="rte_increment_1scalar_by_nstream")
     integer,                              intent(in   ) :: ncol, nlay, ngpt
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1
     real(wp), dimension(ncol,nlay,ngpt), intent(in   ) :: tau2, ssa2
@@ -215,7 +215,7 @@ contains
     ! --------------
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1)
@@ -235,15 +235,15 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine increment_1scalar_by_nstream
   ! ---------------------------------
   ! ---------------------------------
   ! increment 2stream by 1scalar
   subroutine increment_2stream_by_1scalar(ncol, nlay, ngpt, &
-                                               tau1, ssa1,       &
-                                               tau2) bind(C, name="rte_increment_2stream_by_1scalar")
+                                          tau1, ssa1,       &
+                                          tau2) bind(C, name="rte_increment_2stream_by_1scalar")
     integer,                              intent(in   ) :: ncol, nlay, ngpt
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1
     real(wp), dimension(ncol,nlay,ngpt), intent(in   ) :: tau2
@@ -254,7 +254,7 @@ contains
     ! --------------
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1)
@@ -278,14 +278,14 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine increment_2stream_by_1scalar
   ! ---------------------------------
   ! increment 2stream by 2stream
   subroutine increment_2stream_by_2stream(ncol, nlay, ngpt, &
-                                               tau1, ssa1, g1,   &
-                                               tau2, ssa2, g2) bind(C, name="rte_increment_2stream_by_2stream")
+                                          tau1, ssa1, g1,   &
+                                          tau2, ssa2, g2) bind(C, name="rte_increment_2stream_by_2stream")
     integer,                              intent(in   ) :: ncol, nlay, ngpt
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1, g1
     real(wp), dimension(ncol,nlay,ngpt), intent(in   ) :: tau2, ssa2, g2
@@ -296,7 +296,7 @@ contains
     ! --------------
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1, g1)
@@ -320,7 +320,7 @@ contains
             g1(icol,ilay,igpt) = &
               (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * g1(icol,ilay,igpt) + &
                tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * g2(icol,ilay,igpt)) &
-                / tauscat12
+              / tauscat12
             ssa1(icol,ilay,igpt) = tauscat12 / tau12
             tau1(icol,ilay,igpt) = tau12
           end if
@@ -328,14 +328,14 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine increment_2stream_by_2stream
   ! ---------------------------------
   ! increment 2stream by nstream
   subroutine increment_2stream_by_nstream(ncol, nlay, ngpt, nmom2, &
-                                               tau1, ssa1, g1,          &
-                                               tau2, ssa2, p2) bind(C, name="rte_increment_2stream_by_nstream")
+                                          tau1, ssa1, g1,          &
+                                          tau2, ssa2, p2) bind(C, name="rte_increment_2stream_by_nstream")
     integer,                              intent(in   ) :: ncol, nlay, ngpt, nmom2
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1, g1
     real(wp), dimension(ncol,nlay,ngpt), intent(in   ) :: tau2, ssa2
@@ -348,7 +348,7 @@ contains
     ! --------------
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1, g1)
@@ -367,8 +367,8 @@ contains
           tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,igpt)
           ! w=(tau1*ssa1 + tau2*ssa2) / t
           tauscat12 = &
-             tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-             tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
+            tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+            tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
           if(tauscat12 > eps) then
             g1(icol,ilay,igpt) = &
               (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * g1(   icol,ilay,igpt)+ &
@@ -380,15 +380,15 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine increment_2stream_by_nstream
   ! ---------------------------------
   ! ---------------------------------
   ! increment nstream by 1scalar
   subroutine increment_nstream_by_1scalar(ncol, nlay, ngpt, &
-                                               tau1, ssa1,       &
-                                               tau2) bind(C, name="rte_increment_nstream_by_1scalar")
+                                          tau1, ssa1,       &
+                                          tau2) bind(C, name="rte_increment_nstream_by_1scalar")
     integer,                              intent(in   ) :: ncol, nlay, ngpt
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1
     real(wp), dimension(ncol,nlay,ngpt), intent(in   ) :: tau2
@@ -399,7 +399,7 @@ contains
     ! --------------
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1)
@@ -423,14 +423,14 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine increment_nstream_by_1scalar
   ! ---------------------------------
   ! increment nstream by 2stream
   subroutine increment_nstream_by_2stream(ncol, nlay, ngpt, nmom1, &
-                                               tau1, ssa1, p1,          &
-                                               tau2, ssa2, g2) bind(C, name="rte_increment_nstream_by_2stream")
+                                          tau1, ssa1, p1,          &
+                                          tau2, ssa2, g2) bind(C, name="rte_increment_nstream_by_2stream")
     integer,                              intent(in   ) :: ncol, nlay, ngpt, nmom1
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1
     real(wp), dimension(nmom1, &
@@ -445,7 +445,7 @@ contains
     ! --------------
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1, p1)
@@ -463,34 +463,34 @@ contains
         do icol = 1, ncol
           tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,igpt)
           tauscat12 = &
-             tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-             tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
+            tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+            tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
           !
           ! Here assume Henyey-Greenstein
           !
           if(tauscat12 > eps) then
             temp_mom = g2(icol,ilay,igpt)
             do imom = 1, nmom1
-               p1(imom, icol,ilay,igpt) = &
-                    (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(imom, icol,ilay,igpt) + &
-                    tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * temp_mom) / tauscat12
-               temp_mom = temp_mom * g2(icol,ilay,igpt)
+              p1(imom, icol,ilay,igpt) = &
+                (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(imom, icol,ilay,igpt) + &
+                 tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * temp_mom) / tauscat12
+              temp_mom = temp_mom * g2(icol,ilay,igpt)
             end do
             ssa1(icol,ilay,igpt) = tauscat12 / tau12
             tau1(icol,ilay,igpt) = tau12
-         end if
+          end if
         end do
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine increment_nstream_by_2stream
   ! ---------------------------------
   ! increment nstream by nstream
   subroutine increment_nstream_by_nstream(ncol, nlay, ngpt, nmom1, nmom2, &
-                                               tau1, ssa1, p1,                 &
-                                               tau2, ssa2, p2) bind(C, name="rte_increment_nstream_by_nstream")
+                                          tau1, ssa1, p1,                 &
+                                          tau2, ssa2, p2) bind(C, name="rte_increment_nstream_by_nstream")
     integer,                              intent(in   ) :: ncol, nlay, ngpt, nmom1, nmom2
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1
     real(wp), dimension(nmom1, &
@@ -506,7 +506,7 @@ contains
     mom_lim = min(nmom1, nmom2)
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1, p1)
@@ -523,16 +523,16 @@ contains
         do icol = 1, ncol
           tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,igpt)
           tauscat12 = &
-             tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-             tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
+            tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+            tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
           if(tauscat12 > eps) then
             !
             ! If op2 has more moments than op1 these are ignored;
             !   if it has fewer moments the higher orders are assumed to be 0
             !
             p1(1:mom_lim, icol,ilay,igpt) = &
-                (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:mom_lim, icol,ilay,igpt) + &
-                 tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * p2(1:mom_lim, icol,ilay,igpt)) / max(eps,tauscat12)
+              (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:mom_lim, icol,ilay,igpt) + &
+               tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * p2(1:mom_lim, icol,ilay,igpt)) / max(eps,tauscat12)
             ssa1(icol,ilay,igpt) = tauscat12 / max(eps,tau12)
             tau1(icol,ilay,igpt) = tau12
           end if
@@ -540,8 +540,8 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine increment_nstream_by_nstream
   ! ---------------------------------
   !
@@ -550,9 +550,9 @@ contains
   !
   ! ---------------------------------
   subroutine inc_1scalar_by_1scalar_bybnd(ncol, nlay, ngpt, &
-                                               tau1,             &
-                                               tau2,             &
-                                               nbnd, gpt_lims) bind(C, name="rte_inc_1scalar_by_1scalar_bybnd")
+                                          tau1,             &
+                                          tau2,             &
+                                          nbnd, gpt_lims) bind(C, name="rte_inc_1scalar_by_1scalar_bybnd")
     integer,                             intent(in   ) :: ncol, nlay, ngpt, nbnd
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1
     real(wp), dimension(ncol,nlay,nbnd), intent(in   ) :: tau2
@@ -561,7 +561,7 @@ contains
 
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1)
@@ -584,15 +584,15 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine inc_1scalar_by_1scalar_bybnd
   ! ---------------------------------
   ! increment 1scalar by 2stream
   subroutine inc_1scalar_by_2stream_bybnd(ncol, nlay, ngpt, &
-                                               tau1,             &
-                                               tau2, ssa2,       &
-                                               nbnd, gpt_lims) bind(C, name="rte_inc_1scalar_by_2stream_bybnd")
+                                          tau1,             &
+                                          tau2, ssa2,       &
+                                          nbnd, gpt_lims) bind(C, name="rte_inc_1scalar_by_2stream_bybnd")
     integer,                             intent(in   ) :: ncol, nlay, ngpt, nbnd
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1
     real(wp), dimension(ncol,nlay,nbnd), intent(in   ) :: tau2, ssa2
@@ -601,7 +601,7 @@ contains
 
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1)
@@ -624,15 +624,15 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine inc_1scalar_by_2stream_bybnd
   ! ---------------------------------
   ! increment 1scalar by nstream
   subroutine inc_1scalar_by_nstream_bybnd(ncol, nlay, ngpt, &
-                                               tau1,             &
-                                               tau2, ssa2,       &
-                                               nbnd, gpt_lims) bind(C, name="rte_inc_1scalar_by_nstream_bybnd")
+                                          tau1,             &
+                                          tau2, ssa2,       &
+                                          nbnd, gpt_lims) bind(C, name="rte_inc_1scalar_by_nstream_bybnd")
     integer,                             intent(in   ) :: ncol, nlay, ngpt, nbnd
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1
     real(wp), dimension(ncol,nlay,nbnd), intent(in   ) :: tau2, ssa2
@@ -641,7 +641,7 @@ contains
 
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1)
@@ -664,16 +664,16 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine inc_1scalar_by_nstream_bybnd
 
-    ! ---------------------------------
+  ! ---------------------------------
   ! increment 2stream by 1scalar
   subroutine inc_2stream_by_1scalar_bybnd(ncol, nlay, ngpt, &
-                                               tau1, ssa1,       &
-                                               tau2,             &
-                                               nbnd, gpt_lims) bind(C, name="rte_inc_2stream_by_1scalar_bybnd")
+                                          tau1, ssa1,       &
+                                          tau2,             &
+                                          nbnd, gpt_lims) bind(C, name="rte_inc_2stream_by_1scalar_bybnd")
     integer,                             intent(in   ) :: ncol, nlay, ngpt, nbnd
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1
     real(wp), dimension(ncol,nlay,nbnd), intent(in   ) :: tau2
@@ -684,7 +684,7 @@ contains
 
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1)
@@ -711,15 +711,15 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine inc_2stream_by_1scalar_bybnd
   ! ---------------------------------
   ! increment 2stream by 2stream
   subroutine inc_2stream_by_2stream_bybnd(ncol, nlay, ngpt, &
-                                               tau1, ssa1, g1,   &
-                                               tau2, ssa2, g2,   &
-                                               nbnd, gpt_lims) bind(C, name="rte_inc_2stream_by_2stream_bybnd")
+                                          tau1, ssa1, g1,   &
+                                          tau2, ssa2, g2,   &
+                                          nbnd, gpt_lims) bind(C, name="rte_inc_2stream_by_2stream_bybnd")
     integer,                             intent(in   ) :: ncol, nlay, ngpt, nbnd
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1, g1
     real(wp), dimension(ncol,nlay,nbnd), intent(in   ) :: tau2, ssa2, g2
@@ -729,7 +729,7 @@ contains
 
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1, g1)
@@ -752,8 +752,8 @@ contains
               tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,ibnd)
               ! w=(tau1*ssa1 + tau2*ssa2) / t
               tauscat12 = &
-                 tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-                 tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
+                tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+                tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
               g1(icol,ilay,igpt) = &
                 (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * g1(icol,ilay,igpt) + &
                  tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * g2(icol,ilay,ibnd)) / max(eps,tauscat12)
@@ -765,15 +765,15 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine inc_2stream_by_2stream_bybnd
   ! ---------------------------------
   ! increment 2stream by nstream
   subroutine inc_2stream_by_nstream_bybnd(ncol, nlay, ngpt, nmom2, &
-                                               tau1, ssa1, g1,          &
-                                               tau2, ssa2, p2,          &
-                                               nbnd, gpt_lims) bind(C, name="rte_inc_2stream_by_nstream_bybnd")
+                                          tau1, ssa1, g1,          &
+                                          tau2, ssa2, p2,          &
+                                          nbnd, gpt_lims) bind(C, name="rte_inc_2stream_by_nstream_bybnd")
     integer,                             intent(in   ) :: ncol, nlay, ngpt, nmom2, nbnd
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1, g1
     real(wp), dimension(ncol,nlay,nbnd), intent(in   ) :: tau2, ssa2
@@ -786,7 +786,7 @@ contains
 
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1, g1)
@@ -808,8 +808,8 @@ contains
               tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,ibnd)
               ! w=(tau1*ssa1 + tau2*ssa2) / t
               tauscat12 = &
-                 tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-                 tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
+                tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+                tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
               g1(icol,ilay,igpt) = &
                 (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * g1(   icol,ilay,igpt)+ &
                  tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * p2(1, icol,ilay,ibnd)) / max(eps,tauscat12)
@@ -821,16 +821,16 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine inc_2stream_by_nstream_bybnd
   ! ---------------------------------
   ! ---------------------------------
   ! increment nstream by 1scalar
   subroutine inc_nstream_by_1scalar_bybnd(ncol, nlay, ngpt, &
-                                               tau1, ssa1,       &
-                                               tau2,             &
-                                               nbnd, gpt_lims) bind(C, name="rte_inc_nstream_by_1scalar_bybnd")
+                                          tau1, ssa1,       &
+                                          tau2,             &
+                                          nbnd, gpt_lims) bind(C, name="rte_inc_nstream_by_1scalar_bybnd")
     integer,                             intent(in   ) :: ncol, nlay, ngpt, nbnd
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1
     real(wp), dimension(ncol,nlay,nbnd), intent(in   ) :: tau2
@@ -841,7 +841,7 @@ contains
 
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1)
@@ -868,15 +868,15 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine inc_nstream_by_1scalar_bybnd
   ! ---------------------------------
   ! increment nstream by 2stream
   subroutine inc_nstream_by_2stream_bybnd(ncol, nlay, ngpt, nmom1, &
-                                               tau1, ssa1, p1,          &
-                                               tau2, ssa2, g2,          &
-                                               nbnd, gpt_lims) bind(C, name="rte_inc_nstream_by_2stream_bybnd")
+                                          tau1, ssa1, p1,          &
+                                          tau2, ssa2, g2,          &
+                                          nbnd, gpt_lims) bind(C, name="rte_inc_nstream_by_2stream_bybnd")
     integer,                             intent(in   ) :: ncol, nlay, ngpt, nmom1, nbnd
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1
     real(wp), dimension(nmom1, &
@@ -891,7 +891,7 @@ contains
 
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1, p1)
@@ -911,17 +911,17 @@ contains
             if (igpt >= gpt_lims(1, ibnd) .and. igpt <= gpt_lims(2, ibnd) ) then
               tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,ibnd)
               tauscat12 = &
-                 tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-                 tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
+                tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+                tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
               !
               ! Here assume Henyey-Greenstein
               !
               temp_mom = g2(icol,ilay,ibnd)
               do imom = 1, nmom1
-                 p1(imom, icol,ilay,igpt) = &
-                      (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(imom, icol,ilay,igpt) + &
-                      tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * temp_mom  ) / max(eps,tauscat12)
-                 temp_mom = temp_mom * g2(icol,ilay,igpt)
+                p1(imom, icol,ilay,igpt) = &
+                  (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(imom, icol,ilay,igpt) + &
+                   tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * temp_mom  ) / max(eps,tauscat12)
+                temp_mom = temp_mom * g2(icol,ilay,igpt)
               end do
               ssa1(icol,ilay,igpt) = tauscat12 / max(eps,tau12)
               tau1(icol,ilay,igpt) = tau12
@@ -931,15 +931,15 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine inc_nstream_by_2stream_bybnd
   ! ---------------------------------
   ! increment nstream by nstream
   subroutine inc_nstream_by_nstream_bybnd(ncol, nlay, ngpt, nmom1, nmom2, &
-                                               tau1, ssa1, p1,                 &
-                                               tau2, ssa2, p2,                 &
-                                               nbnd, gpt_lims) bind(C, name="rte_inc_nstream_by_nstream_bybnd")
+                                          tau1, ssa1, p1,                 &
+                                          tau2, ssa2, p2,                 &
+                                          nbnd, gpt_lims) bind(C, name="rte_inc_nstream_by_nstream_bybnd")
     integer,                             intent(in   ) :: ncol, nlay, ngpt, nmom1, nmom2, nbnd
     real(wp), dimension(ncol,nlay,ngpt), intent(inout) :: tau1, ssa1
     real(wp), dimension(nmom1, &
@@ -955,7 +955,7 @@ contains
     mom_lim = min(nmom1, nmom2)
     ! tau1 and tau2 might be the same array, thus we need to perform copy and copyin
     ! in separate steps. Otherwise, at the time of copyout of tau1 runtime may see
-    ! it as present (as present counter of tau2, having the same memory address) 
+    ! it as present (as present counter of tau2, having the same memory address)
     ! is not necessarily decrement yet, and copyout action is not carried out
     ! (present_or_copyout semantic)
     !$acc data copy(tau1, ssa1, p1)
@@ -977,15 +977,15 @@ contains
             if (igpt >= gpt_lims(1, ibnd) .and. igpt <= gpt_lims(2, ibnd) ) then
               tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,ibnd)
               tauscat12 = &
-                 tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-                 tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
+                tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+                tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
               !
               ! If op2 has more moments than op1 these are ignored;
               !   if it has fewer moments the higher orders are assumed to be 0
               !
               p1(1:mom_lim, icol,ilay,igpt) = &
-                  (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:mom_lim, icol,ilay,igpt) + &
-                   tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * p2(1:mom_lim, icol,ilay,ibnd)) / max(eps,tauscat12)
+                (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:mom_lim, icol,ilay,igpt) + &
+                 tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * p2(1:mom_lim, icol,ilay,ibnd)) / max(eps,tauscat12)
               ssa1(icol,ilay,igpt) = tauscat12 / max(eps,tau12)
               tau1(icol,ilay,igpt) = tau12
             endif
@@ -994,8 +994,8 @@ contains
       end do
     end do
 
-  !$acc end data
-  !$acc end data
+    !$acc end data
+    !$acc end data
   end subroutine inc_nstream_by_nstream_bybnd
   ! ---------------------------------
   ! -------------------------------------------------------------------------------------------------
@@ -1009,7 +1009,7 @@ contains
     real(wp), dimension(ncol,nlay,ngpt), intent(in ) :: array_in
     integer,                             intent(in ) :: colS, colE
     real(wp), dimension(colE-colS+1,&
-                             nlay,ngpt), intent(out) :: array_out
+                        nlay,ngpt), intent(out) :: array_out
     integer :: icol, ilay, igpt
 
     !$acc parallel loop collapse(3) &
@@ -1034,7 +1034,7 @@ contains
     real(wp), dimension(nmom,ncol,nlay,ngpt), intent(in ) :: array_in
     integer,                                  intent(in ) :: colS, colE
     real(wp), dimension(nmom,colE-colS+1,&
-                                  nlay,ngpt), intent(out) :: array_out
+                        nlay,ngpt), intent(out) :: array_out
 
     integer :: icol, ilay, igpt, imom
 
@@ -1060,13 +1060,13 @@ contains
   ! Extract the absorption optical thickness which requires mulitplying by 1 - ssa
   !
   subroutine extract_subset_absorption_tau(ncol, nlay, ngpt, tau_in, ssa_in, &
-                                                colS, colE, tau_out)              &
+                                           colS, colE, tau_out)              &
     bind (C, name="rte_extract_subset_absorption_tau")
     integer,                             intent(in ) :: ncol, nlay, ngpt
     real(wp), dimension(ncol,nlay,ngpt), intent(in ) :: tau_in, ssa_in
     integer,                             intent(in ) :: colS, colE
     real(wp), dimension(colE-colS+1,&
-                             nlay,ngpt), intent(out) :: tau_out
+                        nlay,ngpt), intent(out) :: tau_out
 
     integer :: icol, ilay, igpt
 

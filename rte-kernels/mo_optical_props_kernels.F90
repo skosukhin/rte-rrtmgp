@@ -45,7 +45,7 @@ contains
   !> Delta-scale two-stream optical properties given user-provided value of \(f\) (forward scattering)
   !
   pure subroutine delta_scale_2str_f_k(ncol, nlay, ngpt, tau, ssa, g, f) &
-      bind(C, name="rte_delta_scale_2str_f_k")
+    bind(C, name="rte_delta_scale_2str_f_k")
     integer,                               intent(in   ) :: ncol, nlay, ngpt
       !! Array sizes
     real(wp), dimension(ncol, nlay, ngpt), intent(inout) ::  tau, ssa, g
@@ -63,7 +63,7 @@ contains
           tau(icol,ilay,igpt) = (1._wp - wf) * tau(icol,ilay,igpt)
           ssa(icol,ilay,igpt) = (ssa(icol,ilay,igpt) - wf) /  max(eps,(1.0_wp - wf))
           g  (icol,ilay,igpt) = (g  (icol,ilay,igpt) - f(icol,ilay,igpt)) / &
-                                        max(eps,(1._wp - f(icol,ilay,igpt)))
+                                max(eps,(1._wp - f(icol,ilay,igpt)))
         end do
       end do
     end do
@@ -74,7 +74,7 @@ contains
   !>    i.e. \(f = g^2\)
   !
   pure subroutine delta_scale_2str_k(ncol, nlay, ngpt, tau, ssa, g) &
-      bind(C, name="rte_delta_scale_2str_k")
+    bind(C, name="rte_delta_scale_2str_k")
     integer,                               intent(in   ) :: ncol, nlay, ngpt
       !! Array sizes
     real(wp), dimension(ncol, nlay, ngpt), intent(inout) ::  tau, ssa, g
@@ -217,7 +217,7 @@ contains
           g1(icol,ilay,igpt) = &
             (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * g1(icol,ilay,igpt) + &
              tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * g2(icol,ilay,igpt)) &
-              / max(eps,tauscat12)
+            / max(eps,tauscat12)
           ssa1(icol,ilay,igpt) = tauscat12 / max(eps,tau12)
           tau1(icol,ilay,igpt) = tau12
         end do
@@ -245,8 +245,8 @@ contains
           tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,igpt)
           ! w=(tau1*ssa1 + tau2*ssa2) / t
           tauscat12 = &
-             tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-             tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
+            tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+            tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
           g1(icol,ilay,igpt) = &
             (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * g1(   icol,ilay,igpt)+ &
              tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * p2(1, icol,ilay,igpt)) / max(eps,tauscat12)
@@ -301,8 +301,8 @@ contains
         do icol = 1, ncol
           tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,igpt)
           tauscat12 = &
-             tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-             tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
+            tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+            tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
           !
           ! Here assume Henyey-Greenstein
           !
@@ -311,8 +311,8 @@ contains
             temp_moms(imom) = temp_moms(imom-1) * g2(icol,ilay,igpt)
           end do
           p1(1:nmom1, icol,ilay,igpt) = &
-              (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:nmom1, icol,ilay,igpt) + &
-               tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * temp_moms(1:nmom1)  ) / max(eps,tauscat12)
+            (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:nmom1, icol,ilay,igpt) + &
+             tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * temp_moms(1:nmom1)  ) / max(eps,tauscat12)
           ssa1(icol,ilay,igpt) = tauscat12 / max(eps,tau12)
           tau1(icol,ilay,igpt) = tau12
         end do
@@ -341,15 +341,15 @@ contains
         do icol = 1, ncol
           tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,igpt)
           tauscat12 = &
-             tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-             tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
+            tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+            tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt)
           !
           ! If op2 has more moments than op1 these are ignored;
           !   if it has fewer moments the higher orders are assumed to be 0
           !
           p1(1:mom_lim, icol,ilay,igpt) = &
-              (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:mom_lim, icol,ilay,igpt) + &
-               tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * p2(1:mom_lim, icol,ilay,igpt)) / max(eps,tauscat12)
+            (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:mom_lim, icol,ilay,igpt) + &
+             tau2(icol,ilay,igpt) * ssa2(icol,ilay,igpt) * p2(1:mom_lim, icol,ilay,igpt)) / max(eps,tauscat12)
           ssa1(icol,ilay,igpt) = tauscat12 / max(eps,tau12)
           tau1(icol,ilay,igpt) = tau12
         end do
@@ -419,7 +419,7 @@ contains
     end do
   end subroutine inc_1scalar_by_nstream_bybnd
 
-    ! ---------------------------------
+  ! ---------------------------------
   !> increment two-stream optical properties \(\tau, \omega_0, g\) defined on g-points with absorption optical depth defined on bands
   pure subroutine inc_2stream_by_1scalar_bybnd(ncol, nlay, ngpt, &
                                                tau1, ssa1,       &
@@ -468,8 +468,8 @@ contains
             tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,ibnd)
             ! w=(tau1*ssa1 + tau2*ssa2) / t
             tauscat12 = &
-               tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-               tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
+              tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+              tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
             g1(icol,ilay,igpt) = &
               (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * g1(icol,ilay,igpt) + &
                tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * g2(icol,ilay,ibnd)) / max(eps,tauscat12)
@@ -504,8 +504,8 @@ contains
             tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,ibnd)
             ! w=(tau1*ssa1 + tau2*ssa2) / t
             tauscat12 = &
-               tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-               tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
+              tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+              tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
             g1(icol,ilay,igpt) = &
               (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * g1(   icol,ilay,igpt)+ &
                tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * p2(1, icol,ilay,ibnd)) / max(eps,tauscat12)
@@ -568,8 +568,8 @@ contains
           do icol = 1, ncol
             tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,ibnd)
             tauscat12 = &
-               tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-               tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
+              tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+              tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
             !
             ! Here assume Henyey-Greenstein
             !
@@ -578,8 +578,8 @@ contains
               temp_moms(imom) = temp_moms(imom-1) * g2(icol,ilay,ibnd)
             end do
             p1(1:nmom1, icol,ilay,igpt) = &
-                (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:nmom1, icol,ilay,igpt) + &
-                 tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * temp_moms(1:nmom1)  ) / max(eps,tauscat12)
+              (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:nmom1, icol,ilay,igpt) + &
+               tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * temp_moms(1:nmom1)  ) / max(eps,tauscat12)
             ssa1(icol,ilay,igpt) = tauscat12 / max(eps,tau12)
             tau1(icol,ilay,igpt) = tau12
           end do
@@ -612,15 +612,15 @@ contains
           do icol = 1, ncol
             tau12 = tau1(icol,ilay,igpt) + tau2(icol,ilay,ibnd)
             tauscat12 = &
-               tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
-               tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
+              tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) + &
+              tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd)
             !
             ! If op2 has more moments than op1 these are ignored;
             !   if it has fewer moments the higher orders are assumed to be 0
             !
             p1(1:mom_lim, icol,ilay,igpt) = &
-                (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:mom_lim, icol,ilay,igpt) + &
-                 tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * p2(1:mom_lim, icol,ilay,ibnd)) / max(eps,tauscat12)
+              (tau1(icol,ilay,igpt) * ssa1(icol,ilay,igpt) * p1(1:mom_lim, icol,ilay,igpt) + &
+               tau2(icol,ilay,ibnd) * ssa2(icol,ilay,ibnd) * p2(1:mom_lim, icol,ilay,ibnd)) / max(eps,tauscat12)
             ssa1(icol,ilay,igpt) = tauscat12 / max(eps,tau12)
             tau1(icol,ilay,igpt) = tau12
           end do
@@ -643,7 +643,7 @@ contains
     real(wp), dimension(ncol,nlay,ngpt), intent(in ) :: array_in         !! Array to subset
     integer,                             intent(in ) :: colS, colE       !! Starting and ending index
     real(wp), dimension(colE-colS+1,&
-                             nlay,ngpt), intent(out) :: array_out        !! subset of the input array
+                        nlay,ngpt), intent(out) :: array_out        !! subset of the input array
 
     integer :: icol, ilay, igpt
     do igpt = 1, ngpt
@@ -664,7 +664,7 @@ contains
     real(wp), dimension(nmom,ncol,nlay,ngpt), intent(in ) :: array_in               !! Array to subset
     integer,                                  intent(in ) :: colS, colE             !! Starting and ending index
     real(wp), dimension(nmom,colE-colS+1,&
-                                  nlay,ngpt), intent(out) :: array_out              !! subset of the input array
+                        nlay,ngpt), intent(out) :: array_out              !! subset of the input array
 
     integer :: icol, ilay, igpt, imom
 
@@ -690,7 +690,7 @@ contains
     real(wp), dimension(ncol,nlay,ngpt), intent(in ) :: tau_in, ssa_in   !! Optical thickness, single scattering albedo
     integer,                             intent(in ) :: colS, colE       !! Starting and ending index
     real(wp), dimension(colE-colS+1,&
-                             nlay,ngpt), intent(out) :: tau_out          !! absorption optical thickness subset
+                        nlay,ngpt), intent(out) :: tau_out          !! absorption optical thickness subset
 
     integer :: icol, ilay, igpt
 

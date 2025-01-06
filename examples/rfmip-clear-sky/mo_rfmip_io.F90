@@ -25,9 +25,9 @@
 module mo_rfmip_io
   use mo_rte_kind,      only: wp
   use mo_gas_concentrations, &
-                        only: ty_gas_concs
+    only: ty_gas_concs
   use mo_gas_optics_util_string, &
-                        only: lower_case, string_in_array, string_loc_in_array
+    only: lower_case, string_in_array, string_loc_in_array
   use mo_simple_netcdf, only: read_field, write_field, get_dim_size
   use netcdf
   implicit none
@@ -72,7 +72,7 @@ contains
     character(len=*),           intent(in   ) :: fileName
     integer,                    intent(in   ) :: blocksize
     real(wp), dimension(:,:,:), allocatable, & ! [blocksize, nlay/+1, nblocks]
-                                intent(  out) :: p_lay, p_lev, t_lay, t_lev
+      intent(  out) :: p_lay, p_lev, t_lay, t_lev
     ! ---------------------------
     integer :: ncid
     integer :: b, nblocks
@@ -103,12 +103,12 @@ contains
 
     deallocate(temp3d)
     temp3d = reshape(spread(read_field(ncid, "pres_level", nlay_l+1, ncol_l),  dim = 3, ncopies = nexp_l), &
-                    shape = [nlay_l+1, blocksize, nblocks])
+                     shape = [nlay_l+1, blocksize, nblocks])
     do b = 1, nblocks
       p_lev(:,:,b) = transpose(temp3d(:,:,b))
     end do
     temp3d = reshape(       read_field(ncid, "temp_level", nlay_l+1, ncol_l, nexp_l), &
-                    shape = [nlay_l+1, blocksize, nblocks])
+                     shape = [nlay_l+1, blocksize, nblocks])
     do b = 1, nblocks
       t_lev(:,:,b) = transpose(temp3d(:,:,b))
     end do
@@ -120,11 +120,11 @@ contains
   ! Read and reshape shortwave boundary conditions
   !
   subroutine read_and_block_sw_bc(fileName, blocksize, &
-                               surface_albedo, total_solar_irradiance, solar_zenith_angle)
+                                  surface_albedo, total_solar_irradiance, solar_zenith_angle)
     character(len=*),           intent(in   ) :: fileName
     integer,                    intent(in   ) :: blocksize
     real(wp), dimension(:,:), allocatable, &
-                                intent(  out) :: surface_albedo, total_solar_irradiance, solar_zenith_angle
+      intent(  out) :: surface_albedo, total_solar_irradiance, solar_zenith_angle
     ! ---------------------------
     integer :: ncid
     integer :: nblocks
@@ -162,7 +162,7 @@ contains
     character(len=*),           intent(in   ) :: fileName
     integer,                    intent(in   ) :: blocksize
     real(wp), dimension(:,:), allocatable, &
-                                intent(  out) :: surface_emissivity, surface_temperature
+      intent(  out) :: surface_emissivity, surface_temperature
     ! ---------------------------
     integer :: ncid
     integer :: nblocks
@@ -280,7 +280,7 @@ contains
   subroutine read_kdist_gas_names(fileName, kdist_gas_names)
     character(len=*),          intent(in   ) :: fileName
     character(len=32), dimension(:), allocatable, &
-                               intent(  out) :: kdist_gas_names
+      intent(  out) :: kdist_gas_names
     ! ---------------------------
     integer :: ncid, varid
     character(len=9), parameter :: varName = "gas_names"
@@ -315,11 +315,11 @@ contains
     character(len=*),           intent(in   ) :: fileName
     integer,                    intent(in   ) :: blocksize
     character(len=*),  dimension(:), &
-                                intent(in   ) :: gas_names ! Names used by the k-distribution/gas concentration type
+      intent(in   ) :: gas_names ! Names used by the k-distribution/gas concentration type
     character(len=*),  dimension(:), &
-                                intent(in   ) :: names_in_file ! Corresponding names in the RFMIP file
+      intent(in   ) :: names_in_file ! Corresponding names in the RFMIP file
     type(ty_gas_concs), dimension(:), allocatable, &
-                                intent(  out) :: gas_conc_array
+      intent(  out) :: gas_conc_array
 
     ! ---------------------------
     integer :: ncid
@@ -350,7 +350,7 @@ contains
         call stop_on_err(gas_conc_array(b)%init(gas_names))
       else
         call stop_on_err(gas_conc_array(b)%init([gas_names, 'h2o    ', 'o3     ', 'no2    ']))
-      end if 
+      end if
     end do
     !
     ! Which gases are known to the k-distribution and available in the files?
@@ -397,7 +397,7 @@ contains
         else
           ! Create 2D field, blocksize x nlay, with scalar values from each experiment
           call stop_on_err(gas_conc_array(b)%set_vmr(gas_names(g), &
-          spread(gas_conc_temp_1d(exp_num(:,b)), 2, ncopies = nlay_l)))
+                                                     spread(gas_conc_temp_1d(exp_num(:,b)), 2, ncopies = nlay_l)))
         end if
       end do
       !
@@ -407,7 +407,6 @@ contains
       do b = 1, nblocks
         call stop_on_err(gas_conc_array(b)%set_vmr('no2', 0._wp))
       end do
-
 
     end do
     ncid = nf90_close(ncid)
@@ -438,7 +437,7 @@ contains
   subroutine unblock_and_write(fileName, varName, values)
     character(len=*),           intent(in   ) :: fileName, varName
     real(wp), dimension(:,:,:),  & ! [blocksize, nlay/+1, nblocks]
-                                intent(in   ) :: values
+      intent(in   ) :: values
     ! ---------------------------
     integer :: ncid
     integer :: b, blocksize, nlev, nblocks

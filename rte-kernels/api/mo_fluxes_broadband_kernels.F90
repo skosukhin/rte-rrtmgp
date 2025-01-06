@@ -38,8 +38,8 @@ module mo_fluxes_broadband_kernels
   ! ----------------------------------------------------------------------------
   !>
   !> Spectral reduction over all points for net flux
-  !>   Overloaded - which routine is called depends on arguments 
-  !> 
+  !>   Overloaded - which routine is called depends on arguments
+  !>
   interface net_broadband
     ! ----------------------------------------------------------------------------
     !>
@@ -54,7 +54,7 @@ module mo_fluxes_broadband_kernels
         !! Spectrally-resolved flux up and down
       real(wp), dimension(ncol, nlev),       intent(out) :: broadband_flux_net
         !! Net (down minus up) summed over `ngpt`
-     end subroutine net_broadband_full
+    end subroutine net_broadband_full
     ! ----------------------------------------------------------------------------
     !>
     !> Net flux when bradband flux up and down are already available
@@ -68,7 +68,7 @@ module mo_fluxes_broadband_kernels
         !! Broadband downward and upward fluxes
       real(wp), dimension(ncol, nlev), intent(out) :: broadband_flux_net
         !! Net (down minus up)
-     end subroutine net_broadband_precalc
+    end subroutine net_broadband_precalc
   end interface net_broadband
   ! ----------------------------------------------------------------------------
 end module mo_fluxes_broadband_kernels

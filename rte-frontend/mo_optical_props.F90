@@ -33,7 +33,7 @@
 !>
 !>   These classes must be allocated before use. Initialization and allocation can be combined.
 !>   The classes have a validate() function that checks all arrays for valid values (e.g. tau > 0.)
-!>   The vertical orientation can be specified via this%set_top_at_1() or obtained via this%top_at_1(). 
+!>   The vertical orientation can be specified via this%set_top_at_1() or obtained via this%top_at_1().
 !>
 !> Optical properties can be delta-scaled (though this is currently implemented only for two-stream arrays)
 !>
@@ -54,17 +54,17 @@
 module mo_optical_props
   use mo_rte_kind,              only: wp, wl
   use mo_rte_config,            only: check_extents, check_values
-  use mo_rte_util_array_validation, & 
-                                only: any_vals_less_than, any_vals_outside, extents_are
+  use mo_rte_util_array_validation, &
+    only: any_vals_less_than, any_vals_outside, extents_are
   use mo_optical_props_kernels, only: &
-        increment_1scalar_by_1scalar, increment_1scalar_by_2stream, increment_1scalar_by_nstream, &
-        increment_2stream_by_1scalar, increment_2stream_by_2stream, increment_2stream_by_nstream, &
-        increment_nstream_by_1scalar, increment_nstream_by_2stream, increment_nstream_by_nstream, &
-        inc_1scalar_by_1scalar_bybnd, inc_1scalar_by_2stream_bybnd, inc_1scalar_by_nstream_bybnd, &
-        inc_2stream_by_1scalar_bybnd, inc_2stream_by_2stream_bybnd, inc_2stream_by_nstream_bybnd, &
-        inc_nstream_by_1scalar_bybnd, inc_nstream_by_2stream_bybnd, inc_nstream_by_nstream_bybnd, &
-        delta_scale_2str_kernel, &
-        extract_subset
+    increment_1scalar_by_1scalar, increment_1scalar_by_2stream, increment_1scalar_by_nstream, &
+    increment_2stream_by_1scalar, increment_2stream_by_2stream, increment_2stream_by_nstream, &
+    increment_nstream_by_1scalar, increment_nstream_by_2stream, increment_nstream_by_nstream, &
+    inc_1scalar_by_1scalar_bybnd, inc_1scalar_by_2stream_bybnd, inc_1scalar_by_nstream_bybnd, &
+    inc_2stream_by_1scalar_bybnd, inc_2stream_by_2stream_bybnd, inc_2stream_by_nstream_bybnd, &
+    inc_nstream_by_1scalar_bybnd, inc_nstream_by_2stream_bybnd, inc_nstream_by_nstream_bybnd, &
+    delta_scale_2str_kernel, &
+    extract_subset
   implicit none
   private
   integer, parameter, public :: name_len = 32
@@ -110,7 +110,7 @@ module mo_optical_props
   ! -------------------------------------------------------------------------------------------------
   type, extends(ty_optical_props), abstract, public :: ty_optical_props_arry
     real(wp), dimension(:,:,:), allocatable :: tau !! optical depth (ncol, nlay, ngpt)
-    logical(wl),                    private :: top_at_1 ! No default - maybe uninitialized values will get caught? 
+    logical(wl),                    private :: top_at_1 ! No default - maybe uninitialized values will get caught?
   contains
     procedure, public  :: get_ncol
     procedure, public  :: get_nlay
@@ -120,7 +120,7 @@ module mo_optical_props
     procedure, public  :: increment
     !>
     !>
-    !> 
+    !>
     procedure, public :: top_is_at_1
     procedure, public :: set_top_at_1
 
@@ -153,7 +153,7 @@ module mo_optical_props
       import wp
       class(ty_optical_props_arry),  intent(inout) :: this
       real(wp), dimension(:,:,:), optional, &
-                                     intent(in   ) :: for
+        intent(in   ) :: for
       !> Forward scattering fraction; g**2 if not provided
       character(len=128)  :: err_message
     end function delta_scale_abstract
@@ -241,7 +241,7 @@ contains
     class(ty_optical_props),    intent(inout) :: this
     real(wp), dimension(:,:),   intent(in   ) :: band_lims_wvn
     integer,  dimension(:,:), &
-                      optional, intent(in   ) :: band_lims_gpt
+      optional, intent(in   ) :: band_lims_gpt
     character(len=*), optional, intent(in   ) :: name
     character(len = 128)                      :: err_message
 
@@ -304,7 +304,7 @@ contains
   function init_base_from_copy(this, spectral_desc) result(err_message)
     class(ty_optical_props),    intent(inout) :: this
     class(ty_optical_props),    intent(in   ) :: spectral_desc
-  character(len = 128)                        :: err_message
+    character(len = 128)                        :: err_message
 
     if(.not. spectral_desc%is_initialized()) then
       err_message = "optical_props%init(): can't initialize based on un-initialized input"
@@ -336,7 +336,7 @@ contains
     if(allocated(this%band2gpt)) deallocate(this%band2gpt)
     if(allocated(this%gpt2band)) deallocate(this%gpt2band)
     if(allocated(this%band_lims_wvn)) &
-                                 deallocate(this%band_lims_wvn)
+      deallocate(this%band_lims_wvn)
     this%name = ""
   end subroutine finalize_base
   ! ------------------------------------------------------------------------------------------
@@ -421,7 +421,7 @@ contains
     integer,                      intent(in) :: ncol, nlay
     real(wp), dimension(:,:),     intent(in) :: band_lims_wvn
     integer,  dimension(:,:), &
-                      optional,   intent(in) :: band_lims_gpt
+      optional,   intent(in) :: band_lims_gpt
     character(len=*), optional,   intent(in) :: name
     character(len=128)                       :: err_message
 
@@ -436,7 +436,7 @@ contains
     integer,                      intent(in) :: ncol, nlay
     real(wp), dimension(:,:),     intent(in) :: band_lims_wvn
     integer,  dimension(:,:), &
-                      optional,   intent(in) :: band_lims_gpt
+      optional,   intent(in) :: band_lims_gpt
     character(len=*), optional,   intent(in) :: name
     character(len=128)                       :: err_message
 
@@ -451,7 +451,7 @@ contains
     integer,                      intent(in) :: nmom, ncol, nlay
     real(wp), dimension(:,:),     intent(in) :: band_lims_wvn
     integer,  dimension(:,:), &
-                      optional,   intent(in) :: band_lims_gpt
+      optional,   intent(in) :: band_lims_gpt
     character(len=*), optional,   intent(in) :: name
     character(len=128)                       :: err_message
 
@@ -551,7 +551,7 @@ contains
   function delta_scale_1scl(this, for) result(err_message)
     class(ty_optical_props_1scl), intent(inout) :: this
     real(wp), dimension(:,:,:), optional, &
-                                  intent(in   ) :: for
+      intent(in   ) :: for
     character(128)                              :: err_message
     !
     ! Nothing to do
@@ -562,7 +562,7 @@ contains
   function delta_scale_2str(this, for) result(err_message)
     class(ty_optical_props_2str), intent(inout) :: this
     real(wp), dimension(:,:,:), optional, &
-                                  intent(in   ) :: for
+      intent(in   ) :: for
     !! Forward scattering fraction; g**2 if not provided
     character(128)                              :: err_message
 
@@ -576,16 +576,16 @@ contains
     if(present(for)) then
       if (check_extents) then
         if(.not. extents_are(for, ncol, nlay, ngpt)) then
-        err_message = "delta_scale: dimension of 'for' don't match optical properties arrays"
-        return
+          err_message = "delta_scale: dimension of 'for' don't match optical properties arrays"
+          return
+        end if
       end if
-    end if
-    if (check_values) then
-      if(any_vals_outside(for, 0._wp, 1._wp)) then
-        err_message = "delta_scale: values of 'for' out of bounds [0,1]"
-        return
+      if (check_values) then
+        if(any_vals_outside(for, 0._wp, 1._wp)) then
+          err_message = "delta_scale: values of 'for' out of bounds [0,1]"
+          return
+        end if
       end if
-    end if
       call delta_scale_2str_kernel(ncol, nlay, ngpt, this%tau, this%ssa, this%g, for)
     else
       call delta_scale_2str_kernel(ncol, nlay, ngpt, this%tau, this%ssa, this%g)
@@ -596,7 +596,7 @@ contains
   function delta_scale_nstr(this, for) result(err_message)
     class(ty_optical_props_nstr), intent(inout) :: this
     real(wp), dimension(:,:,:), optional, &
-                                 intent(in   ) :: for
+      intent(in   ) :: for
     character(128)                             :: err_message
 
     err_message = 'delta_scale_nstr: Not yet implemented'
@@ -617,7 +617,7 @@ contains
     end if
     if (check_values) then
       if(any_vals_less_than(this%tau, 0._wp)) &
-      err_message = "validate: tau values out of range"
+        err_message = "validate: tau values out of range"
     end if
     if(len_trim(err_message) > 0 .and. len_trim(this%get_name()) > 0) &
       err_message = trim(this%get_name()) // ': ' // trim(err_message)
@@ -643,8 +643,8 @@ contains
       d2 = size(this%tau, 2)
       d3 = size(this%tau, 3)
       if(.not. extents_are(this%ssa, d1, d2, d3) .or. &
-        .not. extents_are(this%g  , d1, d2, d3))     &
-      err_message = "validate: arrays not sized consistently"
+         .not. extents_are(this%g  , d1, d2, d3))     &
+        err_message = "validate: arrays not sized consistently"
     end if
     !
     ! Valid values
@@ -684,8 +684,8 @@ contains
     d4 = size(this%p,   1)
     if (check_extents) then
       if(.not. extents_are(this%ssa, d1, d2, d3) .or. &
-        .not. extents_are(this%p  , d4, d1, d2, d3))     &
-      err_message = "validate: arrays not sized consistently"
+         .not. extents_are(this%p  , d4, d1, d2, d3))     &
+        err_message = "validate: arrays not sized consistently"
     end if
     !
     ! Valid values
@@ -700,7 +700,7 @@ contains
     end if
 
     if(len_trim(err_message) > 0 .and. len_trim(this%get_name()) > 0) &
-        err_message = trim(this%get_name()) // ': ' // trim(err_message)
+      err_message = trim(this%get_name()) // ': ' // trim(err_message)
   end function validate_nstream
 
   ! ------------------------------------------------------------------------------------------
@@ -731,7 +731,7 @@ contains
     nlay = full%get_nlay()
     ngpt = full%get_ngpt()
     if(start < 1 .or. start + n-1 > full%get_ncol()) &
-       err_message = "optical_props%subset: Asking for columns outside range"
+      err_message = "optical_props%subset: Asking for columns outside range"
     if(err_message /= "") return
 
     if(subset%is_initialized()) call subset%finalize()
@@ -740,28 +740,28 @@ contains
     !   but Intel compiler doesn't run without them
     if(allocated(subset%tau)) deallocate(subset%tau)
     select type (subset)
-      class is (ty_optical_props_1scl)
-        err_message = subset%alloc_1scl(n, nlay)
-        if(err_message /= "") return
-      class is (ty_optical_props_2str)
-        if(allocated(subset%ssa)) deallocate(subset%ssa)
-        if(allocated(subset%g  )) deallocate(subset%g  )
-        err_message = subset%alloc_2str(n, nlay)
-        if(err_message /= "") return
-        subset%ssa(1:n,:,:) = 0._wp
-        subset%g  (1:n,:,:) = 0._wp
-      class is (ty_optical_props_nstr)
-        if(allocated(subset%ssa)) deallocate(subset%ssa)
-        if(allocated(subset%p  )) then
-          nmom = subset%get_nmom()
-          deallocate(subset%p  )
-        else
-          nmom = 1
-        end if
-        err_message = subset%alloc_nstr(nmom, n, nlay)
-        if(err_message /= "") return
-        subset%ssa(1:n,:,:) = 0._wp
-        subset%p(:,1:n,:,:) = 0._wp
+    class is (ty_optical_props_1scl)
+      err_message = subset%alloc_1scl(n, nlay)
+      if(err_message /= "") return
+    class is (ty_optical_props_2str)
+      if(allocated(subset%ssa)) deallocate(subset%ssa)
+      if(allocated(subset%g  )) deallocate(subset%g  )
+      err_message = subset%alloc_2str(n, nlay)
+      if(err_message /= "") return
+      subset%ssa(1:n,:,:) = 0._wp
+      subset%g  (1:n,:,:) = 0._wp
+    class is (ty_optical_props_nstr)
+      if(allocated(subset%ssa)) deallocate(subset%ssa)
+      if(allocated(subset%p  )) then
+        nmom = subset%get_nmom()
+        deallocate(subset%p  )
+      else
+        nmom = 1
+      end if
+      err_message = subset%alloc_nstr(nmom, n, nlay)
+      if(err_message /= "") return
+      subset%ssa(1:n,:,:) = 0._wp
+      subset%p(:,1:n,:,:) = 0._wp
     end select
     call extract_subset(ncol, nlay, ngpt, full%tau, start, start+n-1, subset%tau)
     call subset%set_top_at_1(full%top_is_at_1())
@@ -785,38 +785,38 @@ contains
     nlay = full%get_nlay()
     ngpt = full%get_ngpt()
     if(start < 1 .or. start + n-1 > full%get_ncol()) &
-       err_message = "optical_props%subset: Asking for columns outside range"
+      err_message = "optical_props%subset: Asking for columns outside range"
     if(err_message /= "") return
 
     if(subset%is_initialized()) call subset%finalize()
     err_message = subset%init(full)
     select type (subset)
-      class is (ty_optical_props_1scl)
-        err_message = subset%alloc_1scl(n, nlay)
-        if(err_message /= "") return
-        call extract_subset(ncol, nlay, ngpt, full%tau, full%ssa, start, start+n-1, subset%tau)
-      class is (ty_optical_props_2str)
-        if(allocated(subset%ssa)) deallocate(subset%ssa)
-        if(allocated(subset%g  )) deallocate(subset%g  )
-        err_message = subset%alloc_2str(n, nlay)
-        if(err_message /= "") return
-        call extract_subset(ncol, nlay, ngpt, full%tau, start, start+n-1, subset%tau)
-        call extract_subset(ncol, nlay, ngpt, full%ssa, start, start+n-1, subset%ssa)
-        call extract_subset(ncol, nlay, ngpt, full%g  , start, start+n-1, subset%g  )
-      class is (ty_optical_props_nstr)
-        if(allocated(subset%ssa)) deallocate(subset%ssa)
-        if(allocated(subset%p  )) then
-          nmom = subset%get_nmom()
-          deallocate(subset%p  )
-        else
-          nmom = 1
-        end if
-        err_message = subset%alloc_nstr(nmom, n, nlay)
-        if(err_message /= "") return
-        call extract_subset(ncol, nlay, ngpt, full%tau, start, start+n-1, subset%tau)
-        call extract_subset(ncol, nlay, ngpt, full%ssa, start, start+n-1, subset%ssa)
-        subset%p(1,1:n,:,:) = full%g  (start:start+n-1,:,:)
-        subset%p(2:,:, :,:) = 0._wp
+    class is (ty_optical_props_1scl)
+      err_message = subset%alloc_1scl(n, nlay)
+      if(err_message /= "") return
+      call extract_subset(ncol, nlay, ngpt, full%tau, full%ssa, start, start+n-1, subset%tau)
+    class is (ty_optical_props_2str)
+      if(allocated(subset%ssa)) deallocate(subset%ssa)
+      if(allocated(subset%g  )) deallocate(subset%g  )
+      err_message = subset%alloc_2str(n, nlay)
+      if(err_message /= "") return
+      call extract_subset(ncol, nlay, ngpt, full%tau, start, start+n-1, subset%tau)
+      call extract_subset(ncol, nlay, ngpt, full%ssa, start, start+n-1, subset%ssa)
+      call extract_subset(ncol, nlay, ngpt, full%g  , start, start+n-1, subset%g  )
+    class is (ty_optical_props_nstr)
+      if(allocated(subset%ssa)) deallocate(subset%ssa)
+      if(allocated(subset%p  )) then
+        nmom = subset%get_nmom()
+        deallocate(subset%p  )
+      else
+        nmom = 1
+      end if
+      err_message = subset%alloc_nstr(nmom, n, nlay)
+      if(err_message /= "") return
+      call extract_subset(ncol, nlay, ngpt, full%tau, start, start+n-1, subset%tau)
+      call extract_subset(ncol, nlay, ngpt, full%ssa, start, start+n-1, subset%ssa)
+      subset%p(1,1:n,:,:) = full%g  (start:start+n-1,:,:)
+      subset%p(2:,:, :,:) = 0._wp
     end select
     call subset%set_top_at_1(full%top_is_at_1())
 
@@ -839,33 +839,33 @@ contains
     nlay = full%get_nlay()
     ngpt = full%get_ngpt()
     if(start < 1 .or. start + n-1 > full%get_ncol()) &
-       err_message = "optical_props%subset: Asking for columns outside range"
+      err_message = "optical_props%subset: Asking for columns outside range"
     if(err_message /= "") return
 
     if(subset%is_initialized()) call subset%finalize()
     err_message = subset%init(full)
     if(allocated(subset%tau)) deallocate(subset%tau)
     select type (subset)
-      class is (ty_optical_props_1scl)
-        err_message = subset%alloc_1scl(n, nlay)
-        if(err_message /= "") return
-        call extract_subset(ncol, nlay, ngpt, full%tau, full%ssa, start, start+n-1, subset%tau)
-      class is (ty_optical_props_2str)
-        if(allocated(subset%ssa)) deallocate(subset%ssa)
-        if(allocated(subset%g  )) deallocate(subset%g  )
-        err_message = subset%alloc_2str(n, nlay)
-        if(err_message /= "") return
-        call extract_subset(ncol, nlay, ngpt, full%tau, start, start+n-1, subset%tau)
-        call extract_subset(ncol, nlay, ngpt, full%ssa, start, start+n-1, subset%ssa)
-        subset%g  (1:n,:,:) = full%p(1,start:start+n-1,:,:)
-      class is (ty_optical_props_nstr)
-        if(allocated(subset%ssa)) deallocate(subset%ssa)
-        if(allocated(subset%p  )) deallocate(subset%p  )
-        err_message = subset%alloc_nstr(nmom, n, nlay)
-        if(err_message /= "") return
-        call extract_subset(      ncol, nlay, ngpt, full%tau, start, start+n-1, subset%tau)
-        call extract_subset(      ncol, nlay, ngpt, full%ssa, start, start+n-1, subset%ssa)
-        call extract_subset(nmom, ncol, nlay, ngpt, full%p  , start, start+n-1, subset%p  )
+    class is (ty_optical_props_1scl)
+      err_message = subset%alloc_1scl(n, nlay)
+      if(err_message /= "") return
+      call extract_subset(ncol, nlay, ngpt, full%tau, full%ssa, start, start+n-1, subset%tau)
+    class is (ty_optical_props_2str)
+      if(allocated(subset%ssa)) deallocate(subset%ssa)
+      if(allocated(subset%g  )) deallocate(subset%g  )
+      err_message = subset%alloc_2str(n, nlay)
+      if(err_message /= "") return
+      call extract_subset(ncol, nlay, ngpt, full%tau, start, start+n-1, subset%tau)
+      call extract_subset(ncol, nlay, ngpt, full%ssa, start, start+n-1, subset%ssa)
+      subset%g  (1:n,:,:) = full%p(1,start:start+n-1,:,:)
+    class is (ty_optical_props_nstr)
+      if(allocated(subset%ssa)) deallocate(subset%ssa)
+      if(allocated(subset%p  )) deallocate(subset%p  )
+      err_message = subset%alloc_nstr(nmom, n, nlay)
+      if(err_message /= "") return
+      call extract_subset(      ncol, nlay, ngpt, full%tau, start, start+n-1, subset%tau)
+      call extract_subset(      ncol, nlay, ngpt, full%ssa, start, start+n-1, subset%ssa)
+      call extract_subset(nmom, ncol, nlay, ngpt, full%p  , start, start+n-1, subset%p  )
     end select
     call subset%set_top_at_1(full%top_is_at_1())
   end function subset_nstr_range
@@ -906,51 +906,51 @@ contains
       !
       select type (op_io)
       class is (ty_optical_props_1scl)
-          select type (op_in)
-           class is (ty_optical_props_1scl)
-             call increment_1scalar_by_1scalar(ncol, nlay, ngpt, &
-                                               op_io%tau,          &
-                                               op_in%tau)
-           class is (ty_optical_props_2str)
-             call increment_1scalar_by_2stream(ncol, nlay, ngpt, &
-                                               op_io%tau,          &
-                                               op_in%tau, op_in%ssa)
+        select type (op_in)
+        class is (ty_optical_props_1scl)
+          call increment_1scalar_by_1scalar(ncol, nlay, ngpt, &
+                                            op_io%tau,          &
+                                            op_in%tau)
+        class is (ty_optical_props_2str)
+          call increment_1scalar_by_2stream(ncol, nlay, ngpt, &
+                                            op_io%tau,          &
+                                            op_in%tau, op_in%ssa)
 
-           class is (ty_optical_props_nstr)
-             call increment_1scalar_by_nstream(ncol, nlay, ngpt, &
-                                               op_io%tau,          &
-                                               op_in%tau, op_in%ssa)
-          end select
+        class is (ty_optical_props_nstr)
+          call increment_1scalar_by_nstream(ncol, nlay, ngpt, &
+                                            op_io%tau,          &
+                                            op_in%tau, op_in%ssa)
+        end select
       class is (ty_optical_props_2str)
         select type (op_in)
-          class is (ty_optical_props_1scl)
-            call increment_2stream_by_1scalar(ncol, nlay, ngpt,   &
-                                              op_io%tau, op_io%ssa,&
-                                              op_in%tau)
-          class is (ty_optical_props_2str)
-            call increment_2stream_by_2stream(ncol, nlay, ngpt,        &
-                                              op_io%tau, op_io%ssa, op_io%g, &
-                                              op_in%tau, op_in%ssa, op_in%g)
-          class is (ty_optical_props_nstr)
-            call increment_2stream_by_nstream(ncol, nlay, ngpt, op_in%get_nmom(), &
-                                              op_io%tau, op_io%ssa, op_io%g, &
-                                              op_in%tau, op_in%ssa, op_in%p)
+        class is (ty_optical_props_1scl)
+          call increment_2stream_by_1scalar(ncol, nlay, ngpt,   &
+                                            op_io%tau, op_io%ssa,&
+                                            op_in%tau)
+        class is (ty_optical_props_2str)
+          call increment_2stream_by_2stream(ncol, nlay, ngpt,        &
+                                            op_io%tau, op_io%ssa, op_io%g, &
+                                            op_in%tau, op_in%ssa, op_in%g)
+        class is (ty_optical_props_nstr)
+          call increment_2stream_by_nstream(ncol, nlay, ngpt, op_in%get_nmom(), &
+                                            op_io%tau, op_io%ssa, op_io%g, &
+                                            op_in%tau, op_in%ssa, op_in%p)
         end select
 
       class is (ty_optical_props_nstr)
         select type (op_in)
-          class is (ty_optical_props_1scl)
-            call increment_nstream_by_1scalar(ncol, nlay, ngpt, &
-                                              op_io%tau, op_io%ssa, &
-                                              op_in%tau)
-          class is (ty_optical_props_2str)
-            call increment_nstream_by_2stream(ncol, nlay, ngpt, op_io%get_nmom(), &
-                                              op_io%tau, op_io%ssa, op_io%p, &
-                                              op_in%tau, op_in%ssa, op_in%g)
-          class is (ty_optical_props_nstr)
-            call increment_nstream_by_nstream(ncol, nlay, ngpt, op_io%get_nmom(), op_in%get_nmom(), &
-                                              op_io%tau, op_io%ssa, op_io%p, &
-                                              op_in%tau, op_in%ssa, op_in%p)
+        class is (ty_optical_props_1scl)
+          call increment_nstream_by_1scalar(ncol, nlay, ngpt, &
+                                            op_io%tau, op_io%ssa, &
+                                            op_in%tau)
+        class is (ty_optical_props_2str)
+          call increment_nstream_by_2stream(ncol, nlay, ngpt, op_io%get_nmom(), &
+                                            op_io%tau, op_io%ssa, op_io%p, &
+                                            op_in%tau, op_in%ssa, op_in%g)
+        class is (ty_optical_props_nstr)
+          call increment_nstream_by_nstream(ncol, nlay, ngpt, op_io%get_nmom(), op_in%get_nmom(), &
+                                            op_io%tau, op_io%ssa, op_io%p, &
+                                            op_in%tau, op_in%ssa, op_in%p)
         end select
       end select
     else
@@ -967,62 +967,62 @@ contains
       ! Increment by band
       !
       select type (op_io)
+      class is (ty_optical_props_1scl)
+        select type (op_in)
         class is (ty_optical_props_1scl)
-          select type (op_in)
-          class is (ty_optical_props_1scl)
-              call inc_1scalar_by_1scalar_bybnd(ncol, nlay, ngpt, &
-                                                op_io%tau,          &
-                                                op_in%tau,          &
-                                                op_io%get_nband(), op_io%get_band_lims_gpoint())
-            class is (ty_optical_props_2str)
-              call inc_1scalar_by_2stream_bybnd(ncol, nlay, ngpt, &
-                                                op_io%tau,          &
-                                                op_in%tau, op_in%ssa, &
-                                                op_io%get_nband(), op_io%get_band_lims_gpoint())
-            class is (ty_optical_props_nstr)
-              call inc_1scalar_by_nstream_bybnd(ncol, nlay, ngpt, &
-                                                op_io%tau,          &
-                                                op_in%tau, op_in%ssa, &
-                                                op_io%get_nband(), op_io%get_band_lims_gpoint())
-          end select
-
+          call inc_1scalar_by_1scalar_bybnd(ncol, nlay, ngpt, &
+                                            op_io%tau,          &
+                                            op_in%tau,          &
+                                            op_io%get_nband(), op_io%get_band_lims_gpoint())
         class is (ty_optical_props_2str)
-          select type (op_in)
-            class is (ty_optical_props_1scl)
-              call inc_2stream_by_1scalar_bybnd(ncol, nlay, ngpt, &
-                                                op_io%tau, op_io%ssa, &
-                                                op_in%tau,          &
-                                                op_io%get_nband(), op_io%get_band_lims_gpoint())
-            class is (ty_optical_props_2str)
-              call inc_2stream_by_2stream_bybnd(ncol, nlay, ngpt,        &
-                                                op_io%tau, op_io%ssa, op_io%g, &
-                                                op_in%tau, op_in%ssa, op_in%g, &
-                                                op_io%get_nband(), op_io%get_band_lims_gpoint())
-            class is (ty_optical_props_nstr)
-              call inc_2stream_by_nstream_bybnd(ncol, nlay, ngpt, op_in%get_nmom(), &
-                                                op_io%tau, op_io%ssa, op_io%g, &
-                                                op_in%tau, op_in%ssa, op_in%p, &
-                                                op_io%get_nband(), op_io%get_band_lims_gpoint())
-          end select
-
+          call inc_1scalar_by_2stream_bybnd(ncol, nlay, ngpt, &
+                                            op_io%tau,          &
+                                            op_in%tau, op_in%ssa, &
+                                            op_io%get_nband(), op_io%get_band_lims_gpoint())
         class is (ty_optical_props_nstr)
-          select type (op_in)
-            class is (ty_optical_props_1scl)
-              call inc_nstream_by_1scalar_bybnd(ncol, nlay, ngpt, &
-                                                op_io%tau, op_io%ssa, &
-                                                op_in%tau,          &
-                                                op_io%get_nband(), op_io%get_band_lims_gpoint())
-            class is (ty_optical_props_2str)
-              call inc_nstream_by_2stream_bybnd(ncol, nlay, ngpt, op_io%get_nmom(), &
-                                                op_io%tau, op_io%ssa, op_io%p, &
-                                                op_in%tau, op_in%ssa, op_in%g, &
-                                                op_io%get_nband(), op_io%get_band_lims_gpoint())
-            class is (ty_optical_props_nstr)
-              call inc_nstream_by_nstream_bybnd(ncol, nlay, ngpt, op_io%get_nmom(), op_in%get_nmom(), &
-                                                op_io%tau, op_io%ssa, op_io%p, &
-                                                op_in%tau, op_in%ssa, op_in%p, &
-                                                op_io%get_nband(), op_io%get_band_lims_gpoint())
-          end select
+          call inc_1scalar_by_nstream_bybnd(ncol, nlay, ngpt, &
+                                            op_io%tau,          &
+                                            op_in%tau, op_in%ssa, &
+                                            op_io%get_nband(), op_io%get_band_lims_gpoint())
+        end select
+
+      class is (ty_optical_props_2str)
+        select type (op_in)
+        class is (ty_optical_props_1scl)
+          call inc_2stream_by_1scalar_bybnd(ncol, nlay, ngpt, &
+                                            op_io%tau, op_io%ssa, &
+                                            op_in%tau,          &
+                                            op_io%get_nband(), op_io%get_band_lims_gpoint())
+        class is (ty_optical_props_2str)
+          call inc_2stream_by_2stream_bybnd(ncol, nlay, ngpt,        &
+                                            op_io%tau, op_io%ssa, op_io%g, &
+                                            op_in%tau, op_in%ssa, op_in%g, &
+                                            op_io%get_nband(), op_io%get_band_lims_gpoint())
+        class is (ty_optical_props_nstr)
+          call inc_2stream_by_nstream_bybnd(ncol, nlay, ngpt, op_in%get_nmom(), &
+                                            op_io%tau, op_io%ssa, op_io%g, &
+                                            op_in%tau, op_in%ssa, op_in%p, &
+                                            op_io%get_nband(), op_io%get_band_lims_gpoint())
+        end select
+
+      class is (ty_optical_props_nstr)
+        select type (op_in)
+        class is (ty_optical_props_1scl)
+          call inc_nstream_by_1scalar_bybnd(ncol, nlay, ngpt, &
+                                            op_io%tau, op_io%ssa, &
+                                            op_in%tau,          &
+                                            op_io%get_nband(), op_io%get_band_lims_gpoint())
+        class is (ty_optical_props_2str)
+          call inc_nstream_by_2stream_bybnd(ncol, nlay, ngpt, op_io%get_nmom(), &
+                                            op_io%tau, op_io%ssa, op_io%p, &
+                                            op_in%tau, op_in%ssa, op_in%g, &
+                                            op_io%get_nband(), op_io%get_band_lims_gpoint())
+        class is (ty_optical_props_nstr)
+          call inc_nstream_by_nstream_bybnd(ncol, nlay, ngpt, op_io%get_nmom(), op_in%get_nmom(), &
+                                            op_io%tau, op_io%ssa, op_io%p, &
+                                            op_in%tau, op_in%ssa, op_in%p, &
+                                            op_io%get_nband(), op_io%get_band_lims_gpoint())
+        end select
       end select
     end if
   end function increment
@@ -1074,8 +1074,8 @@ contains
   ! ------------------------------------------------------------------------------------------
   pure function top_is_at_1(this)
     !
-    ! Vertical orientation - .true. if array index 1 is top of atmosphere 
-    ! 
+    ! Vertical orientation - .true. if array index 1 is top of atmosphere
+    !
     class(ty_optical_props_arry), intent(in) :: this
     logical                                  :: top_is_at_1
 
@@ -1084,8 +1084,8 @@ contains
   ! ------------------------------------------------------------------------------------------
   subroutine set_top_at_1(this, top_at_1)
     !
-    !> Set vertical orientation of class - .true. if array index 1 is top of atmosphere 
-    ! 
+    !> Set vertical orientation of class - .true. if array index 1 is top of atmosphere
+    !
     class(ty_optical_props_arry), intent(inout) :: this
     logical,                      intent(in   ) :: top_at_1
 
@@ -1131,7 +1131,7 @@ contains
   pure function get_band_lims_gpoint(this)
     class(ty_optical_props), intent(in) :: this
     integer, dimension(size(this%band2gpt,dim=1), size(this%band2gpt,dim=2)) &
-                                        :: get_band_lims_gpoint
+      :: get_band_lims_gpoint
 
     get_band_lims_gpoint = this%band2gpt
   end function get_band_lims_gpoint
@@ -1158,7 +1158,7 @@ contains
   pure function get_band_lims_wavenumber(this)
     class(ty_optical_props), intent(in) :: this
     real(wp), dimension(size(this%band_lims_wvn,1), size(this%band_lims_wvn,2)) &
-                                        :: get_band_lims_wavenumber
+      :: get_band_lims_wavenumber
 
     if(this%is_initialized()) then
       get_band_lims_wavenumber(:,:) = this%band_lims_wvn(:,:)
@@ -1173,7 +1173,7 @@ contains
   pure function get_band_lims_wavelength(this)
     class(ty_optical_props), intent(in) :: this
     real(wp), dimension(size(this%band_lims_wvn,1), size(this%band_lims_wvn,2)) &
-                                        :: get_band_lims_wavelength
+      :: get_band_lims_wavelength
 
     if(this%is_initialized()) then
       get_band_lims_wavelength(:,:) = 1._wp/this%band_lims_wvn(:,:)
@@ -1188,7 +1188,7 @@ contains
   pure function get_gpoint_bands(this)
     class(ty_optical_props), intent(in) :: this
     integer, dimension(size(this%gpt2band,dim=1)) &
-                                        :: get_gpoint_bands
+      :: get_gpoint_bands
 
     if(this%is_initialized()) then
       get_gpoint_bands(:) = this%gpt2band(:)
@@ -1272,7 +1272,7 @@ contains
     class(ty_optical_props),  intent(in   ) :: this
     character(len=name_len)                 :: get_name
 
-      get_name = trim(this%name)
+    get_name = trim(this%name)
   end function get_name
   ! ------------------------------------------------------------------------------------------
 

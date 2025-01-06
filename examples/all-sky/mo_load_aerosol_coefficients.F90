@@ -5,8 +5,8 @@ module mo_load_aerosol_coefficients
                               ty_optical_props_1scl, &
                               ty_optical_props_2str, &
                               ty_optical_props_nstr
-  use mo_aerosol_optics_rrtmgp_merra,  & 
-                        only: ty_aerosol_optics_rrtmgp_merra
+  use mo_aerosol_optics_rrtmgp_merra,  &
+    only: ty_aerosol_optics_rrtmgp_merra
   use mo_simple_netcdf, only: read_field, read_string, var_exists, get_dim_size, &
                               write_field, create_dim, create_var
   use netcdf
@@ -23,8 +23,8 @@ contains
   ! read aerosol optical property LUT coefficients from NetCDF file
   !
   subroutine load_aero_lutcoeff(aerosol_spec, aero_coeff_file)
-    class(ty_aerosol_optics_rrtmgp_merra),   & 
-                                intent(inout) :: aerosol_spec
+    class(ty_aerosol_optics_rrtmgp_merra),   &
+      intent(inout) :: aerosol_spec
     character(len=*),           intent(in   ) :: aero_coeff_file
     ! -----------------
     ! Local variables
@@ -45,7 +45,7 @@ contains
     ! -----------------
     ! Open aerosol optical property coefficient file
     if(nf90_open(trim(aero_coeff_file), NF90_WRITE, ncid) /= NF90_NOERR) &
-       call stop_on_err("load_aero_lutcoeff(): can't open file " // trim(aero_coeff_file))
+      call stop_on_err("load_aero_lutcoeff(): can't open file " // trim(aero_coeff_file))
 
     ! Read LUT coefficient dimensions
     nband = get_dim_size(ncid,'nband')
@@ -86,17 +86,17 @@ contains
     ncid = nf90_close(ncid)
 
     call stop_on_err(aerosol_spec%load(band_lims_wvn, &
-                                  merra_aero_bin_lims, aero_rh, &
-                                  aero_dust_tbl, aero_salt_tbl, aero_sulf_tbl, &
-                                  aero_bcar_tbl, aero_bcar_rh_tbl, &
-                                  aero_ocar_tbl, aero_ocar_rh_tbl))
+                                       merra_aero_bin_lims, aero_rh, &
+                                       aero_dust_tbl, aero_salt_tbl, aero_sulf_tbl, &
+                                       aero_bcar_tbl, aero_bcar_rh_tbl, &
+                                       aero_ocar_tbl, aero_ocar_rh_tbl))
 
   end subroutine load_aero_lutcoeff
   !--------------------------------------------------------------------------------------------------------------------
   subroutine read_aero_state(filename, p_lay, p_lev, t_lay, vmr_h2o)
     character(len=*),                      intent(in   ) :: filename
-    real(wp), dimension(:,:), allocatable, intent(inout) :: p_lay      ! layer pressure 
-    real(wp), dimension(:,:), allocatable, intent(inout) :: p_lev      ! level pressure 
+    real(wp), dimension(:,:), allocatable, intent(inout) :: p_lay      ! layer pressure
+    real(wp), dimension(:,:), allocatable, intent(inout) :: p_lev      ! level pressure
     real(wp), dimension(:,:), allocatable, intent(inout) :: t_lay      ! layer temperature
     real(wp), dimension(:,:), allocatable, intent(inout) :: vmr_h2o    ! water volume mixing ratio
 
@@ -106,7 +106,7 @@ contains
     ! -----------------
     ! Open aerosol optical property coefficient file
     if(nf90_open(trim(filename), NF90_WRITE, ncid) /= NF90_NOERR) &
-       call stop_on_err("read_aero_state(): can't open file " // trim(filename))
+      call stop_on_err("read_aero_state(): can't open file " // trim(filename))
 
     ncol = get_dim_size(ncid,'col')
     nlay = get_dim_size(ncid,'lay')
@@ -149,23 +149,23 @@ contains
     nmom   = get_dim_size(ncid, 'mom')
 
     select type(aerosol_optical_props)
-      type is (ty_optical_props_1scl)
-        call create_var(ncid,    "tauaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
-        call stop_on_err(write_field(ncid, "tauaer",  aerosol_optical_props%tau))
-      type is (ty_optical_props_2str)
-        call create_var(ncid,    "tauaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
-        call create_var(ncid,    "ssaaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
-        call create_var(ncid,    "asyaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
-        call stop_on_err(write_field(ncid, "tauaer",  aerosol_optical_props%tau))
-        call stop_on_err(write_field(ncid, "ssaaer",  aerosol_optical_props%ssa))
-        call stop_on_err(write_field(ncid, "asyaer",  aerosol_optical_props%g  ))
-      type is (ty_optical_props_nstr)
-        call create_var(ncid,    "tauaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
-        call create_var(ncid,    "ssaaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
-        call create_var(ncid,    "paer",    ["mom ", "col ", "lay ", "band"], [nmom, ncol, nlay, nbnd])
-        call stop_on_err(write_field(ncid, "tauaer",  aerosol_optical_props%tau))
-        call stop_on_err(write_field(ncid, "ssaaer",  aerosol_optical_props%ssa))
-        call stop_on_err(write_field(ncid, "paer",    aerosol_optical_props%p  ))
+    type is (ty_optical_props_1scl)
+      call create_var(ncid,    "tauaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
+      call stop_on_err(write_field(ncid, "tauaer",  aerosol_optical_props%tau))
+    type is (ty_optical_props_2str)
+      call create_var(ncid,    "tauaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
+      call create_var(ncid,    "ssaaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
+      call create_var(ncid,    "asyaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
+      call stop_on_err(write_field(ncid, "tauaer",  aerosol_optical_props%tau))
+      call stop_on_err(write_field(ncid, "ssaaer",  aerosol_optical_props%ssa))
+      call stop_on_err(write_field(ncid, "asyaer",  aerosol_optical_props%g  ))
+    type is (ty_optical_props_nstr)
+      call create_var(ncid,    "tauaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
+      call create_var(ncid,    "ssaaer",  ["col ", "lay ", "band"], [ncol, nlay, nbnd])
+      call create_var(ncid,    "paer",    ["mom ", "col ", "lay ", "band"], [nmom, ncol, nlay, nbnd])
+      call stop_on_err(write_field(ncid, "tauaer",  aerosol_optical_props%tau))
+      call stop_on_err(write_field(ncid, "ssaaer",  aerosol_optical_props%ssa))
+      call stop_on_err(write_field(ncid, "paer",    aerosol_optical_props%p  ))
     end select
 
     ncid = nf90_close(ncid)
@@ -195,7 +195,7 @@ contains
     ! -----------------
     ! Open aerosol optical property coefficient file
     if(nf90_open(trim(filename), NF90_WRITE, ncid) /= NF90_NOERR) &
-       call stop_on_err("read_aero_op_nbnd(): can't open file " // trim(filename))
+      call stop_on_err("read_aero_op_nbnd(): can't open file " // trim(filename))
 
     ncol = get_dim_size(ncid,'col')
     nlay = get_dim_size(ncid,'lay')
@@ -208,37 +208,37 @@ contains
     tlay = read_field(ncid, 't_lay', ncol, nlay)
 
     if (is_lw(trim(filename))) then
-       nbnd = get_dim_size(ncid, 'band')
-       ngpt = get_dim_size(ncid, 'gpt')
-       select type(aerosol_optical_props)
-         type is (ty_optical_props_1scl)
-            aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
-         type is (ty_optical_props_2str)
-            aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
-            aerosol_optical_props%ssa    = read_field(ncid, 'ssaaer', ncol, nlay, nbnd)
-            aerosol_optical_props%g      = read_field(ncid, 'asyaer', ncol, nlay, nbnd)
-         type is (ty_optical_props_nstr)
-            aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
-            aerosol_optical_props%ssa    = read_field(ncid, 'ssaaer', ncol, nlay, nbnd)
-            aerosol_optical_props%p      = read_field(ncid, 'paer', nmom, ncol, nlay, nbnd)
-       end select
+      nbnd = get_dim_size(ncid, 'band')
+      ngpt = get_dim_size(ncid, 'gpt')
+      select type(aerosol_optical_props)
+      type is (ty_optical_props_1scl)
+        aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
+      type is (ty_optical_props_2str)
+        aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
+        aerosol_optical_props%ssa    = read_field(ncid, 'ssaaer', ncol, nlay, nbnd)
+        aerosol_optical_props%g      = read_field(ncid, 'asyaer', ncol, nlay, nbnd)
+      type is (ty_optical_props_nstr)
+        aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
+        aerosol_optical_props%ssa    = read_field(ncid, 'ssaaer', ncol, nlay, nbnd)
+        aerosol_optical_props%p      = read_field(ncid, 'paer', nmom, ncol, nlay, nbnd)
+      end select
     end if
 
     if (.not. is_lw(trim(filename))) then
-       nbnd = get_dim_size(ncid, 'band')
-       ngpt = get_dim_size(ncid, 'gpt')
-       select type(aerosol_optical_props)
-         type is (ty_optical_props_1scl)
-            aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
-         type is (ty_optical_props_2str)
-            aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
-            aerosol_optical_props%ssa    = read_field(ncid, 'ssaaer', ncol, nlay, nbnd)
-            aerosol_optical_props%g      = read_field(ncid, 'asyaer', ncol, nlay, nbnd)
-         type is (ty_optical_props_nstr)
-            aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
-            aerosol_optical_props%ssa    = read_field(ncid, 'ssaaer', ncol, nlay, nbnd)
-            aerosol_optical_props%p      = read_field(ncid, 'paer', nmom, ncol, nlay, nbnd)
-       end select
+      nbnd = get_dim_size(ncid, 'band')
+      ngpt = get_dim_size(ncid, 'gpt')
+      select type(aerosol_optical_props)
+      type is (ty_optical_props_1scl)
+        aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
+      type is (ty_optical_props_2str)
+        aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
+        aerosol_optical_props%ssa    = read_field(ncid, 'ssaaer', ncol, nlay, nbnd)
+        aerosol_optical_props%g      = read_field(ncid, 'asyaer', ncol, nlay, nbnd)
+      type is (ty_optical_props_nstr)
+        aerosol_optical_props%tau    = read_field(ncid, 'tauaer', ncol, nlay, nbnd)
+        aerosol_optical_props%ssa    = read_field(ncid, 'ssaaer', ncol, nlay, nbnd)
+        aerosol_optical_props%p      = read_field(ncid, 'paer', nmom, ncol, nlay, nbnd)
+      end select
     end if
 
     ncid = nf90_close(ncid)
@@ -268,49 +268,49 @@ contains
     nmom   = get_dim_size(ncid, 'mom')
 
     if (is_lw(trim(filename))) then
-       ngptlw = get_dim_size(ncid, 'gpt')
-       select type(aerosol_optical_props)
-         type is (ty_optical_props_1scl)
-           call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
-           call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
-         type is (ty_optical_props_2str)
-           call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
-           call create_var(ncid,    "ssaaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
-           call create_var(ncid,    "asyaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
-           call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
-           call stop_on_err(write_field(ncid, "ssaaerosol",  aerosol_optical_props%ssa ))
-           call stop_on_err(write_field(ncid, "asyaerosol",  aerosol_optical_props%g ))
-         type is (ty_optical_props_nstr)
-           call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
-           call create_var(ncid,    "ssaaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
-           call create_var(ncid,    "paerosol",    ["mom", "col", "lay", "gpt"], [nmom, ncol, nlay, ngptlw])
-           call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
-           call stop_on_err(write_field(ncid, "ssaaerosol",  aerosol_optical_props%ssa ))
-           call stop_on_err(write_field(ncid, "paerosol",    aerosol_optical_props%p ))
-       end select
-   endif
+      ngptlw = get_dim_size(ncid, 'gpt')
+      select type(aerosol_optical_props)
+      type is (ty_optical_props_1scl)
+        call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
+        call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
+      type is (ty_optical_props_2str)
+        call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
+        call create_var(ncid,    "ssaaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
+        call create_var(ncid,    "asyaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
+        call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
+        call stop_on_err(write_field(ncid, "ssaaerosol",  aerosol_optical_props%ssa ))
+        call stop_on_err(write_field(ncid, "asyaerosol",  aerosol_optical_props%g ))
+      type is (ty_optical_props_nstr)
+        call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
+        call create_var(ncid,    "ssaaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptlw])
+        call create_var(ncid,    "paerosol",    ["mom", "col", "lay", "gpt"], [nmom, ncol, nlay, ngptlw])
+        call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
+        call stop_on_err(write_field(ncid, "ssaaerosol",  aerosol_optical_props%ssa ))
+        call stop_on_err(write_field(ncid, "paerosol",    aerosol_optical_props%p ))
+      end select
+    endif
 
     if (.not. is_lw(trim(filename))) then
-       ngptsw = get_dim_size(ncid, 'gpt')
-       select type(aerosol_optical_props)
-         type is (ty_optical_props_1scl)
-           call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
-           call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
-         type is (ty_optical_props_2str)
-           call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
-           call create_var(ncid,    "ssaaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
-           call create_var(ncid,    "asyaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
-           call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
-           call stop_on_err(write_field(ncid, "ssaaerosol",  aerosol_optical_props%ssa ))
-           call stop_on_err(write_field(ncid, "asyaerosol",  aerosol_optical_props%g ))
-         type is (ty_optical_props_nstr)
-           call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
-           call create_var(ncid,    "ssaaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
-           call create_var(ncid,    "paerosol",    ["mom", "col", "lay", "gpt"], [nmom, ncol, nlay, ngptsw])
-           call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
-           call stop_on_err(write_field(ncid, "ssaaerosol",  aerosol_optical_props%ssa ))
-           call stop_on_err(write_field(ncid, "paerosol",    aerosol_optical_props%p ))
-       end select
+      ngptsw = get_dim_size(ncid, 'gpt')
+      select type(aerosol_optical_props)
+      type is (ty_optical_props_1scl)
+        call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
+        call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
+      type is (ty_optical_props_2str)
+        call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
+        call create_var(ncid,    "ssaaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
+        call create_var(ncid,    "asyaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
+        call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
+        call stop_on_err(write_field(ncid, "ssaaerosol",  aerosol_optical_props%ssa ))
+        call stop_on_err(write_field(ncid, "asyaerosol",  aerosol_optical_props%g ))
+      type is (ty_optical_props_nstr)
+        call create_var(ncid,    "tauaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
+        call create_var(ncid,    "ssaaerosol",  ["col", "lay", "gpt"], [ncol, nlay, ngptsw])
+        call create_var(ncid,    "paerosol",    ["mom", "col", "lay", "gpt"], [nmom, ncol, nlay, ngptsw])
+        call stop_on_err(write_field(ncid, "tauaerosol",  aerosol_optical_props%tau ))
+        call stop_on_err(write_field(ncid, "ssaaerosol",  aerosol_optical_props%ssa ))
+        call stop_on_err(write_field(ncid, "paerosol",    aerosol_optical_props%p ))
+      end select
     endif
 
     ncid = nf90_close(ncid)
@@ -342,16 +342,16 @@ contains
   end function is_lw
 
   ! -----------------------------------------------------------------------------------
-    subroutine stop_on_err(msg)
-      !
-      ! Print error message and stop
-      !
-      use iso_fortran_env, only : error_unit
-      character(len=*), intent(in) :: msg
-      if(len_trim(msg) > 0) then
-        write (error_unit,*) trim(msg)
-        stop
-      end if
-    end subroutine
+  subroutine stop_on_err(msg)
+    !
+    ! Print error message and stop
+    !
+    use iso_fortran_env, only : error_unit
+    character(len=*), intent(in) :: msg
+    if(len_trim(msg) > 0) then
+      write (error_unit,*) trim(msg)
+      stop
+    end if
+  end subroutine
 
 end module

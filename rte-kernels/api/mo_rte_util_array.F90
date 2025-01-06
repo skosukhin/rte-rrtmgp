@@ -39,8 +39,8 @@ module mo_rte_util_array
     end subroutine zero_array_3D
     ! ----------------------------------------------------------
     subroutine zero_array_4D(ni, nj, nk, nl, array) bind(C, name="zero_array_4D")
-    use mo_rte_kind,      only: wp, wl
-    integer,                             intent(in ) :: ni, nj, nk, nl
+      use mo_rte_kind,      only: wp, wl
+      integer,                             intent(in ) :: ni, nj, nk, nl
       real(wp), dimension(ni, nj, nk, nl), intent(out) :: array
     end subroutine zero_array_4D
   end interface zero_array

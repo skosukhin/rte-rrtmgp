@@ -56,7 +56,7 @@ module mo_rte_solver_kernels
       integer,                               intent(in   ) :: nmus
                                                               !! number of quadrature angles
       real(wp), dimension (ncol,      ngpt, &
-                                      nmus), intent(in   ) :: Ds
+                           nmus), intent(in   ) :: Ds
                                                               !! quadrature secants
       real(wp), dimension(nmus),             intent(in   ) :: weights
                                                               !! quadrature weights
@@ -73,21 +73,21 @@ module mo_rte_solver_kernels
       real(wp), dimension(ncol,       ngpt), intent(in   ) :: inc_flux
                                                               !! Incident diffuse flux, probably 0 [W/m2]
       real(wp), dimension(ncol,nlay+1,ngpt), target, &
-                                             intent(  out) :: flux_up, flux_dn
+        intent(  out) :: flux_up, flux_dn
                                                               !! Fluxes [W/m2]
       !
       ! Optional variables - arrays aren't referenced if corresponding logical  == False
       !
       logical(wl),                           intent(in   ) :: do_broadband
       real(wp), dimension(ncol,nlay+1     ), target, &
-                                             intent(  out) :: broadband_up, broadband_dn
+        intent(  out) :: broadband_up, broadband_dn
                                                               !! Spectrally-integrated fluxes [W/m2]
       logical(wl),                           intent(in   ) :: do_Jacobians
                                                               !! compute Jacobian with respect to surface temeprature?
       real(wp), dimension(ncol       ,ngpt), intent(in   ) :: sfc_srcJac
                                                               !! surface temperature Jacobian of surface source function [W/m2/K]
       real(wp), dimension(ncol,nlay+1     ), target, &
-                                             intent(  out) :: flux_upJac
+        intent(  out) :: flux_upJac
                                                               !! surface temperature Jacobian of Radiances [W/m2-str / K]
       logical(wl),                           intent(in   ) :: do_rescaling
                                                               !! Approximate treatment of scattering (10.1175/JAS-D-18-0014.1)
@@ -169,7 +169,7 @@ module mo_rte_solver_kernels
     subroutine sw_solver_2stream (ncol, nlay, ngpt, top_at_1,  &
                                   tau, ssa, g, mu0,           &
                                   sfc_alb_dir, sfc_alb_dif,   &
-                                              inc_flux_dir,   &
+                                  inc_flux_dir,   &
                                   flux_up, flux_dn, flux_dir, &
                                   has_dif_bc, inc_flux_dif,   &
                                   do_broadband, broadband_up, &
@@ -188,7 +188,7 @@ module mo_rte_solver_kernels
       real(wp), dimension(ncol,       ngpt), intent(in   ) :: inc_flux_dir
                                                               !! Direct beam incident flux
       real(wp), dimension(ncol,nlay+1,ngpt), target, &
-                                             intent(  out) :: flux_up, flux_dn, flux_dir
+        intent(  out) :: flux_up, flux_dn, flux_dir
                                                               !! Fluxes [W/m2]
       logical(wl),                           intent(in   ) :: has_dif_bc
                                                               !! Is a boundary condition for diffuse flux supplied?

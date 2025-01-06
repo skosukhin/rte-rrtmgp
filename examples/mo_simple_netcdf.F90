@@ -9,7 +9,7 @@ module mo_simple_netcdf
   end interface
   interface write_field
     module procedure write_1d_int_field, write_2d_int_field, &
-                     write_1d_field, write_2d_field, write_3d_field, write_4d_field
+      write_1d_field, write_2d_field, write_3d_field, write_4d_field
   end interface
 
   public :: dim_exists, get_dim_size, create_dim, &
@@ -180,7 +180,7 @@ contains
     stat = nf90_put_var(ncid, varid, var)
     if(stat /= NF90_NOERR) &
       err_msg = "write_field: can't write variable " // trim(varName) // &
-      " netcdf err: " // nf90_strerror(stat)
+                " netcdf err: " // nf90_strerror(stat)
 
   end function write_2d_field
   !--------------------------------------------------------------------------------------------------------------------
@@ -201,7 +201,7 @@ contains
     stat = nf90_put_var(ncid, varid, var)
     if(stat /= NF90_NOERR) &
       err_msg = "write_field: can't write variable " // trim(varName) // &
-      " netcdf err: " // nf90_strerror(stat)
+                " netcdf err: " // nf90_strerror(stat)
 
   end function write_3d_field
   !--------------------------------------------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ contains
     stat = nf90_put_var(ncid, varid, var)
     if(stat /= NF90_NOERR) &
       err_msg = "write_field: can't write variable " // trim(varName) // &
-      " netcdf err: " // nf90_strerror(stat)
+                " netcdf err: " // nf90_strerror(stat)
 
   end function write_4d_field
   !--------------------------------------------------------------------------------------------------------------------
@@ -303,7 +303,7 @@ contains
 
     if(dim_exists(ncid, dimName)) then
       if (dimLength /= get_dim_size(ncid, trim(dimName))) &
-          call stop_on_err("dim " // trim(dimName) // " is present but incorrectly sized.")
+        call stop_on_err("dim " // trim(dimName) // " is present but incorrectly sized.")
     else
       if(nf90_redef(ncid) /= NF90_NOERR) &
         call stop_on_err("create_dim: can't put file into redefine mode")

@@ -97,11 +97,11 @@ contains
     !$omp defaultmap(tofrom:scalar) reduction(min:minValue)
     !$omp distribute parallel do simd reduction(min:minValue)
     do i = 1, dim1
-       do j = 1, dim2
-          do k = 1, dim3
-             minValue = min(minValue,array(i,j,k))
-          enddo
-       enddo
+      do j = 1, dim2
+        do k = 1, dim3
+          minValue = min(minValue,array(i,j,k))
+        enddo
+      enddo
     enddo
     !$omp end target teams
 #else
@@ -205,10 +205,9 @@ contains
     real(wp), dimension(:,:,:), intent(in) :: array
     real(wp),                   intent(in) :: checkMin, checkMax
 
-      ! Compact version using intrinsics below
-      ! but an explicit loop is the only current solution on GPUs
+    ! Compact version using intrinsics below
+    ! but an explicit loop is the only current solution on GPUs
     real(wp) :: minValue, maxValue
-
 
 #ifdef _OPENMP
     integer :: dim1, dim2, dim3, i, j, k
@@ -221,12 +220,12 @@ contains
     !$omp defaultmap(tofrom:scalar) reduction(min:minValue) reduction(max:maxValue)
     !$omp distribute parallel do simd reduction(min:minValue) reduction(max:maxValue)
     do i= 1, dim1
-       do j = 1, dim2
-          do k = 1, dim3
-             minValue = min(minValue,array(i,j,k))
-             maxValue = max(maxValue,array(i,j,k))
-          enddo
-       enddo
+      do j = 1, dim2
+        do k = 1, dim3
+          minValue = min(minValue,array(i,j,k))
+          maxValue = max(maxValue,array(i,j,k))
+        enddo
+      enddo
     enddo
     !$omp end target teams
 #else
@@ -368,5 +367,5 @@ contains
     extents_are_2d_int = (size(array,1) == n1 .and. &
                           size(array,2) == n2 )
   end function extents_are_2d_int
- 
+
 end module mo_rte_util_array_validation

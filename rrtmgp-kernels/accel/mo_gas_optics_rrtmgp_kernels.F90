@@ -26,13 +26,13 @@ contains
   ! for calculations of major optical depths, minor optical depths, Rayleigh,
   ! and Planck fractions
   subroutine interpolation( &
-                ncol,nlay,ngas,nflav,neta, npres, ntemp, &
-                flavor,                                  &
-                press_ref_log, temp_ref,press_ref_log_delta,    &
-                temp_ref_min,temp_ref_delta,press_ref_trop_log, &
-                vmr_ref,                                        &
-                play,tlay,col_gas,                              &
-                jtemp,fmajor,fminor,col_mix,tropo,jeta,jpress) bind(C, name="rrtmgp_interpolation")
+    ncol,nlay,ngas,nflav,neta, npres, ntemp, &
+    flavor,                                  &
+    press_ref_log, temp_ref,press_ref_log_delta,    &
+    temp_ref_min,temp_ref_delta,press_ref_trop_log, &
+    vmr_ref,                                        &
+    play,tlay,col_gas,                              &
+    jtemp,fmajor,fminor,col_mix,tropo,jeta,jpress) bind(C, name="rrtmgp_interpolation")
     ! input dimensions
     integer,                            intent(in) :: ncol,nlay
     integer,                            intent(in) :: ngas,nflav,neta,npres,ntemp
@@ -60,7 +60,7 @@ contains
     real(wp), dimension(ncol,nlay) :: ftemp, fpress ! interpolation fraction for temperature, pressure
     real(wp) :: locpress ! needed to find location in pressure grid
     real(wp) :: ratio_eta_half ! ratio of vmrs of major species that defines eta=0.5
-                               ! for given flavor and reference temperature level
+    ! for given flavor and reference temperature level
     real(wp) :: eta, feta      ! binary_species_parameter, interpolation variable for eta
     real(wp) :: loceta         ! needed to find location in eta grid
     real(wp) :: ftemp_term
@@ -157,33 +157,33 @@ contains
   !   (jeta,jtemp,jpress)
   !
   subroutine compute_tau_absorption(                &
-                ncol,nlay,nbnd,ngpt,                &  ! dimensions
-                ngas,nflav,neta,npres,ntemp,        &
-                nminorlower, nminorklower,          & ! number of minor contributors, total num absorption coeffs
-                nminorupper, nminorkupper,          &
-                idx_h2o,                            &
-                gpoint_flavor,                      &
-                band_lims_gpt,                      &
-                kmajor,                             &
-                kminor_lower,                       &
-                kminor_upper,                       &
-                minor_limits_gpt_lower,             &
-                minor_limits_gpt_upper,             &
-                minor_scales_with_density_lower,    &
-                minor_scales_with_density_upper,    &
-                scale_by_complement_lower,          &
-                scale_by_complement_upper,          &
-                idx_minor_lower,                    &
-                idx_minor_upper,                    &
-                idx_minor_scaling_lower,            &
-                idx_minor_scaling_upper,            &
-                kminor_start_lower,                 &
-                kminor_start_upper,                 &
-                tropo,                              &
-                col_mix,fmajor,fminor,              &
-                play,tlay,col_gas,                  &
-                jeta,jtemp,jpress,                  &
-                tau) bind(C, name="rrtmgp_compute_tau_absorption")
+    ncol,nlay,nbnd,ngpt,                &  ! dimensions
+    ngas,nflav,neta,npres,ntemp,        &
+    nminorlower, nminorklower,          & ! number of minor contributors, total num absorption coeffs
+    nminorupper, nminorkupper,          &
+    idx_h2o,                            &
+    gpoint_flavor,                      &
+    band_lims_gpt,                      &
+    kmajor,                             &
+    kminor_lower,                       &
+    kminor_upper,                       &
+    minor_limits_gpt_lower,             &
+    minor_limits_gpt_upper,             &
+    minor_scales_with_density_lower,    &
+    minor_scales_with_density_upper,    &
+    scale_by_complement_lower,          &
+    scale_by_complement_upper,          &
+    idx_minor_lower,                    &
+    idx_minor_upper,                    &
+    idx_minor_scaling_lower,            &
+    idx_minor_scaling_upper,            &
+    kminor_start_lower,                 &
+    kminor_start_upper,                 &
+    tropo,                              &
+    col_mix,fmajor,fminor,              &
+    play,tlay,col_gas,                  &
+    jeta,jtemp,jpress,                  &
+    tau) bind(C, name="rrtmgp_compute_tau_absorption")
     ! ---------------------
     ! input dimensions
     integer,                                intent(in) :: ncol,nlay,nbnd,ngpt
@@ -280,56 +280,56 @@ contains
     ! Major Species
     ! ---------------------
     call gas_optical_depths_major(   &
-          ncol,nlay,nbnd,ngpt,       & ! dimensions
-          nflav,neta,npres,ntemp,    &
-          gpoint_flavor,             &
-          band_lims_gpt,             &
-          kmajor,                    &
-          col_mix,fmajor,            &
-          jeta,tropo,jtemp,jpress,   &
-          tau)
+      ncol,nlay,nbnd,ngpt,       & ! dimensions
+      nflav,neta,npres,ntemp,    &
+      gpoint_flavor,             &
+      band_lims_gpt,             &
+      kmajor,                    &
+      col_mix,fmajor,            &
+      jeta,tropo,jtemp,jpress,   &
+      tau)
     ! ---------------------
     ! Minor Species - lower
     ! ---------------------
     idx_tropo = 1
     call gas_optical_depths_minor(     &
-           ncol,nlay,ngpt,             & ! dimensions
-           ngas,nflav,ntemp,neta,      &
-           nminorlower,nminorklower,   &
-           idx_h2o,idx_tropo,          &
-           gpoint_flavor,              &
-           kminor_lower,               &
-           minor_limits_gpt_lower,     &
-           minor_scales_with_density_lower, &
-           scale_by_complement_lower,  &
-           idx_minor_lower,            &
-           idx_minor_scaling_lower,    &
-           kminor_start_lower,         &
-           play, tlay,                 &
-           col_gas,fminor,jeta,        &
-           itropo_lower,jtemp,         &
-           tau)
+      ncol,nlay,ngpt,             & ! dimensions
+      ngas,nflav,ntemp,neta,      &
+      nminorlower,nminorklower,   &
+      idx_h2o,idx_tropo,          &
+      gpoint_flavor,              &
+      kminor_lower,               &
+      minor_limits_gpt_lower,     &
+      minor_scales_with_density_lower, &
+      scale_by_complement_lower,  &
+      idx_minor_lower,            &
+      idx_minor_scaling_lower,    &
+      kminor_start_lower,         &
+      play, tlay,                 &
+      col_gas,fminor,jeta,        &
+      itropo_lower,jtemp,         &
+      tau)
     ! ---------------------
     ! Minor Species - upper
     ! ---------------------
     idx_tropo = 2
     call gas_optical_depths_minor(     &
-           ncol,nlay,ngpt,             & ! dimensions
-           ngas,nflav,ntemp,neta,      &
-           nminorupper,nminorkupper,   &
-           idx_h2o,idx_tropo,          &
-           gpoint_flavor,              &
-           kminor_upper,               &
-           minor_limits_gpt_upper,     &
-           minor_scales_with_density_upper, &
-           scale_by_complement_upper,  &
-           idx_minor_upper,            &
-           idx_minor_scaling_upper,    &
-           kminor_start_upper,         &
-           play, tlay,                 &
-           col_gas,fminor,jeta,        &
-           itropo_upper,jtemp,         &
-           tau)
+      ncol,nlay,ngpt,             & ! dimensions
+      ngas,nflav,ntemp,neta,      &
+      nminorupper,nminorkupper,   &
+      idx_h2o,idx_tropo,          &
+      gpoint_flavor,              &
+      kminor_upper,               &
+      minor_limits_gpt_upper,     &
+      minor_scales_with_density_upper, &
+      scale_by_complement_upper,  &
+      idx_minor_upper,            &
+      idx_minor_scaling_upper,    &
+      kminor_start_upper,         &
+      play, tlay,                 &
+      col_gas,fminor,jeta,        &
+      itropo_upper,jtemp,         &
+      tau)
 
     !$acc exit data delete(itropo_lower,itropo_upper)
     !$omp target exit data map(release:itropo_lower, itropo_upper)
@@ -506,7 +506,7 @@ contains
             iflav = gpt_flv(idx_tropo,igpt) ! eta interpolation depends on flavor
             minor_loc = minor_start + (igpt - minor_limits_gpt(1,imnr)) ! add offset to starting point
             kminor_loc = interpolate2D(fminor(:,:,icol,ilay,iflav), kminor, minor_loc, &
-                                        jeta(:,icol,ilay,iflav), myjtemp)
+                                       jeta(:,icol,ilay,iflav), myjtemp)
             tau_minor = kminor_loc * scaling
             tau(icol,ilay,igpt) = tau(icol,ilay,igpt) + tau_minor
           enddo
@@ -567,13 +567,13 @@ contains
 
   ! ----------------------------------------------------------
   subroutine compute_Planck_source(                        &
-                    ncol, nlay, nbnd, ngpt,                &
-                    nflav, neta, npres, ntemp, nPlanckTemp,&
-                    tlay, tlev, tsfc, sfc_lay,             &
-                    fmajor, jeta, tropo, jtemp, jpress,    &
-                    gpoint_bands, band_lims_gpt,           &
-                    pfracin, temp_ref_min, totplnk_delta, totplnk, gpoint_flavor, &
-                    sfc_src, lay_src, lev_src, sfc_source_Jac) bind(C, name="rrtmgp_compute_Planck_source")
+    ncol, nlay, nbnd, ngpt,                &
+    nflav, neta, npres, ntemp, nPlanckTemp,&
+    tlay, tlev, tsfc, sfc_lay,             &
+    fmajor, jeta, tropo, jtemp, jpress,    &
+    gpoint_bands, band_lims_gpt,           &
+    pfracin, temp_ref_min, totplnk_delta, totplnk, gpoint_flavor, &
+    sfc_src, lay_src, lev_src, sfc_source_Jac) bind(C, name="rrtmgp_compute_Planck_source")
     integer,                                    intent(in) :: ncol, nlay, nbnd, ngpt
     integer,                                    intent(in) :: nflav, neta, npres, ntemp, nPlanckTemp
     real(wp),    dimension(ncol,nlay  ),        intent(in) :: tlay
@@ -604,7 +604,7 @@ contains
     integer  :: ilay, icol, igpt, ibnd, itropo, iflav
     integer  :: gptS, gptE
     real(wp), dimension(2), parameter :: one = [1._wp, 1._wp]
-    real(wp) :: pfrac, pfrac_m1 ! Planck fraction in this layer and the one below 
+    real(wp) :: pfrac, pfrac_m1 ! Planck fraction in this layer and the one below
     real(wp) :: planck_function_1, planck_function_2
     ! -----------------
 
@@ -636,7 +636,7 @@ contains
 
           ! Compute level source irradiance for g-point
           planck_function_1 = interpolate1D(tlev(icol,ilay), temp_ref_min, totplnk_delta, totplnk(:,ibnd))
-          if (ilay == 1) then 
+          if (ilay == 1) then
             lev_src(icol,ilay,  igpt) = pfrac * planck_function_1
           else
             itropo = merge(1,2,tropo(icol,ilay-1))  !WS moved itropo inside loop for GPU
@@ -645,7 +645,7 @@ contains
               interpolate3D(one, fmajor(:,:,:,icol,ilay-1,iflav), pfracin, &
                             igpt, jeta(:,icol,ilay-1,iflav), jtemp(icol,ilay-1),jpress(icol,ilay-1)+itropo)
             lev_src(icol,ilay,  igpt) = sqrt(pfrac * pfrac_m1) * planck_function_1
-          end if 
+          end if
           if (ilay == nlay) then
             planck_function_1 = interpolate1D(tlev(icol,nlay+1), temp_ref_min, totplnk_delta, totplnk(:,ibnd))
             lev_src(icol,nlay+1,igpt) = pfrac * planck_function_1
@@ -674,7 +674,7 @@ contains
                             offset, & ! minimum of table axis
                             delta     ! step size of table axis
     real(wp), dimension(:), &
-              intent(in) :: table ! dimensions (axis, values)
+      intent(in) :: table ! dimensions (axis, values)
     ! output
     real(wp)             :: res
 
@@ -692,11 +692,11 @@ contains
   !   This function returns a single value from a subset (in gpoint) of the k table
   !
   function interpolate2D(fminor, k, igpt, jeta, jtemp) result(res)
-  !$acc routine seq
-  !$omp declare target
+    !$acc routine seq
+    !$omp declare target
     real(wp), dimension(2,2), intent(in) :: fminor ! interpolation fractions for minor species
-                                       ! index(1) : reference eta level (temperature dependent)
-                                       ! index(2) : reference temperature level
+    ! index(1) : reference eta level (temperature dependent)
+    ! index(2) : reference temperature level
     real(wp), dimension(:,:,:), intent(in) :: k ! (g-point, eta, temp)
     integer,                    intent(in) :: igpt, jtemp ! interpolation index for temperature
     integer, dimension(2),      intent(in) :: jeta ! interpolation index for binary species parameter (eta)
@@ -712,13 +712,13 @@ contains
   ! ----------------------------------------------------------
   ! interpolation in temperature, pressure, and eta
   function interpolate3D(scaling, fmajor, k, igpt, jeta, jtemp, jpress) result(res)
-  !$acc routine seq
-  !$omp declare target
+    !$acc routine seq
+    !$omp declare target
     real(wp), dimension(2),     intent(in) :: scaling
     real(wp), dimension(2,2,2), intent(in) :: fmajor ! interpolation fractions for major species
-                                                     ! index(1) : reference eta level (temperature dependent)
-                                                     ! index(2) : reference pressure level
-                                                     ! index(3) : reference temperature level
+    ! index(1) : reference eta level (temperature dependent)
+    ! index(2) : reference pressure level
+    ! index(3) : reference temperature level
     real(wp), dimension(:,:,:,:),intent(in) :: k ! (gpt, eta,temp,press)
     integer,                     intent(in) :: igpt
     integer, dimension(2),       intent(in) :: jeta ! interpolation index for binary species parameter (eta)
@@ -729,14 +729,14 @@ contains
     res =  &
       scaling(1) * &
       ( fmajor(1,1,1) * k(jtemp, jeta(1)  , jpress-1, igpt  ) + &
-        fmajor(2,1,1) * k(jtemp, jeta(1)+1, jpress-1, igpt  ) + &
-        fmajor(1,2,1) * k(jtemp, jeta(1)  , jpress  , igpt  ) + &
-        fmajor(2,2,1) * k(jtemp, jeta(1)+1, jpress  , igpt  ) ) + &
+       fmajor(2,1,1) * k(jtemp, jeta(1)+1, jpress-1, igpt  ) + &
+       fmajor(1,2,1) * k(jtemp, jeta(1)  , jpress  , igpt  ) + &
+       fmajor(2,2,1) * k(jtemp, jeta(1)+1, jpress  , igpt  ) ) + &
       scaling(2) * &
       ( fmajor(1,1,2) * k(jtemp+1, jeta(2)  , jpress-1, igpt) + &
-        fmajor(2,1,2) * k(jtemp+1, jeta(2)+1, jpress-1, igpt) + &
-        fmajor(1,2,2) * k(jtemp+1, jeta(2)  , jpress  , igpt) + &
-        fmajor(2,2,2) * k(jtemp+1, jeta(2)+1, jpress  , igpt) )
+       fmajor(2,1,2) * k(jtemp+1, jeta(2)+1, jpress-1, igpt) + &
+       fmajor(1,2,2) * k(jtemp+1, jeta(2)  , jpress  , igpt) + &
+       fmajor(2,2,2) * k(jtemp+1, jeta(2)+1, jpress  , igpt) )
   end function interpolate3D
   ! ----------------------------------------------------------
   !

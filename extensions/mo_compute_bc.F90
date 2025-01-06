@@ -21,8 +21,8 @@ module mo_compute_bc
   ! -------------------------------------------------------------------------------------------------
   use mo_rte_kind,           only: wp, wl
   use mo_rte_config,         only: check_extents
-  use mo_rte_util_array_validation, & 
-                             only: extents_are
+  use mo_rte_util_array_validation, &
+    only: extents_are
   use mo_source_functions,   only: ty_source_func_lw
   use mo_gas_concentrations, only: ty_gas_concs
   use mo_optical_props,      only: ty_optical_props, ty_optical_props_arry, &
@@ -58,9 +58,9 @@ contains
                                                tlay       ! layer temperatures [K]; (ncol,nlay)
     type(ty_gas_concs),       intent(in   ) :: gas_concs  ! Gas volume mixing ratios
     real(wp), dimension(:,:), target, &
-                              intent(  out) :: flux_bc    ! Boundary condition to be applied (ncol,ngpt)
+      intent(  out) :: flux_bc    ! Boundary condition to be applied (ncol,ngpt)
     real(wp), dimension(:), optional, &
-                              intent(in   ) :: mu0        ! Must be provided for solar problems
+      intent(in   ) :: mu0        ! Must be provided for solar problems
     character(len=128)                      :: error_msg
     ! ----------------------------------------------------------
     !
@@ -77,10 +77,10 @@ contains
     real(wp), dimension(size(play,1), 1) :: play_1lay, tlay_1lay
     real(wp), dimension(size(play,1), 2) :: plev_1lay, tlev_1lay
     real(wp), dimension(k_dist%get_nband(),size(play,1)) &
-                                          :: lower_bc ! emissivity or surface albedo
+      :: lower_bc ! emissivity or surface albedo
     type(ty_gas_concs)                    :: gas_concs_1lay  ! Gas volume mixing ratios
     class(ty_optical_props_arry), &
-                              allocatable :: optical_props_1lay
+      allocatable :: optical_props_1lay
     type(ty_fluxes_1lev)                  :: fluxes_1lev
     type(ty_source_func_lw)               :: lw_sources_1lay
     real(wp), dimension(size(play,1),k_dist%get_ngpt()) :: solar_src
@@ -149,9 +149,9 @@ contains
       !
       allocate(ty_optical_props_1scl::optical_props_1lay)
       select type (optical_props_1lay)
-        type is (ty_optical_props_1scl)
-          error_msg =  optical_props_1lay%alloc_1scl(ncol, 1, k_dist)
-          if(error_msg /= "") return
+      type is (ty_optical_props_1scl)
+        error_msg =  optical_props_1lay%alloc_1scl(ncol, 1, k_dist)
+        if(error_msg /= "") return
       end select
       error_msg = lw_sources_1lay%alloc(ncol, 1, k_dist)
       if(error_msg /= "") return
@@ -178,9 +178,9 @@ contains
       end if
       allocate(ty_optical_props_2str::optical_props_1lay)
       select type (optical_props_1lay)
-        type is (ty_optical_props_2str)
-          error_msg =  optical_props_1lay%alloc_2str(ncol, 1, k_dist)
-          if(error_msg /= "") return
+      type is (ty_optical_props_2str)
+        error_msg =  optical_props_1lay%alloc_2str(ncol, 1, k_dist)
+        if(error_msg /= "") return
       end select
       !
       ! Gas optics and sources
@@ -202,7 +202,7 @@ contains
     class(ty_optical_props),           intent(in   ) :: spectral_disc  !< derived type with spectral information
     logical,                           intent(in   ) :: top_at_1
     real(kind=wp), dimension(:,:,:), optional, &
-                                       intent(in   ) :: gpt_flux_dn_dir! Direct flux down
+      intent(in   ) :: gpt_flux_dn_dir! Direct flux down
     character(len=128)                               :: error_msg
     ! ------
     integer :: ncol, nlev, ngpt, bottom_lev
@@ -216,9 +216,9 @@ contains
       return
     end if
     bottom_lev = merge(2, 1, top_at_1)
-   !
-   ! Return the g-point flux at the bottomw of a two-layer domain
-   !
+    !
+    ! Return the g-point flux at the bottomw of a two-layer domain
+    !
     if(associated(this%gpt_flux_dn)) then
       if(any([size(this%gpt_flux_dn, 1) /= ncol,  &
               size(this%gpt_flux_dn, 2) /= ngpt])) then

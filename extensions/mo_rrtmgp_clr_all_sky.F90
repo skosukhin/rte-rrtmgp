@@ -22,13 +22,13 @@
 module mo_rrtmgp_clr_all_sky
   use mo_rte_kind,   only: wp
   use mo_gas_optics, &
-                        only: ty_gas_optics
+    only: ty_gas_optics
   use mo_gas_concentrations, &
-                        only: ty_gas_concs
+    only: ty_gas_concs
   use mo_optical_props, only: ty_optical_props, &
                               ty_optical_props_arry, ty_optical_props_1scl, ty_optical_props_2str, ty_optical_props_nstr
   use mo_source_functions, &
-                        only: ty_source_func_lw
+    only: ty_source_func_lw
   use mo_fluxes,        only: ty_fluxes
   use mo_rte_lw,        only: base_rte_lw => rte_lw
   use mo_rte_sw,        only: base_rte_sw => rte_sw
@@ -44,9 +44,9 @@ contains
   !
   ! --------------------------------------------------
   function rte_lw(k_dist, gas_concs, p_lay, t_lay, p_lev,    &
-                     t_sfc, sfc_emis, cloud_props,           &
-                     allsky_fluxes, clrsky_fluxes,           &
-                     aer_props, col_dry, t_lev, inc_flux, n_gauss_angles) result(error_msg)
+                  t_sfc, sfc_emis, cloud_props,           &
+                  allsky_fluxes, clrsky_fluxes,           &
+                  aer_props, col_dry, t_lev, inc_flux, n_gauss_angles) result(error_msg)
     class(ty_gas_optics),              intent(in   ) :: k_dist       !< derived type with spectral information
     type(ty_gas_concs),                intent(in   ) :: gas_concs    !< derived type encapsulating gas concentrations
     real(wp), dimension(:,:),          intent(in   ) :: p_lay, t_lay !< pressure [Pa], temperature [K] at layer centers (ncol,nlay)
@@ -58,13 +58,13 @@ contains
 
     ! Optional inputs
     class(ty_optical_props_arry),  &
-              optional,       intent(in ) :: aer_props   !< aerosol optical properties
+      optional,       intent(in ) :: aer_props   !< aerosol optical properties
     real(wp), dimension(:,:), &
-              optional,       intent(in ) :: col_dry !< Molecular number density (ncol, nlay)
+      optional,       intent(in ) :: col_dry !< Molecular number density (ncol, nlay)
     real(wp), dimension(:,:), target, &
-              optional,       intent(in ) :: t_lev     !< temperature at levels [K] (ncol, nlay+1)
+      optional,       intent(in ) :: t_lev     !< temperature at levels [K] (ncol, nlay+1)
     real(wp), dimension(:,:), target, &
-              optional,       intent(in ) :: inc_flux   !< incident flux at domain top [W/m2] (ncol, ngpts)
+      optional,       intent(in ) :: inc_flux   !< incident flux at domain top [W/m2] (ncol, ngpts)
     integer,  optional,       intent(in ) :: n_gauss_angles ! Number of angles used in Gaussian quadrature (no-scattering solution)
     character(len=128)                    :: error_msg
     ! --------------------------------
@@ -83,7 +83,6 @@ contains
     nlay  = size(p_lay, 2)
     ngpt  = k_dist%get_ngpt()
     nband = k_dist%get_nband()
-
 
     ! ------------------------------------------------------------------------------------
     !  Error checking
@@ -113,24 +112,24 @@ contains
     ! Optical properties arrays
     !
     select type(cloud_props)
-      class is (ty_optical_props_1scl) ! No scattering
-        allocate(ty_optical_props_1scl::optical_props)
-      class is (ty_optical_props_2str)
-        allocate(ty_optical_props_2str::optical_props)
-      class is (ty_optical_props_nstr)
-        allocate(ty_optical_props_nstr::optical_props)
-        nstr = size(cloud_props%tau,1)
+    class is (ty_optical_props_1scl) ! No scattering
+      allocate(ty_optical_props_1scl::optical_props)
+    class is (ty_optical_props_2str)
+      allocate(ty_optical_props_2str::optical_props)
+    class is (ty_optical_props_nstr)
+      allocate(ty_optical_props_nstr::optical_props)
+      nstr = size(cloud_props%tau,1)
     end select
 
     error_msg = optical_props%init(k_dist)
     if(len_trim(error_msg) > 0) return
     select type (optical_props)
-      class is (ty_optical_props_1scl) ! No scattering
-        error_msg = optical_props%alloc_1scl(ncol, nlay)
-      class is (ty_optical_props_2str)
-        error_msg = optical_props%alloc_2str(ncol, nlay)
-      class is (ty_optical_props_nstr)
-        error_msg = optical_props%alloc_nstr(nstr, ncol, nlay)
+    class is (ty_optical_props_1scl) ! No scattering
+      error_msg = optical_props%alloc_1scl(ncol, nlay)
+    class is (ty_optical_props_2str)
+      error_msg = optical_props%alloc_2str(ncol, nlay)
+    class is (ty_optical_props_nstr)
+      error_msg = optical_props%alloc_nstr(nstr, ncol, nlay)
     end select
     if (error_msg /= '') return
 
@@ -174,25 +173,25 @@ contains
   end function rte_lw
   ! --------------------------------------------------
   function rte_sw(k_dist, gas_concs, p_lay, t_lay, p_lev, &
-                                 mu0, sfc_alb_dir, sfc_alb_dif, cloud_props, &
-                                 allsky_fluxes, clrsky_fluxes,           &
-                                 aer_props, col_dry, inc_flux) result(error_msg)
+                  mu0, sfc_alb_dir, sfc_alb_dif, cloud_props, &
+                  allsky_fluxes, clrsky_fluxes,           &
+                  aer_props, col_dry, inc_flux) result(error_msg)
     class(ty_gas_optics),              intent(in   ) :: k_dist       !< derived type with spectral information
     type(ty_gas_concs),                intent(in   ) :: gas_concs    !< derived type encapsulating gas concentrations
     real(wp), dimension(:,:),          intent(in   ) :: p_lay, t_lay !< pressure [Pa], temperature [K] at layer centers (ncol,nlay)
     real(wp), dimension(:,:),          intent(in   ) :: p_lev        !< pressure at levels/interfaces [Pa] (ncol,nlay+1)
     real(wp), dimension(:  ),          intent(in   ) :: mu0          !< cosine of solar zenith angle
     real(wp), dimension(:,:),          intent(in   ) :: sfc_alb_dir, sfc_alb_dif
-                                                        !  surface albedo for direct and diffuse radiation (band, col)
+    !  surface albedo for direct and diffuse radiation (band, col)
     class(ty_optical_props_arry),      intent(in   ) :: cloud_props !< cloud optical properties (ncol,nlay,ngpt)
     class(ty_fluxes),                  intent(inout) :: allsky_fluxes, clrsky_fluxes
 
     ! Optional inputs
     class(ty_optical_props_arry),   target, &
-              optional,       intent(in ) :: aer_props   !< aerosol optical properties
+      optional,       intent(in ) :: aer_props   !< aerosol optical properties
     real(wp), dimension(:,:), &
-              optional,       intent(in ) :: col_dry, &  !< Molecular number density (ncol, nlay)
-                                             inc_flux    !< incident flux at domain top [W/m2] (ncol, ngpts)
+      optional,       intent(in ) :: col_dry, &  !< Molecular number density (ncol, nlay)
+                                     inc_flux    !< incident flux at domain top [W/m2] (ncol, ngpts)
 
     character(len=128)                    :: error_msg
     ! --------------------------------
@@ -234,25 +233,25 @@ contains
     ! Optical properties arrays
     !
     select type(cloud_props)
-      class is (ty_optical_props_1scl) ! No scattering
-        allocate(ty_optical_props_1scl::optical_props)
-      class is (ty_optical_props_2str)
-        allocate(ty_optical_props_2str::optical_props)
-      class is (ty_optical_props_nstr)
-        allocate(ty_optical_props_nstr::optical_props)
-        nstr = cloud_props%get_nmom()
+    class is (ty_optical_props_1scl) ! No scattering
+      allocate(ty_optical_props_1scl::optical_props)
+    class is (ty_optical_props_2str)
+      allocate(ty_optical_props_2str::optical_props)
+    class is (ty_optical_props_nstr)
+      allocate(ty_optical_props_nstr::optical_props)
+      nstr = cloud_props%get_nmom()
     end select
 
     error_msg = optical_props%init(k_dist%get_band_lims_wavenumber(), &
                                    k_dist%get_band_lims_gpoint())
     if(len_trim(error_msg) > 0) return
     select type (optical_props)
-      class is (ty_optical_props_1scl) ! No scattering
-        error_msg = optical_props%alloc_1scl(ncol, nlay)
-      class is (ty_optical_props_2str)
-        error_msg = optical_props%alloc_2str(ncol, nlay)
-      class is (ty_optical_props_nstr)
-        error_msg = optical_props%alloc_nstr(nstr, ncol, nlay)
+    class is (ty_optical_props_1scl) ! No scattering
+      error_msg = optical_props%alloc_1scl(ncol, nlay)
+    class is (ty_optical_props_2str)
+      error_msg = optical_props%alloc_2str(ncol, nlay)
+    class is (ty_optical_props_nstr)
+      error_msg = optical_props%alloc_nstr(nstr, ncol, nlay)
     end select
     if (error_msg /= '') return
 
@@ -277,8 +276,8 @@ contains
     if(error_msg /= '') return
 
     error_msg = base_rte_sw(optical_props, mu0, toa_flux, &
-                               sfc_alb_dir, sfc_alb_dif,  &
-                               clrsky_fluxes)
+                            sfc_alb_dir, sfc_alb_dif,  &
+                            clrsky_fluxes)
 
     if(error_msg /= '') return
     ! ------------------------------------------------------------------------------------
@@ -288,8 +287,8 @@ contains
     if(error_msg /= '') return
 
     error_msg = base_rte_sw(optical_props, mu0, toa_flux, &
-                               sfc_alb_dir, sfc_alb_dif,  &
-                               allsky_fluxes)
+                            sfc_alb_dir, sfc_alb_dif,  &
+                            allsky_fluxes)
 
     call optical_props%finalize()
   end function rte_sw

@@ -120,8 +120,8 @@ contains
     !$omp target teams distribute parallel do simd collapse(2)
     do ilev = 1, nlev
       do icol = 1, ncol
-         broadband_flux_net(icol,ilev) = flux_dn(icol,ilev) - flux_up(icol,ilev)
-       end do
+        broadband_flux_net(icol,ilev) = flux_dn(icol,ilev) - flux_up(icol,ilev)
+      end do
     end do
     !$acc exit data delete(flux_dn, flux_up) copyout(broadband_flux_net)
     !$omp target exit data map(release:flux_dn, flux_up) map(from:broadband_flux_net)

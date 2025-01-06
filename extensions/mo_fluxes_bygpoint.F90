@@ -16,8 +16,8 @@
 !
 module mo_fluxes_bygpoint
   use mo_rte_kind,      only: wp
-  use mo_rte_util_array_validation, & 
-                        only: extents_are
+  use mo_rte_util_array_validation, &
+    only: extents_are
   use mo_fluxes,        only: ty_fluxes
   use mo_optical_props, only: ty_optical_props
   implicit none
@@ -43,7 +43,7 @@ contains
     class(ty_optical_props),           intent(in   ) :: spectral_disc  !< derived type with spectral information
     logical,                           intent(in   ) :: top_at_1
     real(kind=wp), dimension(:,:,:), optional, &
-                                       intent(in   ) :: gpt_flux_dn_dir! Direct flux down
+      intent(in   ) :: gpt_flux_dn_dir! Direct flux down
     character(len=128)                               :: error_msg
     ! ------
     integer :: ncol, nlev, ngpt, nbnd
@@ -83,18 +83,18 @@ contains
     end if
   end function reduce_bygpoint
 
-    ! --------------------------------------------------------------------------------------
-    ! Are any fluxes desired from this set of g-point fluxes? We can tell because memory will
-    !   be allocated for output
-    !
-    function are_desired_bygpoint(this)
-      class(ty_fluxes_bygpoint), intent(in   ) :: this
-      logical                                  :: are_desired_bygpoint
+  ! --------------------------------------------------------------------------------------
+  ! Are any fluxes desired from this set of g-point fluxes? We can tell because memory will
+  !   be allocated for output
+  !
+  function are_desired_bygpoint(this)
+    class(ty_fluxes_bygpoint), intent(in   ) :: this
+    logical                                  :: are_desired_bygpoint
 
-      are_desired_bygpoint = any([associated(this%gpt_flux_up),     &
-                                  associated(this%gpt_flux_dn),     &
-                                  associated(this%gpt_flux_dn_dir), &
-                                  associated(this%gpt_flux_net)])
-    end function are_desired_bygpoint
+    are_desired_bygpoint = any([associated(this%gpt_flux_up),     &
+                                associated(this%gpt_flux_dn),     &
+                                associated(this%gpt_flux_dn_dir), &
+                                associated(this%gpt_flux_net)])
+  end function are_desired_bygpoint
 
 end module mo_fluxes_bygpoint

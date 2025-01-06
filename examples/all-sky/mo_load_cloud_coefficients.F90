@@ -5,8 +5,8 @@ module mo_load_cloud_coefficients
                               ty_optical_props_1scl, &
                               ty_optical_props_2str, &
                               ty_optical_props_nstr
-  use mo_cloud_optics_rrtmgp, & 
-                        only: ty_cloud_optics_rrtmgp
+  use mo_cloud_optics_rrtmgp, &
+    only: ty_cloud_optics_rrtmgp
   use mo_simple_netcdf, only: read_field, read_string, var_exists, get_dim_size, &
                               write_field, create_dim, create_var
   use netcdf
@@ -46,7 +46,7 @@ contains
     ! -----------------
     ! Open cloud optical property coefficient file
     if(nf90_open(trim(cld_coeff_file), NF90_NOWRITE, ncid) /= NF90_NOERR) &
-       call stop_on_err("load_cld_lutcoeff(): can't open file " // trim(cld_coeff_file))
+      call stop_on_err("load_cld_lutcoeff(): can't open file " // trim(cld_coeff_file))
 
     ! Read LUT coefficient dimensions
     nband     = get_dim_size(ncid,'nband')
@@ -117,7 +117,7 @@ contains
     ! -----------------
     ! Open cloud optical property coefficient file
     if(nf90_open(trim(cld_coeff_file), NF90_NOWRITE, ncid) /= NF90_NOERR) &
-       call stop_on_err("load_cld_padecoeff(): can't open file " // trim(cld_coeff_file))
+      call stop_on_err("load_cld_padecoeff(): can't open file " // trim(cld_coeff_file))
 
     ! Read Pade coefficient dimensions
     nband        = get_dim_size(ncid,'nband')
@@ -171,16 +171,16 @@ contains
   end subroutine load_cld_padecoeff
 
   ! -----------------------------------------------------------------------------------
-    subroutine stop_on_err(msg)
-      !
-      ! Print error message and stop
-      !
-      use iso_fortran_env, only : error_unit
-      character(len=*), intent(in) :: msg
-      if(len_trim(msg) > 0) then
-        write (error_unit,*) trim(msg)
-        error stop 1
-      end if
-    end subroutine
+  subroutine stop_on_err(msg)
+    !
+    ! Print error message and stop
+    !
+    use iso_fortran_env, only : error_unit
+    character(len=*), intent(in) :: msg
+    if(len_trim(msg) > 0) then
+      write (error_unit,*) trim(msg)
+      error stop 1
+    end if
+  end subroutine
 
 end module

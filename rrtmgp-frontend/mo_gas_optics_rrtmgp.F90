@@ -10,7 +10,7 @@
 !    BSD 3-clause license, see http://opensource.org/licenses/BSD-3-Clause
 ! -------------------------------------------------------------------------------------------------
 !
-!> ## Class implementing the RRTMGP correlated-_k_ distribution 
+!> ## Class implementing the RRTMGP correlated-_k_ distribution
 !>
 !> Implements a class for computing spectrally-resolved gas optical properties and source functions
 !>   given atmopsheric physical properties (profiles of temperature, pressure, and gas concentrations)
@@ -26,12 +26,12 @@ module mo_gas_optics_rrtmgp
   use mo_rte_kind,           only: wp, wl
   use mo_rte_config,         only: check_extents, check_values
   use mo_rte_util_array,     only: zero_array
-  use mo_rte_util_array_validation, & 
-                             only: any_vals_less_than, any_vals_outside, extents_are
+  use mo_rte_util_array_validation, &
+    only: any_vals_less_than, any_vals_outside, extents_are
   use mo_optical_props,      only: ty_optical_props
   use mo_source_functions,   only: ty_source_func_lw
-  use mo_gas_optics_rrtmgp_kernels, & 
-                             only: interpolation, compute_tau_absorption, compute_tau_rayleigh, compute_Planck_source
+  use mo_gas_optics_rrtmgp_kernels, &
+    only: interpolation, compute_tau_absorption, compute_tau_rayleigh, compute_Planck_source
   use mo_gas_optics_constants,   only: avogad, m_dry, m_h2o, grav
   use mo_gas_optics_util_string, only: lower_case, string_in_array, string_loc_in_array
   use mo_gas_concentrations, only: ty_gas_concs
@@ -126,14 +126,14 @@ module mo_gas_optics_rrtmgp
     !   Allocated only when gas optics object is internal-source
     !
     real(wp), dimension(:,:,:,:), allocatable :: planck_frac   ! stored fraction of Planck irradiance in band for given g-point
-                                                               ! planck_frac(g-point, eta, pressure, temperature)
+    ! planck_frac(g-point, eta, pressure, temperature)
     real(wp), dimension(:,:),     allocatable :: totplnk       ! integrated Planck irradiance by band; (Planck temperatures,band)
     real(wp)                                  :: totplnk_delta ! temperature steps in totplnk
     real(wp), dimension(:,:),     allocatable :: optimal_angle_fit ! coefficients of linear function
-                                                                   ! of vertical path clear-sky transmittance that is used to
-                                                                   ! determine the secant of single angle used for the
-                                                                   ! no-scattering calculation,
-                                                                   ! optimal_angle_fit(coefficient, band)
+    ! of vertical path clear-sky transmittance that is used to
+    ! determine the secant of single angle used for the
+    ! no-scattering calculation,
+    ! optimal_angle_fit(coefficient, band)
     ! -----------------------------------------------------------------------------------
     ! Solar source function spectral mapping with solar variability capability
     !   Allocated  when gas optics object is external-source
@@ -235,14 +235,14 @@ contains
     type(ty_gas_concs),       intent(in   ) :: gas_desc  !! Gas volume mixing ratios
     ! output
     class(ty_optical_props_arry),  &
-                              intent(inout) :: optical_props !! Optical properties
+      intent(inout) :: optical_props !! Optical properties
     class(ty_source_func_lw    ),  &
-                              intent(inout) :: sources       !! Planck sources
-    character(len=128)                      :: error_msg     !! Empty if succssful 
+      intent(inout) :: sources       !! Planck sources
+    character(len=128)                      :: error_msg     !! Empty if succssful
     ! Optional inputs
     real(wp), dimension(:,:),   intent(in   ), &
-                           optional, target :: col_dry, &  !! Column dry amount; dim(ncol,nlay)
-                                               tlev        !! level temperatures [K]; (ncol,nlay+1)
+      optional, target :: col_dry, &  !! Column dry amount; dim(ncol,nlay)
+                          tlev        !! level temperatures [K]; (ncol,nlay+1)
     ! ----------------------------------------------------------
     ! Local variables
     ! Interpolation coefficients for use in source function
@@ -301,7 +301,7 @@ contains
         error_msg = "gas_optics(): array tsfc has values outside range"
       if(present(tlev)) then
         if(any_vals_outside(tlev, this%temp_ref_min, this%temp_ref_max)) &
-            error_msg = "gas_optics(): array tlev has values outside range"
+          error_msg = "gas_optics(): array tlev has values outside range"
       end if
     end if
     if(error_msg  /= '') return
@@ -311,7 +311,7 @@ contains
     ! present status of optional argument should be passed to source()
     !    but nvfortran (and PGI Fortran before it) do not do so
     !
-    if(present(tlev)) then   
+    if(present(tlev)) then
       error_msg = source(this,                               &
                          ncol, nlay, nband, ngpt, optical_props%top_is_at_1(),  &
                          play, plev, tlay, tsfc,             &
@@ -320,14 +320,14 @@ contains
                          tlev)
       !$acc        exit data      delete(tlev)
       !$omp target exit data map(release:tlev)
-    else 
+    else
       error_msg = source(this,                               &
                          ncol, nlay, nband, ngpt, optical_props%top_is_at_1(),  &
                          play, plev, tlay, tsfc,             &
                          jtemp, jpress, jeta, tropo, fmajor, &
                          sources)
 
-    end if 
+    end if
     !$acc        exit data      delete(tsfc)
     !$omp target exit data map(release:tsfc)
     !$acc        exit data      delete(jtemp, jpress, tropo, fmajor, jeta)
@@ -337,7 +337,7 @@ contains
   !------------------------------------------------------------------------------------------
   !
   !> Compute gas optical depth given temperature, pressure, and composition
-  !>    Top-of-atmosphere stellar insolation is also reported 
+  !>    Top-of-atmosphere stellar insolation is also reported
   !
   function gas_optics_ext(this,                         &
                           play, plev, tlay, gas_desc,   & ! mandatory inputs
@@ -351,13 +351,13 @@ contains
     type(ty_gas_concs),       intent(in   ) :: gas_desc  !! Gas volume mixing ratios
     ! output
     class(ty_optical_props_arry),  &
-                              intent(inout) :: optical_props 
+      intent(inout) :: optical_props
     real(wp), dimension(:,:), intent(  out) :: toa_src     !! Incoming solar irradiance(ncol,ngpt)
     character(len=128)                      :: error_msg   !! Empty if successful
 
     ! Optional inputs
     real(wp), dimension(:,:), intent(in   ), &
-                           optional, target :: col_dry ! Column dry amount; dim(ncol,nlay)
+      optional, target :: col_dry ! Column dry amount; dim(ncol,nlay)
     ! ----------------------------------------------------------
     ! Local variables
     ! Interpolation coefficients for use in source function
@@ -410,9 +410,9 @@ contains
     !$acc parallel loop collapse(2)
     !$omp target teams distribute parallel do simd collapse(2)
     do igpt = 1,ngpt
-       do icol = 1,ncol
-          toa_src(icol,igpt) = this%solar_source(igpt)
-       end do
+      do icol = 1,ncol
+        toa_src(icol,igpt) = this%solar_source(igpt)
+      end do
     end do
     !$acc exit data copyout(toa_src)
     !$omp target exit data map(from:toa_src)
@@ -429,7 +429,7 @@ contains
                             col_dry) result(error_msg)
 
     class(ty_gas_optics_rrtmgp), &
-                                      intent(in   ) :: this
+      intent(in   ) :: this
     integer,                          intent(in   ) :: ncol, nlay, ngpt, nband
     real(wp), dimension(:,:),         intent(in   ) :: play, &   ! layer pressures [Pa, mb]; (ncol,nlay)
                                                        plev, &   ! level pressures [Pa, mb]; (ncol,nlay+1)
@@ -445,7 +445,7 @@ contains
 
     ! Optional inputs
     real(wp), dimension(:,:), intent(in   ), &
-                           optional, target :: col_dry ! Column dry amount; dim(ncol,nlay)
+      optional, target :: col_dry ! Column dry amount; dim(ncol,nlay)
     ! ----------------------------------------------------------
     ! Local variables
     real(wp), dimension(ncol,nlay,ngpt) :: tau, tau_rayleigh  ! absorption, Rayleigh scattering optical depths
@@ -458,14 +458,14 @@ contains
     real(wp), dimension(ncol,nlay,  this%get_ngas()) :: vmr     ! volume mixing ratios
     real(wp), dimension(ncol,nlay,0:this%get_ngas()) :: col_gas ! column amounts for each gas, plus col_dry
     real(wp), dimension(2,    ncol,nlay,get_nflav(this)) :: col_mix ! combination of major species's column amounts
-                                                         ! index(1) : reference temperature level
-                                                         ! index(2) : flavor
-                                                         ! index(3) : layer
+    ! index(1) : reference temperature level
+    ! index(2) : flavor
+    ! index(3) : layer
     real(wp), dimension(2,2,  ncol,nlay,get_nflav(this)) :: fminor ! interpolation fractions for minor species
-                                                          ! index(1) : reference eta level (temperature dependent)
-                                                          ! index(2) : reference temperature level
-                                                          ! index(3) : flavor
-                                                          ! index(4) : layer
+    ! index(1) : reference eta level (temperature dependent)
+    ! index(2) : reference temperature level
+    ! index(3) : flavor
+    ! index(4) : layer
     integer :: ngas, nflav, neta, npres, ntemp
     integer :: icol, ilay, igas
     integer :: idx_h2o ! index of water vapor
@@ -559,24 +559,24 @@ contains
       !$acc enter data copyin(optical_props)
 #endif
       select type(optical_props)
-        type is (ty_optical_props_1scl)
+      type is (ty_optical_props_1scl)
 #ifndef _CRAYFTN
-          !$acc enter data copyin(optical_props)
+        !$acc enter data copyin(optical_props)
 #endif
-          !$acc enter data create(   optical_props%tau)
-          !$omp target enter data map(alloc:optical_props%tau)
-        type is (ty_optical_props_2str)
+        !$acc enter data create(   optical_props%tau)
+        !$omp target enter data map(alloc:optical_props%tau)
+      type is (ty_optical_props_2str)
 #ifndef _CRAYFTN
-          !$acc enter data copyin(optical_props)
+        !$acc enter data copyin(optical_props)
 #endif
-          !$acc enter data create(   optical_props%tau, optical_props%ssa, optical_props%g)
-          !$omp target enter data map(alloc:optical_props%tau, optical_props%ssa, optical_props%g)
-        type is (ty_optical_props_nstr)
+        !$acc enter data create(   optical_props%tau, optical_props%ssa, optical_props%g)
+        !$omp target enter data map(alloc:optical_props%tau, optical_props%ssa, optical_props%g)
+      type is (ty_optical_props_nstr)
 #ifndef _CRAYFTN
-          !$acc enter data copyin(optical_props)
+        !$acc enter data copyin(optical_props)
 #endif
-          !$acc enter data create(   optical_props%tau, optical_props%ssa, optical_props%p)
-          !$omp target enter data map(alloc:optical_props%tau, optical_props%ssa, optical_props%p)
+        !$acc enter data create(   optical_props%tau, optical_props%ssa, optical_props%p)
+        !$omp target enter data map(alloc:optical_props%tau, optical_props%ssa, optical_props%p)
       end select
 
       !
@@ -618,105 +618,105 @@ contains
       !$acc        data copyout( jtemp, jpress, jeta, tropo, fmajor) create(   col_mix, fminor)
       !$omp target data map(from:jtemp, jpress, jeta, tropo, fmajor) map(alloc:col_mix, fminor)
       call interpolation(               &
-            ncol,nlay,                &        ! problem dimensions
-            ngas, nflav, neta, npres, ntemp, & ! interpolation dimensions
-            this%flavor,              &
-            this%press_ref_log,       &
-            this%temp_ref,            &
-            this%press_ref_log_delta, &
-            this%temp_ref_min,        &
-            this%temp_ref_delta,      &
-            this%press_ref_trop_log,  &
-            this%vmr_ref, &
-            play,         &
-            tlay,         &
-            col_gas,      &
-            jtemp,        & ! outputs
-            fmajor,fminor,&
-            col_mix,      &
-            tropo,        &
-            jeta,jpress)
+        ncol,nlay,                &        ! problem dimensions
+        ngas, nflav, neta, npres, ntemp, & ! interpolation dimensions
+        this%flavor,              &
+        this%press_ref_log,       &
+        this%temp_ref,            &
+        this%press_ref_log_delta, &
+        this%temp_ref_min,        &
+        this%temp_ref_delta,      &
+        this%press_ref_trop_log,  &
+        this%vmr_ref, &
+        play,         &
+        tlay,         &
+        col_gas,      &
+        jtemp,        & ! outputs
+        fmajor,fminor,&
+        col_mix,      &
+        tropo,        &
+        jeta,jpress)
       if (allocated(this%krayl)) then
         !$acc        data copyin(this%gpoint_flavor, this%krayl)    create(tau, tau_rayleigh)
         !$omp target data map(to:this%gpoint_flavor, this%krayl) map(alloc:tau, tau_rayleigh)
         call zero_array(ncol, nlay, ngpt, tau)
         call compute_tau_absorption(                     &
-              ncol,nlay,nband,ngpt,                    &  ! dimensions
-              ngas,nflav,neta,npres,ntemp,             &
-              nminorlower, nminorklower,               & ! number of minor contributors, total num absorption coeffs
-              nminorupper, nminorkupper,               &
-              idx_h2o,                                 &
-              this%gpoint_flavor,                      &
-              this%get_band_lims_gpoint(),             &
-              this%kmajor,                             &
-              this%kminor_lower,                       &
-              this%kminor_upper,                       &
-              this%minor_limits_gpt_lower,             &
-              this%minor_limits_gpt_upper,             &
-              this%minor_scales_with_density_lower,    &
-              this%minor_scales_with_density_upper,    &
-              this%scale_by_complement_lower,          &
-              this%scale_by_complement_upper,          &
-              this%idx_minor_lower,                    &
-              this%idx_minor_upper,                    &
-              this%idx_minor_scaling_lower,            &
-              this%idx_minor_scaling_upper,            &
-              this%kminor_start_lower,                 &
-              this%kminor_start_upper,                 &
-              tropo,                                   &
-              col_mix,fmajor,fminor,                   &
-              play,tlay,col_gas,                       &
-              jeta,jtemp,jpress,                       &
-              tau)
+          ncol,nlay,nband,ngpt,                    &  ! dimensions
+          ngas,nflav,neta,npres,ntemp,             &
+          nminorlower, nminorklower,               & ! number of minor contributors, total num absorption coeffs
+          nminorupper, nminorkupper,               &
+          idx_h2o,                                 &
+          this%gpoint_flavor,                      &
+          this%get_band_lims_gpoint(),             &
+          this%kmajor,                             &
+          this%kminor_lower,                       &
+          this%kminor_upper,                       &
+          this%minor_limits_gpt_lower,             &
+          this%minor_limits_gpt_upper,             &
+          this%minor_scales_with_density_lower,    &
+          this%minor_scales_with_density_upper,    &
+          this%scale_by_complement_lower,          &
+          this%scale_by_complement_upper,          &
+          this%idx_minor_lower,                    &
+          this%idx_minor_upper,                    &
+          this%idx_minor_scaling_lower,            &
+          this%idx_minor_scaling_upper,            &
+          this%kminor_start_lower,                 &
+          this%kminor_start_upper,                 &
+          tropo,                                   &
+          col_mix,fmajor,fminor,                   &
+          play,tlay,col_gas,                       &
+          jeta,jtemp,jpress,                       &
+          tau)
         call compute_tau_rayleigh(         & !Rayleigh scattering optical depths
-            ncol,nlay,nband,ngpt,        &
-            ngas,nflav,neta,npres,ntemp, & ! dimensions
-            this%gpoint_flavor,          &
-            this%get_band_lims_gpoint(), &
-            this%krayl,                  & ! inputs from object
-            idx_h2o, col_dry_wk,col_gas, &
-            fminor,jeta,tropo,jtemp,     & ! local input
-            tau_rayleigh)
+          ncol,nlay,nband,ngpt,        &
+          ngas,nflav,neta,npres,ntemp, & ! dimensions
+          this%gpoint_flavor,          &
+          this%get_band_lims_gpoint(), &
+          this%krayl,                  & ! inputs from object
+          idx_h2o, col_dry_wk,col_gas, &
+          fminor,jeta,tropo,jtemp,     & ! local input
+          tau_rayleigh)
         call combine_abs_and_rayleigh(tau, tau_rayleigh, optical_props)
         !$acc end        data
         !$omp end target data
       else
         call zero_array(ncol, nlay, ngpt, optical_props%tau)
         call compute_tau_absorption(                     &
-              ncol,nlay,nband,ngpt,                    &  ! dimensions
-              ngas,nflav,neta,npres,ntemp,             &
-              nminorlower, nminorklower,               & ! number of minor contributors, total num absorption coeffs
-              nminorupper, nminorkupper,               &
-              idx_h2o,                                 &
-              this%gpoint_flavor,                      &
-              this%get_band_lims_gpoint(),             &
-              this%kmajor,                             &
-              this%kminor_lower,                       &
-              this%kminor_upper,                       &
-              this%minor_limits_gpt_lower,             &
-              this%minor_limits_gpt_upper,             &
-              this%minor_scales_with_density_lower,    &
-              this%minor_scales_with_density_upper,    &
-              this%scale_by_complement_lower,          &
-              this%scale_by_complement_upper,          &
-              this%idx_minor_lower,                    &
-              this%idx_minor_upper,                    &
-              this%idx_minor_scaling_lower,            &
-              this%idx_minor_scaling_upper,            &
-              this%kminor_start_lower,                 &
-              this%kminor_start_upper,                 &
-              tropo,                                   &
-              col_mix,fmajor,fminor,                   &
-              play,tlay,col_gas,                       &
-              jeta,jtemp,jpress,                       &
-              optical_props%tau)  !
+          ncol,nlay,nband,ngpt,                    &  ! dimensions
+          ngas,nflav,neta,npres,ntemp,             &
+          nminorlower, nminorklower,               & ! number of minor contributors, total num absorption coeffs
+          nminorupper, nminorkupper,               &
+          idx_h2o,                                 &
+          this%gpoint_flavor,                      &
+          this%get_band_lims_gpoint(),             &
+          this%kmajor,                             &
+          this%kminor_lower,                       &
+          this%kminor_upper,                       &
+          this%minor_limits_gpt_lower,             &
+          this%minor_limits_gpt_upper,             &
+          this%minor_scales_with_density_lower,    &
+          this%minor_scales_with_density_upper,    &
+          this%scale_by_complement_lower,          &
+          this%scale_by_complement_upper,          &
+          this%idx_minor_lower,                    &
+          this%idx_minor_upper,                    &
+          this%idx_minor_scaling_lower,            &
+          this%idx_minor_scaling_upper,            &
+          this%kminor_start_lower,                 &
+          this%kminor_start_upper,                 &
+          tropo,                                   &
+          col_mix,fmajor,fminor,                   &
+          play,tlay,col_gas,                       &
+          jeta,jtemp,jpress,                       &
+          optical_props%tau)  !
         select type(optical_props)
-          type is (ty_optical_props_2str)
-            call zero_array(ncol, nlay, ngpt, optical_props%ssa)
-            call zero_array(ncol, nlay, ngpt, optical_props%g)
-          type is (ty_optical_props_nstr)
-            call zero_array(ncol, nlay, ngpt, optical_props%ssa)
-            call zero_array(optical_props%get_nmom(), &
+        type is (ty_optical_props_2str)
+          call zero_array(ncol, nlay, ngpt, optical_props%ssa)
+          call zero_array(ncol, nlay, ngpt, optical_props%g)
+        type is (ty_optical_props_nstr)
+          call zero_array(ncol, nlay, ngpt, optical_props%ssa)
+          call zero_array(optical_props%get_nmom(), &
                           ncol, nlay, ngpt, optical_props%p)
         end select
       end if
@@ -731,15 +731,15 @@ contains
       end if
 
       select type(optical_props)
-        type is (ty_optical_props_1scl)
-          !$acc        exit data copyout( optical_props%tau)
-          !$omp target exit data map(from:optical_props%tau)
-        type is (ty_optical_props_2str)
-          !$acc        exit data copyout( optical_props%tau, optical_props%ssa, optical_props%g)
-          !$omp target exit data map(from:optical_props%tau, optical_props%ssa, optical_props%g)
-        type is (ty_optical_props_nstr)
-          !$acc        exit data copyout( optical_props%tau, optical_props%ssa, optical_props%p)
-          !$omp target exit data map(from:optical_props%tau, optical_props%ssa, optical_props%p)
+      type is (ty_optical_props_1scl)
+        !$acc        exit data copyout( optical_props%tau)
+        !$omp target exit data map(from:optical_props%tau)
+      type is (ty_optical_props_2str)
+        !$acc        exit data copyout( optical_props%tau, optical_props%ssa, optical_props%g)
+        !$omp target exit data map(from:optical_props%tau, optical_props%ssa, optical_props%g)
+      type is (ty_optical_props_nstr)
+        !$acc        exit data copyout( optical_props%tau, optical_props%ssa, optical_props%p)
+        !$omp target exit data map(from:optical_props%tau, optical_props%ssa, optical_props%p)
       end select
       !$acc exit data delete(optical_props)
 
@@ -764,7 +764,7 @@ contains
   !------------------------------------------------------------------------------------------
   function set_solar_variability(this,                      &
                                  mg_index, sb_index, tsi)   &
-                                 result(error_msg)
+    result(error_msg)
     !
     !! Updates the spectral distribution and, optionally,
     !!   the integrated value of the solar source function
@@ -775,7 +775,7 @@ contains
     real(wp),           intent(in) :: mg_index  !! facular brightening index (NRLSSI2 facular "Bremen" index)
     real(wp),           intent(in) :: sb_index  !! sunspot dimming index     (NRLSSI2 sunspot "SPOT67" index)
     real(wp), optional, intent(in) :: tsi       !! total solar irradiance
-    character(len=128)             :: error_msg !! Empty if successful 
+    character(len=128)             :: error_msg !! Empty if successful
     ! ----------------------------------------------------------
     integer :: igpt
     real(wp), parameter :: a_offset = 0.1495954_wp
@@ -808,10 +808,10 @@ contains
     !
     class(ty_gas_optics_rrtmgp), intent(inout) :: this
     real(wp),                    intent(in   ) :: tsi !! user-specified total solar irradiance;
-    character(len=128)                         :: error_msg !! Empty if successful 
+    character(len=128)                         :: error_msg !! Empty if successful
 
     real(wp) :: norm
-    integer  :: igpt, length 
+    integer  :: igpt, length
     ! ----------------------------------------------------------
     error_msg = ""
     if(tsi < 0._wp) then
@@ -825,7 +825,7 @@ contains
       !$acc parallel loop gang vector reduction(+:norm)
       !$omp target teams distribute parallel do simd reduction(+:norm)
       do igpt = 1, length
-         norm = norm + this%solar_source(igpt)
+        norm = norm + this%solar_source(igpt)
       end do
 
       norm = 1._wp/norm
@@ -833,7 +833,7 @@ contains
       !$acc parallel loop gang vector
       !$omp target teams distribute parallel do simd
       do igpt = 1, length
-         this%solar_source(igpt) = this%solar_source(igpt) * tsi * norm
+        this%solar_source(igpt) = this%solar_source(igpt) * tsi * norm
       end do
     end if
 
@@ -848,7 +848,7 @@ contains
                   jtemp, jpress, jeta, tropo, fmajor, &
                   sources,                            & ! Planck sources
                   tlev)                         & ! optional input
-                  result(error_msg)
+    result(error_msg)
     ! inputs
     class(ty_gas_optics_rrtmgp),    intent(in ) :: this
     integer,                               intent(in   ) :: ncol, nlay, nbnd, ngpt
@@ -861,12 +861,12 @@ contains
     integer,     dimension(ncol,nlay),     intent(in   ) :: jtemp, jpress
     logical(wl), dimension(ncol,nlay),     intent(in   ) :: tropo
     real(wp),    dimension(2,2,2,ncol,nlay,get_nflav(this)),  &
-                                           intent(in   ) :: fmajor
+      intent(in   ) :: fmajor
     integer,     dimension(2,    ncol,nlay,get_nflav(this)),  &
-                                           intent(in   ) :: jeta
+      intent(in   ) :: jeta
     class(ty_source_func_lw    ),          intent(inout) :: sources
     real(wp), dimension(ncol,nlay+1),      intent(in   ), &
-                                      optional, target :: tlev          ! level temperatures [K]
+      optional, target :: tlev          ! level temperatures [K]
     character(len=128)                                 :: error_msg
     ! ----------------------------------------------------------
     integer                                      :: icol, ilay
@@ -880,7 +880,7 @@ contains
     !   Allocate small local array for tlev unconditionally
     !
     !$acc        data copyin(sources) copyout( sources%lay_source, sources%lev_source)     &
-    !$acc                             copyout( sources%sfc_source, sources%sfc_source_Jac) & 
+    !$acc                             copyout( sources%sfc_source, sources%sfc_source_Jac) &
     !$acc              create(tlev_arr)
     !$omp target data                 map(from:sources%lay_source, sources%lev_source)     &
     !$omp                             map(from:sources%sfc_source, sources%sfc_source_Jac) &
@@ -895,23 +895,23 @@ contains
       ! Interpolate temperature to levels if not provided
       !   Interpolation and extrapolation at boundaries is weighted by pressure
       !
-     !$acc                parallel loop gang vector
-     !$omp target teams distribute parallel do simd 
+      !$acc                parallel loop gang vector
+      !$omp target teams distribute parallel do simd
       do icol = 1, ncol
-         tlev_arr(icol,1)      = tlay(icol,1) &
-                           + (plev(icol,1)-play(icol,1))*(tlay(icol,2)-tlay(icol,1))  &
-                                                          / (play(icol,2)-play(icol,1))
-         tlev_arr(icol,nlay+1) = tlay(icol,nlay)                                                             &
+        tlev_arr(icol,1)      = tlay(icol,1) &
+                                + (plev(icol,1)-play(icol,1))*(tlay(icol,2)-tlay(icol,1))  &
+                                / (play(icol,2)-play(icol,1))
+        tlev_arr(icol,nlay+1) = tlay(icol,nlay)                                                             &
                                 + (plev(icol,nlay+1)-play(icol,nlay))*(tlay(icol,nlay)-tlay(icol,nlay-1))  &
-                                                          / (play(icol,nlay)-play(icol,nlay-1))
+                                / (play(icol,nlay)-play(icol,nlay-1))
       end do
-     !$acc                parallel loop gang vector collapse(2) 
-     !$omp target teams distribute parallel do simd collapse(2)
-     do ilay = 2, nlay
+      !$acc                parallel loop gang vector collapse(2)
+      !$omp target teams distribute parallel do simd collapse(2)
+      do ilay = 2, nlay
         do icol = 1, ncol
-           tlev_arr(icol,ilay) = (play(icol,ilay-1)*tlay(icol,ilay-1)*(plev(icol,ilay  )-play(icol,ilay)) &
-                                +  play(icol,ilay  )*tlay(icol,ilay  )*(play(icol,ilay-1)-plev(icol,ilay))) /  &
-                                  (plev(icol,ilay)*(play(icol,ilay-1) - play(icol,ilay)))
+          tlev_arr(icol,ilay) = (play(icol,ilay-1)*tlay(icol,ilay-1)*(plev(icol,ilay  )-play(icol,ilay)) &
+                                 +  play(icol,ilay  )*tlay(icol,ilay  )*(play(icol,ilay-1)-plev(icol,ilay))) /  &
+                                (plev(icol,ilay)*(play(icol,ilay-1) - play(icol,ilay)))
         end do
       end do
     end if
@@ -921,13 +921,13 @@ contains
     !  which depend on mapping from spectral space that creates k-distribution.
 
     call compute_Planck_source(ncol, nlay, nbnd, ngpt, &
-                get_nflav(this), this%get_neta(), this%get_npres(), this%get_ntemp(), this%get_nPlanckTemp(), &
-                tlay, tlev_wk, tsfc, merge(nlay, 1, logical(top_at_1, wl)), &
-                fmajor, jeta, tropo, jtemp, jpress,                         &
-                this%get_gpoint_bands(), this%get_band_lims_gpoint(), this%planck_frac, this%temp_ref_min,&
-                this%totplnk_delta, this%totplnk, this%gpoint_flavor,       &
-                sources%sfc_source, sources%lay_source, sources%lev_source, &
-                sources%sfc_source_Jac)
+                               get_nflav(this), this%get_neta(), this%get_npres(), this%get_ntemp(), this%get_nPlanckTemp(), &
+                               tlay, tlev_wk, tsfc, merge(nlay, 1, logical(top_at_1, wl)), &
+                               fmajor, jeta, tropo, jtemp, jpress,                         &
+                               this%get_gpoint_bands(), this%get_band_lims_gpoint(), this%planck_frac, this%temp_ref_min,&
+                               this%totplnk_delta, this%totplnk, this%gpoint_flavor,       &
+                               sources%sfc_source, sources%lay_source, sources%lev_source, &
+                               sources%sfc_source_Jac)
     !$acc end        data
     !$omp end target data
   end function source
@@ -972,7 +972,7 @@ contains
     real(wp),           dimension(:,:),     intent(in   ) :: totplnk
     real(wp),           dimension(:,:,:,:), intent(in   ) :: planck_frac
     real(wp),           dimension(:,:,:),   intent(in   ), &
-                                              allocatable :: rayl_lower, rayl_upper
+      allocatable :: rayl_lower, rayl_upper
     real(wp),           dimension(:,:),     intent(in   ) :: optimal_angle_fit
     character(len=*),   dimension(:),       intent(in   ) :: gas_minor,identifier_minor
     character(len=*),   dimension(:),       intent(in   ) :: minor_gases_lower, &
@@ -1057,7 +1057,7 @@ contains
     class(ty_gas_optics_rrtmgp), intent(inout) :: this
     class(ty_gas_concs),         intent(in   ) :: available_gases ! Which gases does the host model have available?
     character(len=*), &
-              dimension(:),       intent(in) :: gas_names
+      dimension(:),       intent(in) :: gas_names
     integer,  dimension(:,:,:),   intent(in) :: key_species
     integer,  dimension(:,:),     intent(in) :: band2gpt
     real(wp), dimension(:,:),     intent(in) :: band_lims_wavenum
@@ -1067,33 +1067,33 @@ contains
     real(wp), dimension(:,:,:,:), intent(in) :: kmajor
     real(wp), dimension(:,:,:),   intent(in) :: kminor_lower, kminor_upper
     character(len=*),   dimension(:), &
-                                  intent(in) :: gas_minor, &
-                                                identifier_minor
+      intent(in) :: gas_minor, &
+                    identifier_minor
     character(len=*),   dimension(:), &
-                                  intent(in) :: minor_gases_lower, &
-                                                minor_gases_upper
+      intent(in) :: minor_gases_lower, &
+                    minor_gases_upper
     integer,  dimension(:,:),     intent(in) :: &
-                                                minor_limits_gpt_lower, &
-                                                minor_limits_gpt_upper
+      minor_limits_gpt_lower, &
+      minor_limits_gpt_upper
     logical(wl),    dimension(:), intent(in) :: &
-                                                minor_scales_with_density_lower, &
-                                                minor_scales_with_density_upper
+      minor_scales_with_density_lower, &
+      minor_scales_with_density_upper
     character(len=*),dimension(:),intent(in) :: &
-                                                scaling_gas_lower, &
-                                                scaling_gas_upper
+      scaling_gas_lower, &
+      scaling_gas_upper
     logical(wl),    dimension(:), intent(in) :: &
-                                                scale_by_complement_lower, &
-                                                scale_by_complement_upper
+      scale_by_complement_lower, &
+      scale_by_complement_upper
     integer,        dimension(:), intent(in) :: &
-                                                kminor_start_lower, &
-                                                kminor_start_upper
+      kminor_start_lower, &
+      kminor_start_upper
     real(wp),       dimension(:), intent(in) :: solar_quiet, &
                                                 solar_facular, &
                                                 solar_sunspot
     real(wp),                     intent(in) :: tsi_default, &
                                                 mg_default, sb_default
     real(wp), dimension(:,:,:),   intent(in), &
-                                 allocatable :: rayl_lower, rayl_upper
+      allocatable :: rayl_lower, rayl_upper
     character(len = 128) err_message
 
     integer :: ngpt
@@ -1121,9 +1121,9 @@ contains
                                   kminor_start_upper, &
                                   rayl_lower, rayl_upper)
     if(err_message == "") then
-    !
-    ! Spectral solar irradiance terms init
-    !
+      !
+      ! Spectral solar irradiance terms init
+      !
       ngpt = size(solar_quiet)
       allocate(this%solar_source_quiet(ngpt), this%solar_source_facular(ngpt), &
                this%solar_source_sunspot(ngpt), this%solar_source(ngpt))
@@ -1167,7 +1167,7 @@ contains
     class(ty_gas_optics_rrtmgp), intent(inout) :: this
     class(ty_gas_concs),                intent(in   ) :: available_gases
     character(len=*), &
-              dimension(:),       intent(in) :: gas_names
+      dimension(:),       intent(in) :: gas_names
     integer,  dimension(:,:,:),   intent(in) :: key_species
     integer,  dimension(:,:),     intent(in) :: band2gpt
     real(wp), dimension(:,:),     intent(in) :: band_lims_wavenum
@@ -1177,24 +1177,24 @@ contains
     real(wp), dimension(:,:,:,:), intent(in) :: kmajor
     real(wp), dimension(:,:,:),   intent(in) :: kminor_lower, kminor_upper
     character(len=*),   dimension(:), &
-                                  intent(in) :: gas_minor, &
-                                                identifier_minor
+      intent(in) :: gas_minor, &
+                    identifier_minor
     character(len=*),   dimension(:), &
-                                  intent(in) :: minor_gases_lower, &
-                                                minor_gases_upper
+      intent(in) :: minor_gases_lower, &
+                    minor_gases_upper
     integer,  dimension(:,:),     intent(in) :: minor_limits_gpt_lower, &
                                                 minor_limits_gpt_upper
     logical(wl), dimension(:),    intent(in) :: minor_scales_with_density_lower, &
                                                 minor_scales_with_density_upper
     character(len=*),   dimension(:),&
-                                  intent(in) :: scaling_gas_lower, &
-                                                scaling_gas_upper
+      intent(in) :: scaling_gas_lower, &
+                    scaling_gas_upper
     logical(wl), dimension(:),    intent(in) :: scale_by_complement_lower, &
                                                 scale_by_complement_upper
     integer,  dimension(:),       intent(in) :: kminor_start_lower, &
                                                 kminor_start_upper
     real(wp), dimension(:,:,:),   intent(in), &
-                                 allocatable :: rayl_lower, rayl_upper
+      allocatable :: rayl_lower, rayl_upper
     character(len=128)                       :: err_message
     ! --------------------------------------------------------------------------
     logical,  dimension(:),     allocatable :: gas_is_present
@@ -1202,11 +1202,11 @@ contains
     integer,  dimension(:,:,:), allocatable :: key_species_red
     real(wp), dimension(:,:,:), allocatable :: vmr_ref_red
     character(len=256), &
-              dimension(:),     allocatable :: minor_gases_lower_red, &
-                                               minor_gases_upper_red
+      dimension(:),     allocatable :: minor_gases_lower_red, &
+                                       minor_gases_upper_red
     character(len=256), &
-              dimension(:),     allocatable :: scaling_gas_lower_red, &
-                                               scaling_gas_upper_red
+      dimension(:),     allocatable :: scaling_gas_lower_red, &
+                                       scaling_gas_upper_red
     integer :: i, j, idx
     integer :: ngas
     ! --------------------------------------
@@ -1281,16 +1281,16 @@ contains
                              scaling_gas_upper_red, &
                              this%scale_by_complement_upper, &
                              this%kminor_start_upper)
-   !$acc        enter data copyin(this%minor_limits_gpt_lower, this%minor_limits_gpt_upper)
-   !$omp target enter data map(to:this%minor_limits_gpt_lower, this%minor_limits_gpt_upper)
-   !$acc        enter data copyin(this%minor_scales_with_density_lower, this%minor_scales_with_density_upper)
-   !$omp target enter data map(to:this%minor_scales_with_density_lower, this%minor_scales_with_density_upper)
-   !$acc        enter data copyin(this%scale_by_complement_lower, this%scale_by_complement_upper)
-   !$omp target enter data map(to:this%scale_by_complement_lower, this%scale_by_complement_upper)
-   !$acc        enter data copyin(this%kminor_start_lower, this%kminor_start_upper)
-   !$omp target enter data map(to:this%kminor_start_lower, this%kminor_start_upper)
-   !$acc        enter data copyin(this%kminor_lower, this%kminor_upper)
-   !$omp target enter data map(to:this%kminor_lower, this%kminor_upper)
+    !$acc        enter data copyin(this%minor_limits_gpt_lower, this%minor_limits_gpt_upper)
+    !$omp target enter data map(to:this%minor_limits_gpt_lower, this%minor_limits_gpt_upper)
+    !$acc        enter data copyin(this%minor_scales_with_density_lower, this%minor_scales_with_density_upper)
+    !$omp target enter data map(to:this%minor_scales_with_density_lower, this%minor_scales_with_density_upper)
+    !$acc        enter data copyin(this%scale_by_complement_lower, this%scale_by_complement_upper)
+    !$omp target enter data map(to:this%scale_by_complement_lower, this%scale_by_complement_upper)
+    !$acc        enter data copyin(this%kminor_start_lower, this%kminor_start_upper)
+    !$omp target enter data map(to:this%kminor_start_lower, this%kminor_start_upper)
+    !$acc        enter data copyin(this%kminor_lower, this%kminor_upper)
+    !$omp target enter data map(to:this%kminor_lower, this%kminor_upper)
 
     ! Arrays not reduced by the presence, or lack thereof, of a gas
     allocate(this%press_ref(size(press_ref)), this%temp_ref(size(temp_ref)), &
@@ -1300,7 +1300,6 @@ contains
     this%kmajor = RESHAPE(kmajor,(/size(kmajor,4),size(kmajor,2),size(kmajor,3),size(kmajor,1)/), ORDER= (/4,2,3,1/))
     !$acc        enter data copyin(this%press_ref, this%temp_ref, this%kmajor)
     !$omp target enter data map(to:this%press_ref, this%temp_ref, this%kmajor)
-
 
     if(allocated(rayl_lower) .neqv. allocated(rayl_upper)) then
       err_message = "rayl_lower and rayl_upper must have the same allocation status"
@@ -1340,7 +1339,7 @@ contains
     ! create flavor list
     ! Reduce (remap) key_species list; checks that all key gases are present in incoming
     call create_key_species_reduce(gas_names,this%gas_names, &
-      key_species,key_species_red,key_species_present_init)
+                                   key_species,key_species_red,key_species_present_init)
     err_message = check_key_species_present_init(gas_names,key_species_present_init)
     if(len_trim(err_message) /= 0) return
     ! create flavor list
@@ -1477,7 +1476,7 @@ contains
   !
   pure function get_temp_min(this)
     class(ty_gas_optics_rrtmgp), intent(in) :: this
-    real(wp)                                :: get_temp_min !! minimum temperature for which the k-dsitribution is valid 
+    real(wp)                                :: get_temp_min !! minimum temperature for which the k-dsitribution is valid
 
     get_temp_min = this%temp_ref_min
   end function get_temp_min
@@ -1502,7 +1501,7 @@ contains
     real(wp), dimension(:,:), intent(in) :: vmr_h2o  ! volume mixing ratio of water vapor to dry air; (ncol,nlay)
     real(wp), dimension(:,:), intent(in) :: plev     ! Layer boundary pressures [Pa] (ncol,nlay+1)
     real(wp), dimension(:),   optional, &
-                              intent(in) :: latitude ! Latitude [degrees] (ncol)
+      intent(in) :: latitude ! Latitude [degrees] (ncol)
     ! output
     real(wp), dimension(size(plev,dim=1),size(plev,dim=2)-1) :: col_dry ! Column dry amount (ncol,nlay)
     ! ------------------------------------------------
@@ -1556,25 +1555,25 @@ contains
     ! input
     class(ty_gas_optics_rrtmgp),  intent(in   ) :: this
     class(ty_optical_props_arry), intent(in   ) :: optical_props  !! Optical properties
-    real(wp), dimension(:,:),     intent(  out) :: optimal_angles !! Secant of optical transport angle 
+    real(wp), dimension(:,:),     intent(  out) :: optimal_angles !! Secant of optical transport angle
     character(len=128)                          :: err_msg        !! Empty if successful
     !----------------------------
     integer  :: ncol, nlay, ngpt
     integer  :: icol, ilay, igpt, bnd
     real(wp) :: t, trans_total
 #if defined _CRAYFTN && _RELEASE_MAJOR == 14 && _RELEASE_MINOR == 0 && _RELEASE_PATCHLEVEL == 3
-# define CRAY_WORKAROUND 
-#endif 
-#ifdef CRAY_WORKAROUND 
-    integer, allocatable :: bands(:) 
-#else 
+# define CRAY_WORKAROUND
+#endif
+#ifdef CRAY_WORKAROUND
+    integer, allocatable :: bands(:)
+#else
     integer :: bands(optical_props%get_ngpt())
 #endif
     !----------------------------
     ncol = optical_props%get_ncol()
     nlay = optical_props%get_nlay()
     ngpt = optical_props%get_ngpt()
-#ifdef CRAY_WORKAROUND 
+#ifdef CRAY_WORKAROUND
     allocate( bands(ngpt) )  ! In order to work with CCE 14  (it is also better software)
 #endif
 
@@ -1663,7 +1662,7 @@ contains
     end do
     ! rewrite single key_species pairs
     do i=1,size(key_species_list,2)
-        key_species_list(:,i) = rewrite_key_species_pair(key_species_list(:,i))
+      key_species_list(:,i) = rewrite_key_species_pair(key_species_list(:,i))
     end do
     ! count unique key species pairs
     iflavor = 0
@@ -1687,14 +1686,14 @@ contains
   ! create index list for extracting col_gas needed for minor gas optical depth calculations
   !
   subroutine create_idx_minor(gas_names, &
-    gas_minor, identifier_minor, minor_gases_atm, idx_minor_atm)
+                              gas_minor, identifier_minor, minor_gases_atm, idx_minor_atm)
     character(len=*), dimension(:), intent(in) :: gas_names
     character(len=*), dimension(:), intent(in) :: &
-                                                  gas_minor, &
-                                                  identifier_minor
+      gas_minor, &
+      identifier_minor
     character(len=*), dimension(:), intent(in) :: minor_gases_atm
     integer, dimension(:), allocatable, &
-                                   intent(out) :: idx_minor_atm
+      intent(out) :: idx_minor_atm
 
     ! local
     integer :: imnr
@@ -1713,11 +1712,11 @@ contains
   ! create index for special treatment in density scaling of minor gases
   !
   subroutine create_idx_minor_scaling(gas_names, &
-    scaling_gas_atm, idx_minor_scaling_atm)
+                                      scaling_gas_atm, idx_minor_scaling_atm)
     character(len=*), dimension(:), intent(in) :: gas_names
     character(len=*), dimension(:), intent(in) :: scaling_gas_atm
     integer, dimension(:), allocatable, &
-                                   intent(out) :: idx_minor_scaling_atm
+      intent(out) :: idx_minor_scaling_atm
 
     ! local
     integer :: imnr
@@ -1802,11 +1801,11 @@ contains
   end subroutine finalize
   ! ---------------------------------------------------------------------------------------
   subroutine create_key_species_reduce(gas_names,gas_names_red, &
-    key_species,key_species_red,key_species_present_init)
+                                       key_species,key_species_red,key_species_present_init)
     character(len=*), &
-              dimension(:),       intent(in) :: gas_names
+      dimension(:),       intent(in) :: gas_names
     character(len=*), &
-              dimension(:),       intent(in) :: gas_names_red
+      dimension(:),       intent(in) :: gas_names_red
     integer,  dimension(:,:,:),   intent(in) :: key_species
     integer,  dimension(:,:,:), allocatable, intent(out) :: key_species_red
 
@@ -1840,21 +1839,21 @@ contains
 ! ---------------------------------------------------------------------------------------
 
   subroutine reduce_minor_arrays(available_gases, &
-                           gas_minor,identifier_minor,&
-                           kminor_atm, &
-                           minor_gases_atm, &
-                           minor_limits_gpt_atm, &
-                           minor_scales_with_density_atm, &
-                           scaling_gas_atm, &
-                           scale_by_complement_atm, &
-                           kminor_start_atm, &
-                           kminor_atm_red, &
-                           minor_gases_atm_red, &
-                           minor_limits_gpt_atm_red, &
-                           minor_scales_with_density_atm_red, &
-                           scaling_gas_atm_red, &
-                           scale_by_complement_atm_red, &
-                           kminor_start_atm_red)
+                                 gas_minor,identifier_minor,&
+                                 kminor_atm, &
+                                 minor_gases_atm, &
+                                 minor_limits_gpt_atm, &
+                                 minor_scales_with_density_atm, &
+                                 scaling_gas_atm, &
+                                 scale_by_complement_atm, &
+                                 kminor_start_atm, &
+                                 kminor_atm_red, &
+                                 minor_gases_atm_red, &
+                                 minor_limits_gpt_atm_red, &
+                                 minor_scales_with_density_atm_red, &
+                                 scaling_gas_atm_red, &
+                                 scale_by_complement_atm_red, &
+                                 kminor_start_atm_red)
 
     class(ty_gas_concs),                intent(in) :: available_gases
     real(wp),         dimension(:,:,:), intent(in) :: kminor_atm
@@ -1867,19 +1866,19 @@ contains
     logical(wl),      dimension(:),     intent(in) :: scale_by_complement_atm
     integer,          dimension(:),     intent(in) :: kminor_start_atm
     real(wp),         dimension(:,:,:), allocatable, &
-                                        intent(out) :: kminor_atm_red
+      intent(out) :: kminor_atm_red
     character(len=*), dimension(:), allocatable, &
-                                        intent(out) :: minor_gases_atm_red
+      intent(out) :: minor_gases_atm_red
     integer,          dimension(:,:), allocatable, &
-                                        intent(out) :: minor_limits_gpt_atm_red
+      intent(out) :: minor_limits_gpt_atm_red
     logical(wl),      dimension(:),    allocatable, &
-                                        intent(out) ::minor_scales_with_density_atm_red
+      intent(out) ::minor_scales_with_density_atm_red
     character(len=*), dimension(:), allocatable, &
-                                        intent(out) ::scaling_gas_atm_red
+      intent(out) ::scaling_gas_atm_red
     logical(wl),      dimension(:), allocatable, intent(out) :: &
-                                                scale_by_complement_atm_red
+      scale_by_complement_atm_red
     integer,          dimension(:), allocatable, intent(out) :: &
-                                                kminor_start_atm_red
+      kminor_start_atm_red
 
     ! Local variables
     integer :: i, j, ks
@@ -1929,9 +1928,9 @@ contains
       minor_gases_atm_red  = minor_gases_atm        (indexes)
       scaling_gas_atm_red  = scaling_gas_atm        (indexes)
       minor_scales_with_density_atm_red = &
-                             minor_scales_with_density_atm(indexes)
+        minor_scales_with_density_atm(indexes)
       scale_by_complement_atm_red = &
-                             scale_by_complement_atm(indexes)
+        scale_by_complement_atm(indexes)
       kminor_start_atm_red = kminor_start_atm       (indexes)
 
       icnt = 0
@@ -1990,9 +1989,9 @@ contains
     do igpt=1,ngpt
       do iatm=1,2
         gpoint_flavor(iatm,igpt) = key_species_pair2flavor( &
-          flavor, &
-          rewrite_key_species_pair(key_species(:,iatm,gpt2band(igpt))) &
-        )
+                                   flavor, &
+                                   rewrite_key_species_pair(key_species(:,iatm,gpt2band(igpt))) &
+                                   )
       end do
     end do
   end subroutine create_gpoint_flavor
@@ -2000,7 +1999,7 @@ contains
   !--------------------------------------------------------------------------------------------------------------------
   !
   ! Utility function to combine optical depths from gas absorption and Rayleigh scattering
-  !   It may be more efficient to combine scattering and absorption optical depths in place 
+  !   It may be more efficient to combine scattering and absorption optical depths in place
   !   rather than storing and processing two large arrays
   !
   subroutine combine_abs_and_rayleigh(tau, tau_rayleigh, optical_props)
@@ -2025,13 +2024,13 @@ contains
         do ilay = 1, nlay
           do icol = 1, ncol
             optical_props%tau(icol,ilay,igpt) = tau(icol,ilay,igpt) + &
-                                       tau_rayleigh(icol,ilay,igpt)
+                                                tau_rayleigh(icol,ilay,igpt)
           end do
         end do
       end do
-    !
-    ! asymmetry factor or phase function moments
-    !
+      !
+      ! asymmetry factor or phase function moments
+      !
     type is (ty_optical_props_2str)
       !
       ! Extinction optical depth and single scattering albedo
@@ -2043,12 +2042,12 @@ contains
           do icol = 1, ncol
             t = tau(icol,ilay,igpt) + tau_rayleigh(icol,ilay,igpt)
             if(t > 2._wp * tiny(t)) then
-               optical_props%ssa(icol,ilay,igpt) = tau_rayleigh(icol,ilay,igpt) / t
-             else
-               optical_props%ssa(icol,ilay,igpt) = 0._wp
-             end if
-             optical_props%tau(icol,ilay,igpt) = t
-           end do
+              optical_props%ssa(icol,ilay,igpt) = tau_rayleigh(icol,ilay,igpt) / t
+            else
+              optical_props%ssa(icol,ilay,igpt) = 0._wp
+            end if
+            optical_props%tau(icol,ilay,igpt) = t
+          end do
         end do
       end do
       call zero_array(ncol, nlay, ngpt, optical_props%g)
@@ -2063,12 +2062,12 @@ contains
           do icol = 1, ncol
             t = tau(icol,ilay,igpt) + tau_rayleigh(icol,ilay,igpt)
             if(t > 2._wp * tiny(t)) then
-               optical_props%ssa(icol,ilay,igpt) = tau_rayleigh(icol,ilay,igpt) / t
-             else
-               optical_props%ssa(icol,ilay,igpt) = 0._wp
-             end if
-             optical_props%tau(icol,ilay,igpt) = t
-           end do
+              optical_props%ssa(icol,ilay,igpt) = tau_rayleigh(icol,ilay,igpt) / t
+            else
+              optical_props%ssa(icol,ilay,igpt) = 0._wp
+            end if
+            optical_props%tau(icol,ilay,igpt) = t
+          end do
         end do
       end do
       nmom = size(optical_props%p, 1)

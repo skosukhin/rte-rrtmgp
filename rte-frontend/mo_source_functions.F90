@@ -243,7 +243,7 @@ contains
       return
     end if
     if(start < 1 .or. start + n-1 > full%get_ncol()) &
-       err_message = "optical_props%subset: Asking for columns outside range"
+      err_message = "optical_props%subset: Asking for columns outside range"
     if(err_message /= "") return
 
     !
@@ -270,7 +270,7 @@ contains
       return
     end if
     if(start < 1 .or. start + n-1 > full%get_ncol()) &
-       err_message = "optical_props%subset: Asking for columns outside range"
+      err_message = "optical_props%subset: Asking for columns outside range"
     if(err_message /= "") return
 
     !

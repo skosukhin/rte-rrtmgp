@@ -12,7 +12,7 @@ end subroutine stop_on_err
 program test_solar_zenith_angle
   use mo_rte_kind,           only: wp, wl
   use mo_zenith_angle_spherical_correction, &
-                             only: zenith_angle_with_height
+    only: zenith_angle_with_height
 
   use mo_rcemip_profiles,    only: make_rcemip_profiles
   use mo_gas_concentrations, only: ty_gas_concs
@@ -37,10 +37,10 @@ program test_solar_zenith_angle
                                  heating_rate(ncol, nlay),             &
                                  p_lev(ncol, nlay+1)
   real(wp), dimension(ncol, nlay+1), target &
-                              :: flux_up, flux_dn, flux_dir
+    :: flux_up, flux_dn, flux_dir
   character(len=128)          :: k_dist_file = "rrtmgp-gas-sw-g112.nc"
   real(wp), dimension(:,:), allocatable &
-                              :: toa_flux, sfc_alb_dir, sfc_alb_dif
+    :: toa_flux, sfc_alb_dir, sfc_alb_dif
   !
   ! Geometric calculation
   !
@@ -117,7 +117,7 @@ program test_solar_zenith_angle
     print '(6x, " heating rate: ", 4(4x, f7.4))', heating_rate(:,i) * 86400._wp
     if(i > 1) then
       if(any(mu0(:, i) > epsilon(mu0) .neqv. mu0(:, i-1) > epsilon(mu0))) &
-      print *, "************ mu0 sign change "
+        print *, "************ mu0 sign change "
     end if
     print '(f7.0, 33x, 4(5x, f6.2), "  dir")',   p_lev(1,i+1), flux_dir(:,i+1)
     print '(      40x, 4(5x, f6.2), "  dn" )',                 flux_dn (:,i+1)

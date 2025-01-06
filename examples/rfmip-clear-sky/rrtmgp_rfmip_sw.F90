@@ -94,11 +94,11 @@ program rrtmgp_rfmip_sw
   character(len=4)   :: block_size_char, forcing_index_char = '1'
 
   character(len=32 ), &
-            dimension(:),             allocatable :: kdist_gas_names, rfmip_gas_games
+    dimension(:),             allocatable :: kdist_gas_names, rfmip_gas_games
   real(wp), dimension(:,:,:),         allocatable :: p_lay, p_lev, t_lay, t_lev ! block_size, nlay, nblocks
   real(wp), dimension(:,:,:), target, allocatable :: flux_up, flux_dn
   real(wp), dimension(:,:  ),         allocatable :: surface_albedo, total_solar_irradiance, solar_zenith_angle
-                                                     ! block_size, nblocks
+  ! block_size, nblocks
   real(wp), dimension(:,:  ),         allocatable :: sfc_alb_spec ! nbnd, block_size; spectrally-resolved surface albedo
   !
   ! Classes used by rte+rrtmgp
@@ -195,7 +195,7 @@ program rrtmgp_rfmip_sw
     p_lev(:,1,:) = k_dist%get_press_min() + epsilon(k_dist%get_press_min())
   else
     p_lev(:,nlay+1,:) &
-                 = k_dist%get_press_min() + epsilon(k_dist%get_press_min())
+      = k_dist%get_press_min() + epsilon(k_dist%get_press_min())
   end if
 
   !

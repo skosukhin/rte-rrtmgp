@@ -16,23 +16,23 @@
 !     one sulfate type, and both hydrophobic and hydrophilic black carbon and organic carbon.
 !   Input aerosol optical data are stored in look-up tables.
 !
-!   References for the gocart interactive aerosols:   
+!   References for the gocart interactive aerosols:
 !     Chin et al., jgr, 2000 (https://doi.org/10.1029/2000jd900384)
 !     Chin et al., jas, 2002 (https://doi.org/10.1175/1520-0469(2002)059<0461:TAOTFT>2.0.CO;2)
 !     Colarco et al., jgr, 2010 (https://doi.org/10.1029/2009jd012820)
-!                                                                      
-!   References for merra2 aerosol reanalysis:                          
-!     Randles et al., j. clim., 2017 (https://doi.org/10.1175/jcli-d-16-0609.1) 
+!
+!   References for merra2 aerosol reanalysis:
+!     Randles et al., j. clim., 2017 (https://doi.org/10.1175/jcli-d-16-0609.1)
 !     Buchard et al., j. clim., 2017 (https://doi.org/10.1175/jcli-d-16-0613.1)
-!                                                                      
+!
 ! The class can be used as-is but is also intended as an example of how to extend the RTE framework
 ! -------------------------------------------------------------------------------------------------
 
 module mo_aerosol_optics_rrtmgp_merra
   use mo_rte_kind,      only: wp, wl
   use mo_rte_config,    only: check_extents, check_values
-  use mo_rte_util_array_validation,& 
-                        only: extents_are, any_vals_outside
+  use mo_rte_util_array_validation,&
+    only: extents_are, any_vals_outside
   use mo_optical_props, only: ty_optical_props,      &
                               ty_optical_props_arry, &
                               ty_optical_props_1scl, &
@@ -101,10 +101,10 @@ contains
                     aero_dust_tbl, aero_salt_tbl, aero_sulf_tbl, &
                     aero_bcar_tbl, aero_bcar_rh_tbl, &
                     aero_ocar_tbl, aero_ocar_rh_tbl) &
-                    result(error_msg)
+    result(error_msg)
 
-    class(ty_aerosol_optics_rrtmgp_merra),   & 
-                                intent(inout) :: this
+    class(ty_aerosol_optics_rrtmgp_merra),   &
+      intent(inout) :: this
     real(wp), dimension(:,:),   intent(in   ) :: band_lims_wvn ! spectral discretization
     ! Lookup table interpolation constants
     real(wp), dimension(:,:),   intent(in   ) :: merra_aero_bin_lims ! aerosol lut size bin limiits (pair,nbin)
@@ -167,7 +167,7 @@ contains
              this%aero_bcar_rh_tbl(nrh, nval, nband), &
              this%aero_ocar_tbl(nval, nband), &
              this%aero_ocar_rh_tbl(nrh, nval, nband))
-    
+
     ! Copy LUT coefficients
     this%merra_aero_bin_lims = merra_aero_bin_lims
     this%aero_rh             = aero_rh
@@ -203,7 +203,7 @@ contains
     ! Lookup table aerosol optics interpolation arrays
     if(allocated(this%merra_aero_bin_lims)) then
       deallocate(this%merra_aero_bin_lims, this%aero_rh)
-      !$acc        exit data delete(     this%merra_aero_bin_lims, this%aero_rh) 
+      !$acc        exit data delete(     this%merra_aero_bin_lims, this%aero_rh)
       !$omp target exit data map(release:this%merra_aero_bin_lims, this%aero_rh)
     end if
 
@@ -214,8 +214,8 @@ contains
       !$acc           delete(this%aero_ocar_tbl, this%aero_ocar_rh_tbl) &
       !$acc           delete(this)
       !$omp target exit data map(release:this%aero_dust_tbl, this%aero_salt_tbl, this%aero_sulf_tbl) &
-      !$omp                  map(release:this%aero_bcar_tbl, this%aero_bcar_rh_tbl)                  & 
-      !$omp                  map(release:this%aero_ocar_tbl, this%aero_ocar_rh_tbl) 
+      !$omp                  map(release:this%aero_bcar_tbl, this%aero_bcar_rh_tbl)                  &
+      !$omp                  map(release:this%aero_ocar_tbl, this%aero_ocar_rh_tbl)
       deallocate(this%aero_dust_tbl, this%aero_salt_tbl, this%aero_sulf_tbl, &
                  this%aero_bcar_tbl, this%aero_bcar_rh_tbl, &
                  this%aero_ocar_tbl, this%aero_ocar_rh_tbl)
@@ -234,32 +234,32 @@ contains
                           optical_props) result(error_msg)
 
     class(ty_aerosol_optics_rrtmgp_merra), &
-              intent(in  ) :: this
-    integer,  intent(in  ) :: aero_type(:,:)   ! MERRA2/GOCART aerosol type 
-                                               ! Dimensions: (ncol,nlay)
-                                               ! 1 = merra_aero_dust    (dust)
-                                               ! 2 = merra_aero_salt    (salt)
-                                               ! 3 = merra_aero_sulf    (sulfate)
-                                               ! 4 = merra_aero_bcar_rh (black carbon, hydrophilic)
-                                               ! 5 = merra_aero_bcar    (black carbon, hydrophobic)
-                                               ! 6 = merra_aero_ocar_rh (organic carbon, hydrophilic)
-                                               ! 7 = merra_aero_ocar    (organic carbon, hydrophobic)
+      intent(in  ) :: this
+    integer,  intent(in  ) :: aero_type(:,:)   ! MERRA2/GOCART aerosol type
+    ! Dimensions: (ncol,nlay)
+    ! 1 = merra_aero_dust    (dust)
+    ! 2 = merra_aero_salt    (salt)
+    ! 3 = merra_aero_sulf    (sulfate)
+    ! 4 = merra_aero_bcar_rh (black carbon, hydrophilic)
+    ! 5 = merra_aero_bcar    (black carbon, hydrophobic)
+    ! 6 = merra_aero_ocar_rh (organic carbon, hydrophilic)
+    ! 7 = merra_aero_ocar    (organic carbon, hydrophobic)
     real(wp), intent(in  ) :: aero_size(:,:)   ! aerosol size (radius) for dust and sea-salt (microns)
-                                               ! Dimensions: (ncol,nlay)
+    ! Dimensions: (ncol,nlay)
     real(wp), intent(in  ) :: aero_mass(:,:)   ! aerosol mass column (kg/m2)
-                                               ! Dimensions: (ncol,nlay)
+    ! Dimensions: (ncol,nlay)
     real(wp), intent(in  ) :: relhum(:,:)      ! relative humidity (fraction, 0-1)
-                                               ! Dimensions: (ncol,nlay)
+    ! Dimensions: (ncol,nlay)
 
     class(ty_optical_props_arry), &
-              intent(inout) :: optical_props
-                                               ! Dimensions: (ncol,nlay,nbnd)
+      intent(inout) :: optical_props
+    ! Dimensions: (ncol,nlay,nbnd)
 
     character(len=128)      :: error_msg
     ! ------- Local -------
     logical(wl), dimension(size(aero_type,1), size(aero_type,2)) :: aeromsk
     real(wp),    dimension(size(aero_type,1), size(aero_type,2), size(this%aero_dust_tbl,3)) :: &
-                 atau, ataussa, ataussag
+      atau, ataussa, ataussag
     integer  :: ncol, nlay, npair, nbin, nrh, nval, nbnd
     integer  :: icol, ilay, ibnd, ibin
     ! scalars for total tau, tau*ssa
@@ -322,13 +322,13 @@ contains
       if(error_msg /= "") return
     end if
 
-    !$acc data        copyin(aero_type, aero_size, aero_mass, relhum) 
-    !$omp target data map(to:aero_type, aero_size, aero_mass, relhum) 
+    !$acc data        copyin(aero_type, aero_size, aero_mass, relhum)
+    !$omp target data map(to:aero_type, aero_size, aero_mass, relhum)
     !
     ! Aerosol mask; don't need aerosol optics if there's no aerosol
     !
     !$acc data           create(aeromsk)
-    !$omp target data map(alloc:aeromsk) 
+    !$omp target data map(alloc:aeromsk)
     !$acc              parallel loop default(present) collapse(2)
     !$omp target teams distribute parallel do simd collapse(2)
     do ilay = 1, nlay
@@ -346,13 +346,13 @@ contains
       if(any_vals_outside(relhum,    aeromsk, 0._wp, 1._wp)) &
         error_msg = 'aerosol optics: relative humidity fraction is out of bounds'
     end if
-    ! Release aerosol mask 
+    ! Release aerosol mask
     !$acc end data
-    !$omp end target data 
+    !$omp end target data
 
     if(error_msg == "") then
       !$acc data           create(atau, ataussa, ataussag)
-      !$omp target data map(alloc:atau, ataussa, ataussag) 
+      !$omp target data map(alloc:atau, ataussa, ataussag)
       !
       !
       ! ----------------------------------------
@@ -409,7 +409,7 @@ contains
               optical_props%tau(icol,ilay,ibnd) = tau
               optical_props%ssa(icol,ilay,ibnd) = taussa / max(epsilon(tau), tau)
               optical_props%g  (icol,ilay,ibnd) = (ataussag(icol,ilay,ibnd)) &
-                                                         / max(epsilon(tau), taussa)
+                                                  / max(epsilon(tau), taussa)
             end do
           end do
         end do
@@ -418,9 +418,9 @@ contains
       end select
       !$acc end data
       !$omp end target data
-    end if 
+    end if
     !$acc end data
-    !$omp end target data 
+    !$omp end target data
   end function aerosol_optics
   !--------------------------------------------------------------------------------------------------------------------
   !
@@ -429,7 +429,7 @@ contains
   !--------------------------------------------------------------------------------------------------------------------
   !
   ! For size dimension, select size bin appropriate for the requested aerosol size.
-  ! For rh dimension, linearly interpolate values from a lookup table with "nrh" 
+  ! For rh dimension, linearly interpolate values from a lookup table with "nrh"
   !   unevenly-spaced elements "aero_rh". The last dimension for all tables is band.
   ! Returns zero where no aerosol is present.
   !
@@ -469,87 +469,87 @@ contains
       do ilay = 1,nlay
         do icol = 1, ncol
           ! Sequential loop to find size bin
-          do i=1,nbin 
-             if (size(icol,ilay) .ge. merra_aero_bin_lims(1,i) .and. &
-                 size(icol,ilay) .le. merra_aero_bin_lims(2,i)) then
-                ibin = i
-             endif
+          do i=1,nbin
+            if (size(icol,ilay) .ge. merra_aero_bin_lims(1,i) .and. &
+                size(icol,ilay) .le. merra_aero_bin_lims(2,i)) then
+              ibin = i
+            endif
           enddo
           itype = type(icol,ilay)
           ! relative humidity linear interpolation coefficients
           if (itype .ne. merra_aero_none) then
-             irh2 = 1
-             do while (rh(icol,ilay) .gt. aero_rh(irh2))
-                irh2 = irh2 + 1
-                if (irh2 .gt. nrh) exit
-             enddo
-             irh1 = max(1, irh2-1)
-             irh2 = min(nrh, irh2)
-             drh0 = aero_rh(irh2) - aero_rh(irh1)
-             drh1 = rh(icol,ilay) - aero_rh(irh1)
-             if (irh1 == irh2) then
-                rdrh = 0._wp
-             else
-                rdrh = drh1 / drh0
-             endif
+            irh2 = 1
+            do while (rh(icol,ilay) .gt. aero_rh(irh2))
+              irh2 = irh2 + 1
+              if (irh2 .gt. nrh) exit
+            enddo
+            irh1 = max(1, irh2-1)
+            irh2 = min(nrh, irh2)
+            drh0 = aero_rh(irh2) - aero_rh(irh1)
+            drh1 = rh(icol,ilay) - aero_rh(irh1)
+            if (irh1 == irh2) then
+              rdrh = 0._wp
+            else
+              rdrh = drh1 / drh0
+            endif
           endif
 
-          ! Set aerosol optical properties where aerosol present. Use aerosol type array as the mask. 
+          ! Set aerosol optical properties where aerosol present. Use aerosol type array as the mask.
           select case (itype)
 
-             ! dust
-             case(merra_aero_dust)
-               tau    (icol,ilay,ibnd) = mass  (icol,ilay)      * aero_dust_tbl(ext,ibin,ibnd)
-               taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * aero_dust_tbl(ssa,ibin,ibnd)
-               taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * aero_dust_tbl(g,ibin,ibnd)
-             ! sea-salt
-             case(merra_aero_salt)
-               tau    (icol,ilay,ibnd) = mass  (icol,ilay) * &
-                                         linear_interp_aero_table(aero_salt_tbl(:,ext,ibin,ibnd),irh1,irh2,rdrh)
-               taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * &
-                                         linear_interp_aero_table(aero_salt_tbl(:,ssa,ibin,ibnd),irh1,irh2,rdrh)
-               taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * &
-                                         linear_interp_aero_table(aero_salt_tbl(:,g,  ibin,ibnd),irh1,irh2,rdrh)
+            ! dust
+          case(merra_aero_dust)
+            tau    (icol,ilay,ibnd) = mass  (icol,ilay)      * aero_dust_tbl(ext,ibin,ibnd)
+            taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * aero_dust_tbl(ssa,ibin,ibnd)
+            taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * aero_dust_tbl(g,ibin,ibnd)
+            ! sea-salt
+          case(merra_aero_salt)
+            tau    (icol,ilay,ibnd) = mass  (icol,ilay) * &
+                                      linear_interp_aero_table(aero_salt_tbl(:,ext,ibin,ibnd),irh1,irh2,rdrh)
+            taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * &
+                                      linear_interp_aero_table(aero_salt_tbl(:,ssa,ibin,ibnd),irh1,irh2,rdrh)
+            taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * &
+                                      linear_interp_aero_table(aero_salt_tbl(:,g,  ibin,ibnd),irh1,irh2,rdrh)
 
-             ! sulfate
-             case(merra_aero_sulf)
-               tau    (icol,ilay,ibnd) = mass  (icol,ilay) * &
-                                         linear_interp_aero_table(aero_sulf_tbl(:,ext,ibnd),irh1,irh2,rdrh)
-               taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * &
-                                         linear_interp_aero_table(aero_sulf_tbl(:,ssa,ibnd),irh1,irh2,rdrh)
-               taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * &
-                                         linear_interp_aero_table(aero_sulf_tbl(:,g,  ibnd),irh1,irh2,rdrh)
-             ! black carbon - hydrophilic
-             case(merra_aero_bcar_rh)
-               tau    (icol,ilay,ibnd) = mass  (icol,ilay) * &
-                                         linear_interp_aero_table(aero_bcar_rh_tbl(:,ext,ibnd),irh1,irh2,rdrh)
-               taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * &
-                                         linear_interp_aero_table(aero_bcar_rh_tbl(:,ssa,ibnd),irh1,irh2,rdrh)
-               taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * &
-                                         linear_interp_aero_table(aero_bcar_rh_tbl(:,g,  ibnd),irh1,irh2,rdrh)
-             ! black carbon - hydrophobic
-             case(merra_aero_bcar)
-               tau    (icol,ilay,ibnd) = mass  (icol,ilay)      * aero_bcar_tbl(ext,ibnd)
-               taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * aero_bcar_tbl(ssa,ibnd)
-               taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * aero_bcar_tbl(g,  ibnd)
-             ! organic carbon - hydrophilic
-             case(merra_aero_ocar_rh)
-               tau    (icol,ilay,ibnd) = mass  (icol,ilay) * &
-                                         linear_interp_aero_table(aero_ocar_rh_tbl(:,ext,ibnd),irh1,irh2,rdrh)
-               taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * &
-                                         linear_interp_aero_table(aero_ocar_rh_tbl(:,ssa,ibnd),irh1,irh2,rdrh)
-               taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * &
-                                         linear_interp_aero_table(aero_ocar_rh_tbl(:,g,  ibnd),irh1,irh2,rdrh)
-             ! organic carbon - hydrophobic
-             case(merra_aero_ocar)
-               tau    (icol,ilay,ibnd) = mass  (icol,ilay)      * aero_ocar_tbl(ext,ibnd)
-               taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * aero_ocar_tbl(ssa,ibnd)
-               taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * aero_ocar_tbl(g,  ibnd)
-             ! no aerosol
-             case default
-               tau    (icol,ilay,ibnd) = 0._wp
-               taussa (icol,ilay,ibnd) = 0._wp
-               taussag(icol,ilay,ibnd) = 0._wp
+            ! sulfate
+          case(merra_aero_sulf)
+            tau    (icol,ilay,ibnd) = mass  (icol,ilay) * &
+                                      linear_interp_aero_table(aero_sulf_tbl(:,ext,ibnd),irh1,irh2,rdrh)
+            taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * &
+                                      linear_interp_aero_table(aero_sulf_tbl(:,ssa,ibnd),irh1,irh2,rdrh)
+            taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * &
+                                      linear_interp_aero_table(aero_sulf_tbl(:,g,  ibnd),irh1,irh2,rdrh)
+            ! black carbon - hydrophilic
+          case(merra_aero_bcar_rh)
+            tau    (icol,ilay,ibnd) = mass  (icol,ilay) * &
+                                      linear_interp_aero_table(aero_bcar_rh_tbl(:,ext,ibnd),irh1,irh2,rdrh)
+            taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * &
+                                      linear_interp_aero_table(aero_bcar_rh_tbl(:,ssa,ibnd),irh1,irh2,rdrh)
+            taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * &
+                                      linear_interp_aero_table(aero_bcar_rh_tbl(:,g,  ibnd),irh1,irh2,rdrh)
+            ! black carbon - hydrophobic
+          case(merra_aero_bcar)
+            tau    (icol,ilay,ibnd) = mass  (icol,ilay)      * aero_bcar_tbl(ext,ibnd)
+            taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * aero_bcar_tbl(ssa,ibnd)
+            taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * aero_bcar_tbl(g,  ibnd)
+            ! organic carbon - hydrophilic
+          case(merra_aero_ocar_rh)
+            tau    (icol,ilay,ibnd) = mass  (icol,ilay) * &
+                                      linear_interp_aero_table(aero_ocar_rh_tbl(:,ext,ibnd),irh1,irh2,rdrh)
+            taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * &
+                                      linear_interp_aero_table(aero_ocar_rh_tbl(:,ssa,ibnd),irh1,irh2,rdrh)
+            taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * &
+                                      linear_interp_aero_table(aero_ocar_rh_tbl(:,g,  ibnd),irh1,irh2,rdrh)
+            ! organic carbon - hydrophobic
+          case(merra_aero_ocar)
+            tau    (icol,ilay,ibnd) = mass  (icol,ilay)      * aero_ocar_tbl(ext,ibnd)
+            taussa (icol,ilay,ibnd) = tau   (icol,ilay,ibnd) * aero_ocar_tbl(ssa,ibnd)
+            taussag(icol,ilay,ibnd) = taussa(icol,ilay,ibnd) * aero_ocar_tbl(g,  ibnd)
+            ! no aerosol
+          case default
+            tau    (icol,ilay,ibnd) = 0._wp
+            taussa (icol,ilay,ibnd) = 0._wp
+            taussag(icol,ilay,ibnd) = 0._wp
 
           end select
 
@@ -561,7 +561,7 @@ contains
   !
   ! Function for linearly interpolating MERRA aerosol optics tables in the rh dimension for
   ! a single parameter, aerosol type, spectral band, and size bin. Interpolation is performed
-  ! only where aerosol in present using aerosol type as the mask. 
+  ! only where aerosol in present using aerosol type as the mask.
   !
   function linear_interp_aero_table(table, index1, index2, weight) result(value)
     !$acc routine seq
@@ -574,7 +574,7 @@ contains
     real(wp) :: value
 
     value = table(index1) + weight * (table(index2) - table(index1))
-     
+
   end function linear_interp_aero_table
 ! ----------------------------------------------------------
   logical function any_int_vals_outside_2D(array, checkMin, checkMax)
